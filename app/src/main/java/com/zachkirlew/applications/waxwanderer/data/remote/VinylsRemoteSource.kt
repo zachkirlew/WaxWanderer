@@ -16,7 +16,7 @@ class VinylsRemoteSource private constructor() : VinylDataSource{
         val retrofit = Retrofit.Builder()
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
-                .baseUrl("https://api.discogs.com/database/")
+                .baseUrl("https://api.discogs.com")
                 .build()
 
         discogsService = retrofit.create<DiscogsApiService>(DiscogsApiService::class.java)
@@ -24,9 +24,14 @@ class VinylsRemoteSource private constructor() : VinylDataSource{
 
     override fun getVinyls(): Observable<DiscogsResponse> {
 
+        val parameters : HashMap<String, Any> = HashMap()
 
-        return discogsService.searchReleases("nirvana",50,"vinyl","release")
-       //return discogsService.searchSimilar("nirvana",20,"vinyl","release","grunge")
+        parameters.put("q","")
+        parameters.put("per_page",50)
+        parameters.put("q","vinyl")
+        parameters.put("q","release")
+
+        return discogsService.searchReleases(parameters)
     }
 
     companion object {

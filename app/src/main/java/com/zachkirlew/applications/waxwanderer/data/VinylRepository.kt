@@ -7,9 +7,9 @@ import io.reactivex.Observable
 class VinylRepository private constructor(private @NonNull val vinylRemoteDataSource: VinylDataSource): VinylDataSource{
 
     override fun getVinyls(): Observable<DiscogsResponse> {
-
         return vinylRemoteDataSource.getVinyls()
     }
+
 
     companion object {
 

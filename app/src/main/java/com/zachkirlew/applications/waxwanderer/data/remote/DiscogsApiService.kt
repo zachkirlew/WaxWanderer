@@ -2,25 +2,15 @@ package com.zachkirlew.applications.waxwanderer.data.remote
 
 import com.zachkirlew.applications.waxwanderer.data.model.DiscogsResponse
 import io.reactivex.Observable
-import retrofit2.http.GET
-import retrofit2.http.Headers
-import retrofit2.http.Query
+import retrofit2.http.*
 
 interface DiscogsApiService {
 
     @Headers("Authorization: Discogs key=ixsPyvNUQWBaufFSeKqJ, secret=OrEgnXaJwlSUrMmxytmfFkVRbjzAPitg")
 
-    @GET("search")
-    fun searchReleases(@Query("q") query : String,
-                       @Query("per_page") perPage : Int,
-                       @Query("format") format : String,
-                       @Query("type") type : String) : Observable<DiscogsResponse>
+    @GET("/database/search")
+    fun searchReleases(@QueryMap parameters: Map<String, Any>) : Observable<DiscogsResponse>
 
-    @GET("search")
-    fun searchSimilar(@Query("q") query : String,
-                      @Query("per_page") perPage : Int,
-                      @Query("format") format : String,
-                      @Query("type") type : String,
-                      @Query("genre") genre : String) : Observable<DiscogsResponse>
-
+    @GET("/releases/{release_id}/rating")
+    fun releaseRating(@Path("release_id") releaseId : String) : Observable<DiscogsResponse>
 }
