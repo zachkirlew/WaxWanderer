@@ -14,6 +14,7 @@ interface DiscogsApiService {
     @GET("search")
     fun searchReleases(@Query("q") query : String,
                        @Query("per_page") perPage : Int,
-                       @Query("format") format : String) : Observable<DiscogsResponse>
+                       @Query("format") format : String,
+                       @Query("type") type : String) : Observable<DiscogsResponse>
 
 }

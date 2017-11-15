@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.*
+import com.squareup.picasso.Picasso
 import com.zachkirlew.applications.waxwanderer.R
 import com.zachkirlew.applications.waxwanderer.data.model.VinylRelease
 import kotlinx.android.synthetic.main.explore_item.view.*
@@ -99,6 +100,7 @@ class ExploreFragment: Fragment(), ExploreContract.View {
                 itemView.artist_name.text=vinyl.year
                 itemView.code.text = vinyl.catno
 
+                Picasso.with(itemView.context).load(vinyl.thumb).into(itemView.cover_art)
             }
         }
 
