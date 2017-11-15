@@ -8,7 +8,6 @@ import retrofit2.http.Query
 
 interface DiscogsApiService {
 
-    //auth
     @Headers("Authorization: Discogs key=ixsPyvNUQWBaufFSeKqJ, secret=OrEgnXaJwlSUrMmxytmfFkVRbjzAPitg")
 
     @GET("search")
@@ -22,6 +21,6 @@ interface DiscogsApiService {
                       @Query("per_page") perPage : Int,
                       @Query("format") format : String,
                       @Query("type") type : String,
-                      @Query("style") styles : String) : Observable<DiscogsResponse>
+                      @Query("genre") genre : String) : Observable<DiscogsResponse>
 
 }

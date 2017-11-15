@@ -10,8 +10,7 @@ import com.squareup.picasso.Picasso
 import com.zachkirlew.applications.waxwanderer.R
 import com.zachkirlew.applications.waxwanderer.data.model.VinylRelease
 import kotlinx.android.synthetic.main.explore_item.view.*
-import android.R.attr.spacing
-import com.zachkirlew.applications.waxwanderer.util.RecylerItemDecoration
+import com.zachkirlew.applications.waxwanderer.util.RecyclerItemDecoration
 
 
 class ExploreFragment: Fragment(), ExploreContract.View {
@@ -42,7 +41,7 @@ class ExploreFragment: Fragment(), ExploreContract.View {
         exploreList.adapter = exploreAdapter
 
         val spacingInPixels = resources.getDimensionPixelSize(R.dimen.list_item_padding)
-        exploreList.addItemDecoration(RecylerItemDecoration(spacingInPixels))
+        exploreList.addItemDecoration(RecyclerItemDecoration(spacingInPixels))
 
 
         return root

@@ -10,17 +10,23 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class VinylsRemoteSource private constructor() : VinylDataSource{
 
-    override fun getVinyls(): Observable<DiscogsResponse> {
-        println("getting vinyl")
+    private val discogsService : DiscogsApiService
 
+    init {
         val retrofit = Retrofit.Builder()
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
                 .baseUrl("https://api.discogs.com/database/")
                 .build()
 
-        val discogsService = retrofit.create<DiscogsApiService>(DiscogsApiService::class.java)
-       return discogsService.searchReleases("HOSTOM",20,"vinyl","release")
+        discogsService = retrofit.create<DiscogsApiService>(DiscogsApiService::class.java)
+    }
+
+    override fun getVinyls(): Observable<DiscogsResponse> {
+
+
+        return discogsService.searchReleases("nirvana",50,"vinyl","release")
+       //return discogsService.searchSimilar("nirvana",20,"vinyl","release","grunge")
     }
 
     companion object {
@@ -34,6 +40,5 @@ class VinylsRemoteSource private constructor() : VinylDataSource{
                 }
                 return INSTANCE as VinylsRemoteSource
             }
-
     }
 }

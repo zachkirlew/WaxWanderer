@@ -18,6 +18,10 @@ class VinylRelease {
     @Expose
     var uri: String? = null
 
+    @SerializedName("community")
+    @Expose
+    var community: Community? = null
+
     @SerializedName("resource_url")
     @Expose
     var resourceUrl: String? = null

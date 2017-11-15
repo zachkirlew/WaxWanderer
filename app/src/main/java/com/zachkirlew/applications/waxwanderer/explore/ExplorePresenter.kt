@@ -28,7 +28,7 @@ class ExplorePresenter(private @NonNull var vinylRepository: VinylRepository, pr
 
                         val results = response.results
 
-                        results?.let {results.map{it.style} }
+//                        results?.let {results.forEach { println("Have: ${it.community?.have} Want: ${it.community?.want}") }}
 
 
                         results?.let {exploreView.showVinylReleases(results)  }
