@@ -28,6 +28,8 @@ class ExplorePresenter(private @NonNull var vinylRepository: VinylRepository, pr
 
                         val results = response.results
 
+                        results?.let {results.map{it.style} }
+
 
                         results?.let {exploreView.showVinylReleases(results)  }
                     }

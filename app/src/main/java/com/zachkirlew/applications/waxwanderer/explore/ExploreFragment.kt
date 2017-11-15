@@ -10,6 +10,8 @@ import com.squareup.picasso.Picasso
 import com.zachkirlew.applications.waxwanderer.R
 import com.zachkirlew.applications.waxwanderer.data.model.VinylRelease
 import kotlinx.android.synthetic.main.explore_item.view.*
+import android.R.attr.spacing
+import com.zachkirlew.applications.waxwanderer.util.RecylerItemDecoration
 
 
 class ExploreFragment: Fragment(), ExploreContract.View {
@@ -38,6 +40,9 @@ class ExploreFragment: Fragment(), ExploreContract.View {
 
         exploreList.layoutManager = mLayoutManager
         exploreList.adapter = exploreAdapter
+
+        val spacingInPixels = resources.getDimensionPixelSize(R.dimen.list_item_padding)
+        exploreList.addItemDecoration(RecylerItemDecoration(spacingInPixels))
 
 
         return root
@@ -100,7 +105,9 @@ class ExploreFragment: Fragment(), ExploreContract.View {
                 itemView.artist_name.text=vinyl.year
                 itemView.code.text = vinyl.catno
 
-                Picasso.with(itemView.context).load(vinyl.thumb).into(itemView.cover_art)
+                if(!vinyl.thumb.isNullOrEmpty()){
+                    Picasso.with(itemView.context).load(vinyl.thumb).into(itemView.cover_art)
+                }
             }
         }
 

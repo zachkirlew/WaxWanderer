@@ -20,7 +20,7 @@ class VinylsRemoteSource private constructor() : VinylDataSource{
                 .build()
 
         val discogsService = retrofit.create<DiscogsApiService>(DiscogsApiService::class.java)
-        return discogsService.searchReleases("Nirvana",20,"vinyl","master")
+       return discogsService.searchReleases("HOSTOM",20,"vinyl","release")
     }
 
     companion object {
