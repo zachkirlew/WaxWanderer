@@ -9,7 +9,7 @@ interface DiscogsApiService {
     @Headers("Authorization: Discogs key=ixsPyvNUQWBaufFSeKqJ, secret=OrEgnXaJwlSUrMmxytmfFkVRbjzAPitg")
 
     @GET("/database/search")
-    fun searchReleases(@QueryMap parameters: Map<String, Any>) : Observable<DiscogsResponse>
+    fun searchReleases(@QueryMap parameters: Map<String, String>) : Observable<DiscogsResponse>
 
     @GET("/releases/{release_id}/rating")
     fun releaseRating(@Path("release_id") releaseId : String) : Observable<DiscogsResponse>

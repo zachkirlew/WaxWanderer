@@ -1,4 +1,4 @@
-package com.zachkirlew.applications.waxwanderer.main
+package com.zachkirlew.applications.waxwanderer.explore
 
 import android.os.Bundle
 import android.support.design.widget.NavigationView
@@ -9,15 +9,11 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.view.MenuItem
 import com.zachkirlew.applications.waxwanderer.R
-import com.zachkirlew.applications.waxwanderer.data.VinylDataSource
 import com.zachkirlew.applications.waxwanderer.data.VinylRepository
 import com.zachkirlew.applications.waxwanderer.data.remote.VinylsRemoteSource
-import com.zachkirlew.applications.waxwanderer.explore.ExploreFragment
-import com.zachkirlew.applications.waxwanderer.explore.ExplorePresenter
 import com.zachkirlew.applications.waxwanderer.util.ActivityUtils
 
-
-class MainActivity : AppCompatActivity() {
+class ExploreActivity : AppCompatActivity() {
 
     private val mDrawerLayout: DrawerLayout by lazy { findViewById<DrawerLayout>(R.id.drawer_layout) }
 
@@ -45,14 +41,17 @@ class MainActivity : AppCompatActivity() {
 
         setupDrawerContent(navigationView)
 
-        val exploreFrag = ExploreFragment()
+        var exploreFrag: ExploreFragment? = supportFragmentManager.findFragmentById(R.id.content) as ExploreFragment?
 
-        ActivityUtils.addFragmentToActivity(
-                supportFragmentManager, exploreFrag, R.id.content)
+        if (exploreFrag == null) {
+
+            exploreFrag = ExploreFragment()
+            ActivityUtils.addFragmentToActivity(
+                    supportFragmentManager, exploreFrag, R.id.content)
+        }
+
 
         val explorePresenter = ExplorePresenter(VinylRepository.getInstance(VinylsRemoteSource.instance),exploreFrag)
-
-
     }
 
     public override fun onSaveInstanceState(bundle: Bundle?) {

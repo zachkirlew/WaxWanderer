@@ -24,12 +24,12 @@ class VinylsRemoteSource private constructor() : VinylDataSource{
 
     override fun getVinyls(): Observable<DiscogsResponse> {
 
-        val parameters : HashMap<String, Any> = HashMap()
+        val parameters : HashMap<String, String> = HashMap()
 
-        parameters.put("q","")
-        parameters.put("per_page",50)
-        parameters.put("q","vinyl")
-        parameters.put("q","release")
+        parameters.put("q","Pearson Sound")
+        parameters.put("per_page","50")
+        parameters.put("format","vinyl")
+        parameters.put("type","release")
 
         return discogsService.searchReleases(parameters)
     }
