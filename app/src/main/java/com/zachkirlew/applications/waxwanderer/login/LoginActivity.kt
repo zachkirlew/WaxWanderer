@@ -8,6 +8,12 @@ import android.util.Log
 import android.view.View
 import android.widget.ProgressBar
 import android.widget.Toast
+import com.facebook.CallbackManager
+import com.facebook.FacebookCallback
+import com.facebook.FacebookException
+import com.facebook.internal.CallbackManagerImpl
+import com.facebook.login.LoginResult
+import com.facebook.login.widget.LoginButton
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.ConnectionResult
@@ -18,18 +24,17 @@ import com.zachkirlew.applications.waxwanderer.explore.ExploreActivity
 
 
 class LoginActivity : AppCompatActivity(), LoginContract.View, GoogleApiClient.OnConnectionFailedListener {
-    override fun showLoginConfirmation() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
 
     private var mGoogleApiClient: GoogleApiClient? = null
+    private val callbackManager: CallbackManager by lazy { CallbackManager.Factory.create() }
 
     private val SIGN_IN_REQUEST_CODE = 888
 
-    private var presenter: LoginPresenter? = null
+    private lateinit var presenter: LoginPresenter
 
-    private val progressSignIn by lazy{findViewById<ProgressBar>(R.id.sign_in_progress_bar)}
-    private val buttonSignIn by lazy{findViewById<SignInButton>(R.id.sign_in_button)}
+    private val progressSignIn by lazy { findViewById<ProgressBar>(R.id.sign_in_progress_bar) }
+    private val buttonGoogleSignIn by lazy { findViewById<SignInButton>(R.id.button_login_google) }
+    private val buttonFacebookSignIn by lazy { findViewById<LoginButton>(R.id.button_login_facebook) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,17 +52,39 @@ class LoginActivity : AppCompatActivity(), LoginContract.View, GoogleApiClient.O
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build()
 
-        buttonSignIn.setOnClickListener { signIn() }
+        buttonGoogleSignIn.setOnClickListener { signIn() }
+
+        buttonFacebookSignIn.setReadPermissions("email", "public_profile")
+        buttonFacebookSignIn.registerCallback(callbackManager, object : FacebookCallback<LoginResult> {
+
+            override fun onSuccess(loginResult: LoginResult) {
+                Log.d(TAG, "facebook:onSuccess:" + loginResult)
+                presenter.handleFacebookAccessToken(loginResult.accessToken)
+            }
+
+            override fun onCancel() {
+                Log.d(TAG, "facebook:onCancel")
+            }
+
+            override fun onError(error: FacebookException) {
+                Log.d(TAG, "facebook:onError", error)
+            }
+        })
     }
+
 
     public override fun onStart() {
         super.onStart()
-        presenter?.setAuthListener()
+        presenter.setAuthListener()
     }
 
     public override fun onStop() {
         super.onStop()
-        presenter?.removeAuthListener()
+        presenter.removeAuthListener()
+    }
+
+    override fun showLoginConfirmation() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     override fun onConnectionFailed(@NonNull connectionResult: ConnectionResult) {
@@ -73,16 +100,24 @@ class LoginActivity : AppCompatActivity(), LoginContract.View, GoogleApiClient.O
     private fun showProgressBar(show: Boolean) {
         progressSignIn.visibility = if (show) View.VISIBLE else View.GONE
 
-        buttonSignIn?.visibility = if (show) View.GONE else View.VISIBLE
+        buttonGoogleSignIn?.visibility = if (show) View.GONE else View.VISIBLE
     }
 
     public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
         super.onActivityResult(requestCode, resultCode, data)
+
+        //Google login
         if (requestCode == SIGN_IN_REQUEST_CODE) {
+
             val result = Auth.GoogleSignInApi.getSignInResultFromIntent(data)
+
             if (result.isSuccess) {
-                presenter?.logInWithFirebase(result.signInAccount!!)
+                presenter.logInWithFirebase(result.signInAccount!!)
             }
+        }
+        //Facebook login
+        else if (requestCode == CallbackManagerImpl.RequestCodeOffset.Login.toRequestCode()) {
+            callbackManager.onActivityResult(requestCode, resultCode, data);
         }
     }
 
@@ -94,11 +129,17 @@ class LoginActivity : AppCompatActivity(), LoginContract.View, GoogleApiClient.O
     }
 
     override fun showFirebaseAuthenticationFailedMessage() {
-        Toast.makeText(this@LoginActivity, "Authentication failed.",
+        Toast.makeText(this@LoginActivity, "Google Authentication failed.",
                 Toast.LENGTH_SHORT).show()
 
         showProgressBar(false)
     }
+
+    override fun showFacebookAuthenticationFailedMessage() {
+        Toast.makeText(this@LoginActivity, "FacebookAuthentication failed.",
+                Toast.LENGTH_SHORT).show()
+    }
+
 
     companion object {
 

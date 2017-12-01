@@ -30,5 +30,13 @@
     <string name="loading">LOADING</string>
     <string name="navigation_drawer_open">Opened</string>
     <string name="navigation_drawer_close">Closed</string>
+    <string name="login_email_password_hint">Password</string>
+    <string name="login_email_submit_text">Login</string>
+    <string name="login_email_sign_up_text">No account yet? Sign up here</string>
+    <string name="login_email_email_hint">Email</string>
+
+    <!--Facebook login strings-->
+    <string name="facebook_app_id">353149691816766</string>
+    <string name="fb_login_protocol_scheme">fb353149691816766</string>
 
 </resources>

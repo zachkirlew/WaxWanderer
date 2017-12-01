@@ -56,5 +56,8 @@ dependencies {
 
     compile 'com.google.android.gms:play-services-auth:11.6.2'
 
+    //facebook login dependency
+    compile 'com.facebook.android:facebook-android-sdk:4.28.0'
+
     apply plugin: 'com.google.gms.google-services'
 }
