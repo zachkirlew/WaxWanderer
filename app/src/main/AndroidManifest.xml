@@ -37,6 +37,8 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".sign_up.SignUpActivity"/>
+
         <activity android:name=".explore.ExploreActivity">
 
         </activity>

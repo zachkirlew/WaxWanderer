@@ -6,8 +6,6 @@ import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import com.facebook.AccessToken
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FacebookAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
@@ -40,36 +38,56 @@ class LoginPresenter(private @NonNull var loginView: LoginContract.View) : Login
         mFirebaseAuth.removeAuthStateListener(mAuthListener)
     }
 
-    override fun logInWithFirebase(account: GoogleSignInAccount) {
-        Log.d(TAG, "firebaseAuthWithGoogle:" + account.getId())
+    override fun logInWithEmail(email : String, password : String) {
 
-        val credential = GoogleAuthProvider.getCredential(account.getIdToken(), null)
+        Log.d(TAG, "firebaseAuthWithEmail:" + email)
+        mFirebaseAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(loginView as Activity) { task ->
+                    if (task.isSuccessful) {
+                        // Sign in success, update UI with the signed-in user's information
+                        Log.d(TAG, "signInWithEmail:success")
+//                        val user = mAuth.getCurrentUser()
+                        loginView.startExploreActivity()
+                    } else {
+                        // If sign in fails, display a message to the user.
+                        Log.w(TAG, "signInWithEmail:failure", task.exception)
+                        loginView.showMessage("Email authentication failed.")
+                    }
+                }
+    }
+
+    override fun logInWithFirebase(account: GoogleSignInAccount) {
+        Log.d(TAG, "firebaseAuthWithGoogle:" + account.id)
+
+        val credential = GoogleAuthProvider.getCredential(account.idToken, null)
         mFirebaseAuth.signInWithCredential(credential)
                 .addOnCompleteListener(loginView as Activity) { task ->
-                    Log.d(TAG, "signInWithCredential:onComplete:" + task.isSuccessful())
+                    Log.d(TAG, "signInWithCredential:onComplete:" + task.isSuccessful)
 
                     //failed to login
                     if (!task.isSuccessful) {
                         Log.w(TAG, "signInWithCredential", task.exception)
-                        loginView.showFirebaseAuthenticationFailedMessage()
+                        loginView.showMessage("Google authentication failed.")
                     } else {
                         loginView.startExploreActivity()
                     }
                 }
     }
 
+
+
     override fun handleFacebookAccessToken(token: AccessToken) {
 
         val credential = FacebookAuthProvider.getCredential(token.token)
         mFirebaseAuth.signInWithCredential(credential)
-                .addOnCompleteListener(loginView as AppCompatActivity, OnCompleteListener<AuthResult> { task ->
+                .addOnCompleteListener(loginView as AppCompatActivity, { task ->
                     if (task.isSuccessful) {
                         // Sign in success, update UI with the signed-in user's information
                         loginView.startExploreActivity()
                     } else {
                         //If sign in fails, display a message to the user.
                         Log.w(TAG, "signInWithCredential:failure", task.exception);
-                        loginView.showFacebookAuthenticationFailedMessage()
+                        loginView.showMessage("Facebook authentication failed.")
                     }
                 })
     }

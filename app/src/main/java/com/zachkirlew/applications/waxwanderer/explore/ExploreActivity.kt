@@ -1,5 +1,6 @@
 package com.zachkirlew.applications.waxwanderer.explore
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
@@ -8,9 +9,11 @@ import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.view.MenuItem
+import com.google.firebase.auth.FirebaseAuth
 import com.zachkirlew.applications.waxwanderer.R
 import com.zachkirlew.applications.waxwanderer.data.VinylRepository
 import com.zachkirlew.applications.waxwanderer.data.remote.VinylsRemoteSource
+import com.zachkirlew.applications.waxwanderer.login.LoginActivity
 import com.zachkirlew.applications.waxwanderer.util.ActivityUtils
 
 class ExploreActivity : AppCompatActivity() {
@@ -73,6 +76,15 @@ class ExploreActivity : AppCompatActivity() {
     private fun setupDrawerContent(navigationView: NavigationView) {
         navigationView.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
+
+                R.id.log_out_navigation_menu_item ->{
+
+                    FirebaseAuth.getInstance().signOut()
+
+                    val intent = Intent(this, LoginActivity::class.java)
+                    startActivity(intent)
+                }
+
 
             }
             menuItem.isChecked = true

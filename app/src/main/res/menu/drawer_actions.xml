@@ -9,4 +9,9 @@
         android:id="@+id/recommendations_navigation_menu_item"
         android:icon="@mipmap/ic_launcher"
         android:title="@string/recommendations_title" />
+
+    <item
+        android:id="@+id/log_out_navigation_menu_item"
+        android:icon="@mipmap/ic_launcher"
+        android:title="@string/log_out_title" />
 </menu>

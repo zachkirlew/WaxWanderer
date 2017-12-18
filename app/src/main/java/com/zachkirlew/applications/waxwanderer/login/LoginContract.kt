@@ -8,14 +8,15 @@ interface LoginContract {
 
         fun startExploreActivity()
 
-        fun showLoginConfirmation()
+        fun startSignUpActivity()
 
-        fun showFirebaseAuthenticationFailedMessage()
 
-        fun showFacebookAuthenticationFailedMessage()
+        fun showMessage(message: String)
     }
 
     interface Presenter {
+
+        fun logInWithEmail(email : String, password : String)
 
         fun logInWithFirebase(account: GoogleSignInAccount)
 

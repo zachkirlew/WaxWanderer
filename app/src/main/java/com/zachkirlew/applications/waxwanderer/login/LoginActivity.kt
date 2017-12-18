@@ -6,8 +6,7 @@ import android.support.annotation.NonNull
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View
-import android.widget.ProgressBar
-import android.widget.Toast
+import android.widget.*
 import com.facebook.CallbackManager
 import com.facebook.FacebookCallback
 import com.facebook.FacebookException
@@ -21,6 +20,7 @@ import com.google.android.gms.common.SignInButton
 import com.google.android.gms.common.api.GoogleApiClient
 import com.zachkirlew.applications.waxwanderer.R
 import com.zachkirlew.applications.waxwanderer.explore.ExploreActivity
+import com.zachkirlew.applications.waxwanderer.sign_up.SignUpActivity
 
 
 class LoginActivity : AppCompatActivity(), LoginContract.View, GoogleApiClient.OnConnectionFailedListener {
@@ -33,8 +33,17 @@ class LoginActivity : AppCompatActivity(), LoginContract.View, GoogleApiClient.O
     private lateinit var presenter: LoginPresenter
 
     private val progressSignIn by lazy { findViewById<ProgressBar>(R.id.sign_in_progress_bar) }
+
+
+    private val buttonEmailSignIn by lazy { findViewById<Button>(R.id.button_login_email) }
     private val buttonGoogleSignIn by lazy { findViewById<SignInButton>(R.id.button_login_google) }
     private val buttonFacebookSignIn by lazy { findViewById<LoginButton>(R.id.button_login_facebook) }
+
+    private val textViewSignUp by lazy {findViewById<TextView>(R.id.textview_sign_up)}
+
+    private val editTextEmail by lazy {findViewById<EditText>(R.id.input_sign_in_email)}
+    private val editTextPassword by lazy {findViewById<EditText>(R.id.input_sign_in_password)}
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,6 +63,10 @@ class LoginActivity : AppCompatActivity(), LoginContract.View, GoogleApiClient.O
 
         buttonGoogleSignIn.setOnClickListener { signIn() }
 
+        textViewSignUp.setOnClickListener{startSignUpActivity()}
+
+        buttonEmailSignIn.setOnClickListener{getLogInCreds()}
+
         buttonFacebookSignIn.setReadPermissions("email", "public_profile")
         buttonFacebookSignIn.registerCallback(callbackManager, object : FacebookCallback<LoginResult> {
 
@@ -72,6 +85,14 @@ class LoginActivity : AppCompatActivity(), LoginContract.View, GoogleApiClient.O
         })
     }
 
+    private fun getLogInCreds() {
+
+        val email = editTextEmail.text.toString()
+        val password = editTextPassword.text.toString()
+
+        presenter.logInWithEmail(email,password)
+    }
+
 
     public override fun onStart() {
         super.onStart()
@@ -83,9 +104,6 @@ class LoginActivity : AppCompatActivity(), LoginContract.View, GoogleApiClient.O
         presenter.removeAuthListener()
     }
 
-    override fun showLoginConfirmation() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
 
     override fun onConnectionFailed(@NonNull connectionResult: ConnectionResult) {
         Log.e(TAG, "onConnectionFailed " + connectionResult.errorMessage!!)
@@ -128,18 +146,18 @@ class LoginActivity : AppCompatActivity(), LoginContract.View, GoogleApiClient.O
         showProgressBar(false)
     }
 
-    override fun showFirebaseAuthenticationFailedMessage() {
-        Toast.makeText(this@LoginActivity, "Google Authentication failed.",
-                Toast.LENGTH_SHORT).show()
+    override fun startSignUpActivity() {
+        val intent = Intent(this, SignUpActivity::class.java)
+        startActivity(intent)
 
         showProgressBar(false)
     }
 
-    override fun showFacebookAuthenticationFailedMessage() {
-        Toast.makeText(this@LoginActivity, "FacebookAuthentication failed.",
+    override fun showMessage(message : String) {
+        Toast.makeText(this@LoginActivity, message,
                 Toast.LENGTH_SHORT).show()
+        showProgressBar(false)
     }
-
 
     companion object {
 

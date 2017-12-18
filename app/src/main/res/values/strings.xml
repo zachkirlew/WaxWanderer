@@ -32,11 +32,14 @@
     <string name="navigation_drawer_close">Closed</string>
     <string name="login_email_password_hint">Password</string>
     <string name="login_email_submit_text">Login</string>
-    <string name="login_email_sign_up_text">No account yet? Sign up here</string>
+    <string name="login_email_sign_up_text">No account yet? <b>Sign up here</b></string>
     <string name="login_email_email_hint">Email</string>
 
     <!--Facebook login strings-->
     <string name="facebook_app_id">353149691816766</string>
     <string name="fb_login_protocol_scheme">fb353149691816766</string>
+    <string name="button_text_sign_in">Sign in</string>
+    <string name="button_text_create_account">Create Account</string>
+    <string name="log_out_title">Log out</string>
 
 </resources>
