@@ -1,9 +1,11 @@
 package com.zachkirlew.applications.waxwanderer.sign_up
 
+import java.util.*
+
 interface SignUpContract {
     interface View {
 
-        fun startExploreActivity()
+        fun startStylesActivity()
 
         fun showCreateUserFailedMessage()
 
@@ -12,7 +14,7 @@ interface SignUpContract {
 
     interface Presenter {
 
-        fun signUp(name : String, email : String, password: String)
+        fun signUp(name : String, email : String, dob : Date, password: String)
 
 
     }
