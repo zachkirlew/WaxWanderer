@@ -7,14 +7,30 @@ interface SignUpContract {
 
         fun startStylesActivity()
 
-        fun showCreateUserFailedMessage()
+        fun showCreateUserFailedMessage(message : String)
 
+        fun showNameErrorMessage(message : String)
 
+        fun showEmailErrorMessage(message : String)
+
+        fun showDOBErrorMessage(message: String)
+
+        fun showPasswordErrorMessage(message : String)
+
+        fun showDateFormatted(date : String)
     }
 
     interface Presenter {
 
-        fun signUp(name : String, email : String, dob : Date, password: String)
+        fun getFormattedDate(year : Int, month : Int, day : Int)
+
+        fun validateName(name : String): Boolean
+
+        fun validateEmail(email : String): Boolean
+
+        fun validatePassword(password: String) : Boolean
+
+        fun signUp(name : String, email : String,password: String)
 
 
     }

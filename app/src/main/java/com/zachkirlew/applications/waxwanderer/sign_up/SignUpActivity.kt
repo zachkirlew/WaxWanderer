@@ -3,15 +3,14 @@ package com.zachkirlew.applications.waxwanderer.sign_up
 import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Bundle
+import android.support.design.widget.TextInputLayout
 import android.support.v7.app.AppCompatActivity
 import android.widget.Button
 import android.widget.DatePicker
 import android.widget.EditText
 import android.widget.Toast
 import com.zachkirlew.applications.waxwanderer.R
-import com.zachkirlew.applications.waxwanderer.explore.ExploreActivity
 import com.zachkirlew.applications.waxwanderer.styles.StylesActivity
-import java.text.DateFormat
 import java.util.*
 
 
@@ -19,14 +18,17 @@ class SignUpActivity : AppCompatActivity(), SignUpContract.View, DatePickerDialo
 
     private lateinit var presenter: SignUpPresenter
 
-    private var chosenDate: Date? = null
-
     private val buttonSignUp by lazy {findViewById<Button>(R.id.btn_sign_up)}
+
     private val editTextName by lazy {findViewById<EditText>(R.id.input_name)}
     private val editTextEmail by lazy {findViewById<EditText>(R.id.input_email)}
     private val editTextPassword by lazy {findViewById<EditText>(R.id.input_password)}
-
     private val editTextDOB by lazy{findViewById<EditText>(R.id.input_dob)}
+
+    private val inputLayoutName by lazy { findViewById<TextInputLayout>(R.id.text_input_layout_name) }
+    private val inputLayoutEmail by lazy { findViewById<TextInputLayout>(R.id.text_input_layout_email) }
+    private val inputLayoutDOB by lazy { findViewById<TextInputLayout>(R.id.text_input_layout_dob) }
+    private val inputLayoutPassword by lazy { findViewById<TextInputLayout>(R.id.text_input_layout_password) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,12 +50,33 @@ class SignUpActivity : AppCompatActivity(), SignUpContract.View, DatePickerDialo
 
     private fun getSignUpCreds (){
 
+        inputLayoutName.isErrorEnabled = false
+        inputLayoutEmail.isErrorEnabled = false
+        inputLayoutDOB.isErrorEnabled = false
+        inputLayoutPassword.isErrorEnabled = false
+
         val name = editTextName.text.toString()
         val email = editTextEmail.text.toString()
         val password = editTextPassword.text.toString()
-        val dob = chosenDate!!
 
-        presenter.signUp(name,email,dob,password)
+        presenter.signUp(name,email,password)
+    }
+
+    override fun showNameErrorMessage(message: String) {
+        inputLayoutName.error = message
+    }
+
+    override fun showEmailErrorMessage(message: String) {
+        inputLayoutEmail.error = message
+    }
+
+    override fun showPasswordErrorMessage(message: String) {
+        inputLayoutPassword.error = message
+    }
+
+
+    override fun showDOBErrorMessage(message: String) {
+        inputLayoutDOB.error = message
     }
 
     private fun showDateDialog() {
@@ -67,22 +90,15 @@ class SignUpActivity : AppCompatActivity(), SignUpContract.View, DatePickerDialo
     }
 
     override fun onDateSet(view: DatePicker?, year: Int, month: Int, day: Int) {
-
-        // Create a Date variable/object with user chosen date
-        val cal = Calendar.getInstance()
-        cal.timeInMillis = 0
-        cal.set(year, month, day, 0, 0, 0)
-
-        chosenDate = cal.time
-
-        val dfMediumUK = DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.UK)
-        val dateFormatted = dfMediumUK.format(chosenDate)
-
-        editTextDOB.setText(dateFormatted)
+        presenter.getFormattedDate(year, month, day)
     }
 
-    override fun  showCreateUserFailedMessage(){
-        Toast.makeText(this@SignUpActivity, "Failed to sign up",
+    override fun showDateFormatted(date: String) {
+        editTextDOB.setText(date)
+    }
+
+    override fun  showCreateUserFailedMessage(message: String){
+        Toast.makeText(this@SignUpActivity, message,
                 Toast.LENGTH_SHORT).show()
     }
 

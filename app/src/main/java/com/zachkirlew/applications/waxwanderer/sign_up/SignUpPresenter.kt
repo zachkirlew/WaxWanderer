@@ -6,7 +6,10 @@ import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.zachkirlew.applications.waxwanderer.data.model.User
+import java.text.DateFormat
 import java.util.*
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 
 
 class SignUpPresenter(private @NonNull var signUpView: SignUpContract.View) : SignUpContract.Presenter {
@@ -16,6 +19,12 @@ class SignUpPresenter(private @NonNull var signUpView: SignUpContract.View) : Si
     private val database = FirebaseDatabase.getInstance()
 
     private val TAG = SignUpActivity::class.java.simpleName
+
+    private var dob: Date? = null
+
+    private val EMAIL_PATTERN = "^[a-zA-Z0-9#_~!$&'()*+,;=:.\"(),:;<>@\\[\\]\\\\]+@[a-zA-Z0-9-]+(\\.[a-zA-Z0-9-]+)*$"
+    private val pattern = Pattern.compile(EMAIL_PATTERN)
+    private lateinit var matcher : Matcher
 
     private val mAuthListener = FirebaseAuth.AuthStateListener { firebaseAuth ->
         // Check if user is signed in (non-null) and update UI accordingly.
@@ -37,21 +46,34 @@ class SignUpPresenter(private @NonNull var signUpView: SignUpContract.View) : Si
         mFirebaseAuth.removeAuthStateListener(mAuthListener)
     }
 
-    override fun signUp(name: String, email: String, dob: Date, password: String) {
+    override fun signUp(name: String, email: String,password: String) {
 
-        mFirebaseAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(signUpView as AppCompatActivity, { task ->
-                    if (task.isSuccessful) {
-                        // Sign in success
-                        Log.d(TAG, "createUserWithEmail:success")
-                        saveUserDetails(name, email, dob)
-                        signUpView.startStylesActivity()
-                    } else {
-                        // If sign in fails, display a message to the user.
-                        Log.w(TAG, "createUserWithEmail:failure", task.exception)
-                        signUpView.showCreateUserFailedMessage()
-                    }
-                })
+        if(!validateName(name))
+            signUpView.showNameErrorMessage("Please enter a name")
+        else if (!validateEmail(email)) {
+            signUpView.showEmailErrorMessage("Please enter a valid email address!")
+        } else if (!validatePassword(password)) {
+            signUpView.showPasswordErrorMessage("Please enter a longer password!")
+        }
+        else if (dob==null) {
+            signUpView.showDOBErrorMessage("Please enter a date of birth!")
+        }
+        else {
+
+            mFirebaseAuth.createUserWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(signUpView as AppCompatActivity, { task ->
+                        if (task.isSuccessful) {
+                            // Sign in success
+                            Log.d(TAG, "createUserWithEmail:success")
+                            saveUserDetails(name, email, dob!!)
+                            signUpView.startStylesActivity()
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.w(TAG, "createUserWithEmail:failure", task.exception)
+                            signUpView.showCreateUserFailedMessage(task.exception?.message.toString())
+                        }
+                    })
+        }
     }
 
     private fun saveUserDetails(name: String, email: String, date: Date) {
@@ -60,6 +82,33 @@ class SignUpPresenter(private @NonNull var signUpView: SignUpContract.View) : Si
         val user = mFirebaseAuth.currentUser
 
         myRef.child("users").child(user?.uid).setValue(User(name,email,date))
-
     }
+
+    override fun getFormattedDate(year: Int, month: Int, day: Int) {
+        val cal = Calendar.getInstance()
+        cal.timeInMillis = 0
+        cal.set(year, month, day, 0, 0, 0)
+
+        dob = cal.time
+
+        val dfMediumUK = DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.UK)
+        val dateFormatted = dfMediumUK.format(dob)
+
+        signUpView.showDateFormatted(dateFormatted)
+    }
+
+
+    override fun validateEmail(email: String) : Boolean {
+        matcher = pattern.matcher(email);
+        return matcher.matches()
+    }
+
+    override fun validateName(name: String): Boolean {
+        return name.length > 1
+    }
+
+    override fun validatePassword(password: String): Boolean {
+        return password.length > 5
+    }
+
 }
