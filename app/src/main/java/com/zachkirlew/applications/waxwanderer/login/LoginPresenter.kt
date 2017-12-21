@@ -9,6 +9,10 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.firebase.auth.FacebookAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 
 
 class LoginPresenter(private @NonNull var loginView: LoginContract.View) : LoginContract.Presenter {
@@ -44,10 +48,11 @@ class LoginPresenter(private @NonNull var loginView: LoginContract.View) : Login
         mFirebaseAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(loginView as Activity) { task ->
                     if (task.isSuccessful) {
+
                         // Sign in success, update UI with the signed-in user's information
                         Log.d(TAG, "signInWithEmail:success")
-//                        val user = mAuth.getCurrentUser()
-                        loginView.startExploreActivity()
+
+                        checkUserPreviousSignIn()
                     } else {
                         // If sign in fails, display a message to the user.
                         Log.w(TAG, "signInWithEmail:failure", task.exception)
@@ -69,12 +74,11 @@ class LoginPresenter(private @NonNull var loginView: LoginContract.View) : Login
                         Log.w(TAG, "signInWithCredential", task.exception)
                         loginView.showMessage("Google authentication failed.")
                     } else {
-                        loginView.startExploreActivity()
+
+                        checkUserPreviousSignIn()
                     }
                 }
     }
-
-
 
     override fun handleFacebookAccessToken(token: AccessToken) {
 
@@ -82,14 +86,38 @@ class LoginPresenter(private @NonNull var loginView: LoginContract.View) : Login
         mFirebaseAuth.signInWithCredential(credential)
                 .addOnCompleteListener(loginView as AppCompatActivity, { task ->
                     if (task.isSuccessful) {
-                        // Sign in success, update UI with the signed-in user's information
-                        loginView.startExploreActivity()
+
+                        checkUserPreviousSignIn()
+
                     } else {
                         //If sign in fails, display a message to the user.
                         Log.w(TAG, "signInWithCredential:failure", task.exception);
                         loginView.showMessage("Facebook authentication failed.")
                     }
                 })
+    }
+
+    //check whether user exists in database and hence has entered DOB
+    private fun checkUserPreviousSignIn() {
+        val user = mFirebaseAuth.currentUser
+
+        val database = FirebaseDatabase.getInstance().reference
+        val ref = database.child("users")
+
+        ref.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                //if user has already entered DOB and other details
+                if (dataSnapshot.child(user?.uid).exists()) {
+                    Log.w(TAG, "User exists")
+                    loginView.startExploreActivity()
+                } else {
+                    loginView.startDOBActivity()
+                }
+            }
+            override fun onCancelled(databaseError: DatabaseError) {
+                Log.e(TAG, "onCancelled", databaseError.toException())
+            }
+        })
     }
 
 }

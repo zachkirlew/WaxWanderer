@@ -19,6 +19,7 @@ import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.SignInButton
 import com.google.android.gms.common.api.GoogleApiClient
 import com.zachkirlew.applications.waxwanderer.R
+import com.zachkirlew.applications.waxwanderer.dob.DOBActivity
 import com.zachkirlew.applications.waxwanderer.explore.ExploreActivity
 import com.zachkirlew.applications.waxwanderer.sign_up.SignUpActivity
 
@@ -137,6 +138,13 @@ class LoginActivity : AppCompatActivity(), LoginContract.View, GoogleApiClient.O
         else if (requestCode == CallbackManagerImpl.RequestCodeOffset.Login.toRequestCode()) {
             callbackManager.onActivityResult(requestCode, resultCode, data);
         }
+    }
+
+    override fun startDOBActivity() {
+        val intent = Intent(this, DOBActivity::class.java)
+        startActivity(intent)
+
+        showProgressBar(false)
     }
 
     override fun startExploreActivity() {

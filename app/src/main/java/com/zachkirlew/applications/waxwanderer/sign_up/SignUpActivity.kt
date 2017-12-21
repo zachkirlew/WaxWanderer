@@ -112,7 +112,6 @@ class SignUpActivity : AppCompatActivity(), SignUpContract.View, DatePickerDialo
         presenter.removeAuthListener()
     }
 
-
     companion object {
 
         private val TAG = SignUpActivity::class.java.simpleName

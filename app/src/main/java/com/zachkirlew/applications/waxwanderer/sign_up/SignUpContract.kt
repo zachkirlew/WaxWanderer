@@ -1,7 +1,5 @@
 package com.zachkirlew.applications.waxwanderer.sign_up
 
-import java.util.*
-
 interface SignUpContract {
     interface View {
 

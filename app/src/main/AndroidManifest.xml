@@ -39,6 +39,8 @@
 
         <activity android:name=".sign_up.SignUpActivity"/>
 
+        <activity android:name=".dob.DOBActivity"/>
+
         <activity android:name=".styles.StylesActivity">
 
         </activity>
