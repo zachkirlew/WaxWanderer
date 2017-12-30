@@ -1,6 +1,6 @@
 package com.zachkirlew.applications.waxwanderer.data.remote
 
-import com.zachkirlew.applications.waxwanderer.data.model.DiscogsResponse
+import com.zachkirlew.applications.waxwanderer.data.model.discogs.DiscogsResponse
 import io.reactivex.Observable
 import retrofit2.http.*
 

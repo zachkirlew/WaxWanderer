@@ -22,6 +22,7 @@ import com.zachkirlew.applications.waxwanderer.R
 import com.zachkirlew.applications.waxwanderer.dob.DOBActivity
 import com.zachkirlew.applications.waxwanderer.explore.ExploreActivity
 import com.zachkirlew.applications.waxwanderer.sign_up.SignUpActivity
+import com.zachkirlew.applications.waxwanderer.styles.StylesActivity
 
 
 class LoginActivity : AppCompatActivity(), LoginContract.View, GoogleApiClient.OnConnectionFailedListener {
@@ -118,7 +119,6 @@ class LoginActivity : AppCompatActivity(), LoginContract.View, GoogleApiClient.O
 
     private fun showProgressBar(show: Boolean) {
         progressSignIn.visibility = if (show) View.VISIBLE else View.GONE
-
         buttonGoogleSignIn?.visibility = if (show) View.GONE else View.VISIBLE
     }
 
@@ -149,6 +149,13 @@ class LoginActivity : AppCompatActivity(), LoginContract.View, GoogleApiClient.O
 
     override fun startExploreActivity() {
         val intent = Intent(this, ExploreActivity::class.java)
+        startActivity(intent)
+
+        showProgressBar(false)
+    }
+
+    override fun startStylesActivity() {
+        val intent = Intent(this, StylesActivity::class.java)
         startActivity(intent)
 
         showProgressBar(false)

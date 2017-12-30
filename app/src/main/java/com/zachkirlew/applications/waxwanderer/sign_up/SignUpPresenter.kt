@@ -81,7 +81,7 @@ class SignUpPresenter(private @NonNull var signUpView: SignUpContract.View) : Si
 
         val user = mFirebaseAuth.currentUser
 
-        myRef.child("users").child(user?.uid).setValue(User(name,email,date))
+        myRef.child("users").child(user?.uid).setValue(User(name,email,date,null))
     }
 
     override fun getFormattedDate(year: Int, month: Int, day: Int) {

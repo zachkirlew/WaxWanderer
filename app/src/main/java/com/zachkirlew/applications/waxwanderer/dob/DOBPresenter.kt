@@ -31,7 +31,7 @@ class DOBPresenter(private @NonNull var dobView: DOBContract.View) : DOBContract
         val firstName = getFirstName(user?.displayName.toString())
         val email = getFirstName(user?.email.toString())
 
-        myRef.child("users").child(user?.uid).setValue(User(firstName, email, dob))
+        myRef.child("users").child(user?.uid).setValue(User(firstName, email, dob,null))
         dobView.startStylesActivity()
     }
 

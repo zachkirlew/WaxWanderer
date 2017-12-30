@@ -1,28 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:animateLayoutChanges="false"
+    android:fillViewport="true"
     android:fitsSystemWindows="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="@dimen/activity_horizontal_margin">
+        android:animateLayoutChanges="true"
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
+            android:padding="@dimen/activity_horizontal_margin"
             android:text="What genre of vinyl do you like to collect?"
             android:textSize="20sp" />
 
         <Spinner
             android:id="@+id/spinner_genres"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:padding="@dimen/activity_horizontal_margin" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="vertical" />
+
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/btn_submit_preferences"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="24dp"
+            android:padding="@dimen/activity_horizontal_margin"
+            android:text="@string/submit_style_preferences_button_text"
+            android:visibility="gone" />
 
 
     </LinearLayout>

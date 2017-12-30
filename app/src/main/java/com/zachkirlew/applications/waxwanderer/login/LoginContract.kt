@@ -10,6 +10,8 @@ interface LoginContract {
 
         fun startSignUpActivity()
 
+        fun startStylesActivity()
+
         fun startDOBActivity()
 
         fun showMessage(message: String)

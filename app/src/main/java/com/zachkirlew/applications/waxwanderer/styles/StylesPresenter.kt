@@ -2,16 +2,15 @@ package com.zachkirlew.applications.waxwanderer.styles
 
 import android.support.annotation.NonNull
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-
-
+import com.zachkirlew.applications.waxwanderer.data.model.Style
+import com.zachkirlew.applications.waxwanderer.data.model.VinylPreference
 
 
 class StylesPresenter(private @NonNull var stylesView: StylesContract.View) : StylesContract.Presenter {
-
 
     private val mFirebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private val database = FirebaseDatabase.getInstance()
@@ -40,7 +39,6 @@ class StylesPresenter(private @NonNull var stylesView: StylesContract.View) : St
 
                 val genres = genreMap.map { it.key }
 
-
                 stylesView.showGenres(genres)
             }
 
@@ -48,11 +46,35 @@ class StylesPresenter(private @NonNull var stylesView: StylesContract.View) : St
 
             }
         })
-
-
     }
 
+    override fun loadStyles(genre: String) {
 
+        val ref = database.reference.child("genres").child(genre)
+        ref.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val stylesMap = dataSnapshot.children.asIterable()
 
+                println("getting styles")
 
+                val styles = stylesMap.map { Style(it.key) }
+
+                stylesView.showStyles(styles)
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+
+            }
+        })
+    }
+
+    override fun savePreferences(selectedGenre: String, selectedStyles: List<String>) {
+
+        val myRef = database.reference
+        val user = mFirebaseAuth.currentUser
+
+        myRef.child("users").child(user?.uid).child("vinyl preferences").setValue(VinylPreference(selectedGenre,selectedStyles))
+
+        stylesView.startExploreActivity()
+    }
 }

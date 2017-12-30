@@ -2,7 +2,8 @@ package com.zachkirlew.applications.waxwanderer.explore
 
 import com.zachkirlew.applications.waxwanderer.base.BasePresenter
 import com.zachkirlew.applications.waxwanderer.base.BaseView
-import com.zachkirlew.applications.waxwanderer.data.model.VinylRelease
+import com.zachkirlew.applications.waxwanderer.data.model.VinylPreference
+import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
 
 
 interface ExploreContract {
@@ -18,7 +19,7 @@ interface ExploreContract {
 
     interface Presenter : BasePresenter {
 
-        fun loadVinylReleases()
+        fun loadVinylReleases(vinylPreference: VinylPreference)
 
         fun openTaskDetails()
 

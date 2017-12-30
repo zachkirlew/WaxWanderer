@@ -108,8 +108,14 @@ class LoginPresenter(private @NonNull var loginView: LoginContract.View) : Login
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 //if user has already entered DOB and other details
                 if (dataSnapshot.child(user?.uid).exists()) {
-                    Log.w(TAG, "User exists")
-                    loginView.startExploreActivity()
+
+                    //if user has entered in styles
+                    if (dataSnapshot.child(user?.uid).child("styles").exists()) {
+                        loginView.startExploreActivity()
+                    } else {
+                        loginView.startStylesActivity()
+                    }
+
                 } else {
                     loginView.startDOBActivity()
                 }

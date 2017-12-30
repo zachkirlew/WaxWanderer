@@ -8,7 +8,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.*
 import com.squareup.picasso.Picasso
 import com.zachkirlew.applications.waxwanderer.R
-import com.zachkirlew.applications.waxwanderer.data.model.VinylRelease
+import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
 import kotlinx.android.synthetic.main.explore_item.view.*
 import com.zachkirlew.applications.waxwanderer.util.RecyclerItemDecoration
 
@@ -43,7 +43,6 @@ class ExploreFragment: Fragment(), ExploreContract.View {
         val spacingInPixels = resources.getDimensionPixelSize(R.dimen.list_item_padding)
         exploreList.addItemDecoration(RecyclerItemDecoration(spacingInPixels))
 
-
         return root
     }
 
@@ -53,6 +52,7 @@ class ExploreFragment: Fragment(), ExploreContract.View {
     }
 
     override fun showVinylReleases(vinyls: List<VinylRelease>) {
+        vinyls.forEach { println(it.style) }
         exploreAdapter.addVinyls(vinyls)
     }
 

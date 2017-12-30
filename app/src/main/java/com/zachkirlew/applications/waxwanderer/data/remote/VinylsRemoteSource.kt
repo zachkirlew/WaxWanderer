@@ -1,7 +1,8 @@
 package com.zachkirlew.applications.waxwanderer.data.remote
 
 import com.zachkirlew.applications.waxwanderer.data.VinylDataSource
-import com.zachkirlew.applications.waxwanderer.data.model.DiscogsResponse
+import com.zachkirlew.applications.waxwanderer.data.model.VinylPreference
+import com.zachkirlew.applications.waxwanderer.data.model.discogs.DiscogsResponse
 import io.reactivex.Observable
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
@@ -22,11 +23,20 @@ class VinylsRemoteSource private constructor() : VinylDataSource{
         discogsService = retrofit.create<DiscogsApiService>(DiscogsApiService::class.java)
     }
 
-    override fun getVinyls(): Observable<DiscogsResponse> {
+    override fun getVinyls(preference: VinylPreference): Observable<DiscogsResponse> {
 
         val parameters : HashMap<String, String> = HashMap()
 
-        parameters.put("q","Pearson Sound")
+        val genre = preference.genre
+
+        val styles = preference.styles
+
+        parameters.put("genre",genre)
+
+        val commaSeparatedStyles = android.text.TextUtils.join(",", styles)
+
+        parameters.put("style",commaSeparatedStyles)
+
         parameters.put("per_page","50")
         parameters.put("format","vinyl")
         parameters.put("type","release")
