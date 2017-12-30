@@ -2,9 +2,10 @@ package com.zachkirlew.applications.waxwanderer.data.model.discogs
 
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 
 
-class Urls {
+class Urls : Serializable {
 
     @SerializedName("last")
     @Expose

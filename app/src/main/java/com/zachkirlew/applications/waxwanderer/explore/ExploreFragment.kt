@@ -1,5 +1,6 @@
 package com.zachkirlew.applications.waxwanderer.explore
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.annotation.Nullable
 import android.support.v4.app.Fragment
@@ -9,8 +10,9 @@ import android.view.*
 import com.squareup.picasso.Picasso
 import com.zachkirlew.applications.waxwanderer.R
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
-import kotlinx.android.synthetic.main.explore_item.view.*
+import com.zachkirlew.applications.waxwanderer.detail_vinyl.VinylDetailActivity
 import com.zachkirlew.applications.waxwanderer.util.RecyclerItemDecoration
+import kotlinx.android.synthetic.main.explore_item.view.*
 
 
 class ExploreFragment: Fragment(), ExploreContract.View {
@@ -91,6 +93,15 @@ class ExploreFragment: Fragment(), ExploreContract.View {
 
         override fun onBindViewHolder(holder: ExploreAdapter.ViewHolder, position: Int) {
             holder.bindItems(vinyls[position])
+
+            holder.itemView.setOnClickListener {
+
+                val context = holder.itemView.context
+
+                val intent = Intent(context, VinylDetailActivity::class.java)
+                intent.putExtra("selected vinyl", vinyls[position])
+                context.startActivity(intent)
+            }
         }
 
         override fun getItemCount(): Int {
@@ -104,7 +115,7 @@ class ExploreFragment: Fragment(), ExploreContract.View {
                 itemView.artist_name.text=vinyl.year
                 itemView.code.text = vinyl.catno
 
-                if(!vinyl.thumb.isNullOrEmpty()){
+                if(!vinyl.thumb.isNullOrEmpty()) {
                     Picasso.with(itemView.context).load(vinyl.thumb).into(itemView.cover_art)
                 }
             }

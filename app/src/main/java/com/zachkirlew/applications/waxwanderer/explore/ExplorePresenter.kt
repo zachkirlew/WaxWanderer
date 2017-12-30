@@ -27,13 +27,14 @@ class ExplorePresenter(private @NonNull var vinylRepository: VinylRepository, pr
         getUserVinylPreference()
     }
 
-    override fun loadVinylReleases(preference: VinylPreference) {
+    override fun loadVinylReleases(vinylPreference: VinylPreference) {
 
-        vinylRepository.getVinyls(preference)
+        vinylRepository.getVinyls(vinylPreference)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(object : Observer<DiscogsResponse>{
                     override fun onNext(response: DiscogsResponse) {
+
 
                         val results = response.results
                         results?.let {exploreView.showVinylReleases(results)  }
@@ -52,9 +53,6 @@ class ExplorePresenter(private @NonNull var vinylRepository: VinylRepository, pr
                     }
 
                 })
-
-
-
     }
 
     private fun getUserVinylPreference(){

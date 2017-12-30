@@ -48,5 +48,10 @@
         <activity android:name=".explore.ExploreActivity">
 
         </activity>
+
+
+        <activity android:name=".detail_vinyl.VinylDetailActivity">
+
+        </activity>
     </application>
 </manifest>

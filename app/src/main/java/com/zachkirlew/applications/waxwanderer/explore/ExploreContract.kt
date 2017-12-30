@@ -10,7 +10,6 @@ interface ExploreContract {
 
     interface View: BaseView<Presenter> {
 
-
         fun showVinylReleases(vinyls: List<VinylRelease>)
 
         fun showVinylReleaseDetailsUI()

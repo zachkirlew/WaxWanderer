@@ -2,10 +2,10 @@ package com.zachkirlew.applications.waxwanderer.data.model.discogs
 
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
-import com.zachkirlew.applications.waxwanderer.data.model.discogs.Community
+import java.io.Serializable
 
 
-class VinylRelease {
+class VinylRelease : Serializable {
 
     @SerializedName("thumb")
     @Expose

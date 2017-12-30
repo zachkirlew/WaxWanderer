@@ -3,7 +3,9 @@ package com.zachkirlew.applications.waxwanderer.data.remote
 import com.zachkirlew.applications.waxwanderer.data.VinylDataSource
 import com.zachkirlew.applications.waxwanderer.data.model.VinylPreference
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.DiscogsResponse
+import com.zachkirlew.applications.waxwanderer.data.model.discogs.detail.DetailVinylRelease
 import io.reactivex.Observable
+import io.reactivex.Single
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
@@ -23,7 +25,12 @@ class VinylsRemoteSource private constructor() : VinylDataSource{
         discogsService = retrofit.create<DiscogsApiService>(DiscogsApiService::class.java)
     }
 
+    override fun getVinyl(releaseId: String): Single<DetailVinylRelease> {
+        return discogsService.release(releaseId)
+    }
+
     override fun getVinyls(preference: VinylPreference): Observable<DiscogsResponse> {
+
 
         val parameters : HashMap<String, String> = HashMap()
 
