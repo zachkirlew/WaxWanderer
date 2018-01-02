@@ -17,7 +17,7 @@ class Artist {
     var join: String? = null
     @SerializedName("name")
     @Expose
-    var name: String? = null
+    lateinit var name: String
     @SerializedName("resource_url")
     @Expose
     var resourceUrl: String? = null

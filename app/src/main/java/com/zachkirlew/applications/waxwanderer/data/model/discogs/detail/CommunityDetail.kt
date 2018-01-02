@@ -1,6 +1,5 @@
 package com.zachkirlew.applications.waxwanderer.data.model.discogs.detail
 
-import android.media.Rating
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
