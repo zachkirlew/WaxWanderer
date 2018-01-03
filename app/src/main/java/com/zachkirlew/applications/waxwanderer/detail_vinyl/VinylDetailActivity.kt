@@ -1,16 +1,13 @@
 package com.zachkirlew.applications.waxwanderer.detail_vinyl
 
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
-import android.support.design.widget.AppBarLayout
-import android.support.design.widget.CollapsingToolbarLayout
+import android.support.design.widget.*
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
-import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.*
 import com.squareup.picasso.Picasso
 import com.zachkirlew.applications.waxwanderer.R
@@ -21,25 +18,24 @@ import com.zachkirlew.applications.waxwanderer.data.model.discogs.detail.Trackli
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.detail.Video
 import com.zachkirlew.applications.waxwanderer.data.remote.VinylsRemoteSource
 import com.zachkirlew.applications.waxwanderer.login.LoginActivity
-import android.support.v4.content.ContextCompat.startActivity
-import android.content.Intent
-import android.net.Uri
-import com.zachkirlew.applications.waxwanderer.data.model.discogs.detail.Rating
 
 
-class VinylDetailActivity : AppCompatActivity(), VinylDetailContract.View {
+class VinylDetailActivity : AppCompatActivity(), VinylDetailContract.View, View.OnClickListener {
 
     private val vinyl by lazy { intent.getSerializableExtra("selected vinyl") as VinylRelease }
     private lateinit var presenter: VinylDetailPresenter
 
-    private val releaseText by lazy { findViewById<TextView>(R.id.title_release) }
+    private val favouriteButton by lazy { findViewById<FloatingActionButton>(R.id.fab_favourite) }
 
+    private val releaseText by lazy { findViewById<TextView>(R.id.title_release) }
 
     private val artistsText by lazy { findViewById<TextView>(R.id.text_artists) }
     private val labelText by lazy { findViewById<TextView>(R.id.text_label) }
     private val releaseDateText by lazy { findViewById<TextView>(R.id.text_release_date) }
     private val genreText by lazy { findViewById<TextView>(R.id.text_genre) }
     private val stylesText by lazy { findViewById<TextView>(R.id.text_styles) }
+
+    private val coordinatorLayout by lazy{findViewById<CoordinatorLayout>(R.id.main_content)}
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,6 +73,8 @@ class VinylDetailActivity : AppCompatActivity(), VinylDetailContract.View {
 
         releaseText.text = vinyl.title
 
+        favouriteButton.setOnClickListener(this)
+
         presenter.loadVinylRelease(vinyl.id.toString())
     }
 
@@ -104,6 +102,10 @@ class VinylDetailActivity : AppCompatActivity(), VinylDetailContract.View {
         Picasso.with(this).load(imageUrl).into(imageView)
     }
 
+    override fun showMessage(message: String) {
+        Snackbar.make(coordinatorLayout, message, Snackbar.LENGTH_LONG).show()
+    }
+
     override fun showDetailVinylInfo(detailVinylRelease: DetailVinylRelease) {
 
         val artistNames = detailVinylRelease.artists?.map { it.name }
@@ -124,6 +126,10 @@ class VinylDetailActivity : AppCompatActivity(), VinylDetailContract.View {
         ratingBar.rating = starRating.toFloat()
     }
 
+    //handle fab press
+    override fun onClick(p0: View?) {
+        presenter.addToFavourites(vinyl)
+    }
 
     private fun commaSeparateList(list: List<String>?): String {
         return android.text.TextUtils.join(", ", list)

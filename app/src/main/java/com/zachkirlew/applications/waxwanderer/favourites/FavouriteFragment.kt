@@ -1,4 +1,4 @@
-package com.zachkirlew.applications.waxwanderer.explore
+package com.zachkirlew.applications.waxwanderer.favourites
 
 import android.content.Intent
 import android.os.Bundle
@@ -9,59 +9,58 @@ import android.support.v7.widget.RecyclerView
 import android.view.*
 import com.squareup.picasso.Picasso
 import com.zachkirlew.applications.waxwanderer.R
-import com.zachkirlew.applications.waxwanderer.data.VinylRepository
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
-import com.zachkirlew.applications.waxwanderer.data.remote.VinylsRemoteSource
 import com.zachkirlew.applications.waxwanderer.detail_vinyl.VinylDetailActivity
 import com.zachkirlew.applications.waxwanderer.util.RecyclerItemDecoration
 import kotlinx.android.synthetic.main.explore_item.view.*
 
 
-class ExploreFragment: Fragment(), ExploreContract.View {
+class FavouriteFragment: Fragment(), FavouriteContract.View {
 
-    private lateinit var explorePresenter : ExploreContract.Presenter
+    private lateinit var favouritePresenter : FavouriteContract.Presenter
 
-    private lateinit var exploreAdapter: ExploreFragment.ExploreAdapter
+    private lateinit var favouriteAdapter: FavouriteFragment.FavouriteAdapter
 
     override fun onCreate(@Nullable savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        exploreAdapter = ExploreAdapter(listOf<VinylRelease>())
+        favouriteAdapter = FavouriteAdapter(listOf<VinylRelease>())
     }
 
     override fun onResume() {
         super.onResume()
-        explorePresenter.start()
+        favouritePresenter.start()
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
+        //reuse explore frgment layout as similar
         val root = inflater?.inflate(R.layout.fragment_explore, container, false)
 
-        explorePresenter = ExplorePresenter(VinylRepository.getInstance(VinylsRemoteSource.instance),this)
+        favouritePresenter = FavouritePresenter(this)
 
         val exploreList = root?.findViewById<RecyclerView>(R.id.explore_list) as RecyclerView
 
         val mLayoutManager = LinearLayoutManager(activity)
 
         exploreList.layoutManager = mLayoutManager
-        exploreList.adapter = exploreAdapter
+        exploreList.adapter = favouriteAdapter
 
         val spacingInPixels = resources.getDimensionPixelSize(R.dimen.list_item_padding)
         exploreList.addItemDecoration(RecyclerItemDecoration(spacingInPixels))
+
 
         return root
     }
 
 
-    override fun setPresenter(presenter: ExploreContract.Presenter) {
-        explorePresenter = presenter
+    override fun setPresenter(presenter: FavouriteContract.Presenter) {
+        favouritePresenter = presenter
     }
 
-    override fun showVinylReleases(vinyls: List<VinylRelease>) {
+    override fun showFavouriteVinyls(vinyls: List<VinylRelease>) {
         vinyls.forEach { println(it.style) }
-        exploreAdapter.addVinyls(vinyls)
+        favouriteAdapter.addVinyls(vinyls)
     }
-
     override fun showVinylReleaseDetailsUI() {
 
     }
@@ -81,7 +80,7 @@ class ExploreFragment: Fragment(), ExploreContract.View {
 
     //Explore adapter
 
-    class ExploreAdapter(private var vinyls: List<VinylRelease>) : RecyclerView.Adapter<ExploreAdapter.ViewHolder>() {
+    class FavouriteAdapter(private var vinyls: List<VinylRelease>) : RecyclerView.Adapter<FavouriteAdapter.ViewHolder>() {
 
 
         fun addVinyls(vinyls : List<VinylRelease>){
@@ -90,12 +89,12 @@ class ExploreFragment: Fragment(), ExploreContract.View {
 
         }
 
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ExploreAdapter.ViewHolder {
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FavouriteAdapter.ViewHolder {
             val v = LayoutInflater.from(parent.context).inflate(R.layout.explore_item, parent, false)
             return ViewHolder(v)
         }
 
-        override fun onBindViewHolder(holder: ExploreAdapter.ViewHolder, position: Int) {
+        override fun onBindViewHolder(holder: FavouriteAdapter.ViewHolder, position: Int) {
             holder.bindItems(vinyls[position])
 
             holder.itemView.setOnClickListener {

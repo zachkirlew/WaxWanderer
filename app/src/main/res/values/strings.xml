@@ -4,7 +4,6 @@
     <string name="app_name">WaxWanderer</string>
 
     <string name="explore_title">Explore</string>
-    <string name="recommendations_title">Recommendations</string>
 
     <string name="add_task">New TO-DO</string>
     <string name="edit_task">Edit TO-DO</string>
@@ -42,5 +41,6 @@
     <string name="button_text_create_account">Create Account</string>
     <string name="log_out_title">Log out</string>
     <string name="submit_style_preferences_button_text">Submit</string>
+    <string name="favourites_title">Favourites</string>
 
 </resources>

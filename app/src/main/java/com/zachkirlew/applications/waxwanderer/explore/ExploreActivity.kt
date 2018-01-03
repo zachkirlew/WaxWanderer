@@ -13,8 +13,12 @@ import com.google.firebase.auth.FirebaseAuth
 import com.zachkirlew.applications.waxwanderer.R
 import com.zachkirlew.applications.waxwanderer.data.VinylRepository
 import com.zachkirlew.applications.waxwanderer.data.remote.VinylsRemoteSource
+import com.zachkirlew.applications.waxwanderer.favourites.FavouriteFragment
 import com.zachkirlew.applications.waxwanderer.login.LoginActivity
 import com.zachkirlew.applications.waxwanderer.util.ActivityUtils
+import android.view.SubMenu
+
+
 
 class ExploreActivity : AppCompatActivity() {
 
@@ -53,8 +57,7 @@ class ExploreActivity : AppCompatActivity() {
                     supportFragmentManager, exploreFrag, R.id.content)
         }
 
-
-        val explorePresenter = ExplorePresenter(VinylRepository.getInstance(VinylsRemoteSource.instance),exploreFrag)
+        navigationView.menu.getItem(0).isChecked = true
     }
 
     public override fun onSaveInstanceState(bundle: Bundle?) {
@@ -75,6 +78,9 @@ class ExploreActivity : AppCompatActivity() {
 
     private fun setupDrawerContent(navigationView: NavigationView) {
         navigationView.setNavigationItemSelectedListener { menuItem ->
+
+            uncheckAllMenuItems(navigationView)
+
             when (menuItem.itemId) {
 
                 R.id.log_out_navigation_menu_item ->{
@@ -85,12 +91,37 @@ class ExploreActivity : AppCompatActivity() {
                     startActivity(intent)
                 }
 
+                R.id.explore_navigation_menu_item ->{
+                    ActivityUtils.changeFragment(
+                            supportFragmentManager, ExploreFragment(), R.id.content)
+                }
 
+                R.id.favourites_navigation_menu_item ->{
+                    ActivityUtils.changeFragment(
+                            supportFragmentManager, FavouriteFragment(), R.id.content)
+                }
             }
+
             menuItem.isChecked = true
             mDrawerLayout.closeDrawers()
             true
         }
+    }
+
+    private fun uncheckAllMenuItems(navigationView: NavigationView) {
+        val menu = navigationView.menu
+        (0 until menu.size())
+                .map { menu.getItem(it) }
+                .forEach {
+                    if (it.hasSubMenu()) {
+                        val subMenu = it.subMenu
+                        (0 until subMenu.size())
+                                .map { subMenu.getItem(it) }
+                                .forEach { it.isChecked = false }
+                    } else {
+                        it.isChecked = false
+                    }
+                }
     }
 
 }
