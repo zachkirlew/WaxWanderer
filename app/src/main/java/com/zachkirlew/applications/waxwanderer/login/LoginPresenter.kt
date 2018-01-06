@@ -13,6 +13,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.zachkirlew.applications.waxwanderer.data.model.User
 
 
 class LoginPresenter(private @NonNull var loginView: LoginContract.View) : LoginContract.Presenter {
@@ -28,7 +29,7 @@ class LoginPresenter(private @NonNull var loginView: LoginContract.View) : Login
 
         if (user != null) {
             Log.d(TAG, "User is Signed In")
-            loginView.startExploreActivity()
+            checkUserPreviousSignIn()
         } else {
             Log.d(TAG, "User is Signed Out")
         }
@@ -107,7 +108,7 @@ class LoginPresenter(private @NonNull var loginView: LoginContract.View) : Login
         ref.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 //if user has already entered DOB and other details
-                if (dataSnapshot.child(user?.uid).exists()) {
+                if (dataSnapshot.child(user?.uid).child("gender").exists()) {
 
                     //if user has entered in styles
                     if (dataSnapshot.child(user?.uid).child("styles").exists()) {
@@ -117,13 +118,26 @@ class LoginPresenter(private @NonNull var loginView: LoginContract.View) : Login
                     }
 
                 } else {
-                    loginView.startDOBActivity()
+                    saveUserDetails()
+
+                    loginView.startMatchDetailsActivity()
                 }
             }
             override fun onCancelled(databaseError: DatabaseError) {
                 Log.e(TAG, "onCancelled", databaseError.toException())
             }
         })
+    }
+
+    private fun saveUserDetails() {
+        val myRef = FirebaseDatabase.getInstance().reference
+
+        val user = mFirebaseAuth.currentUser
+
+        val firstName = user?.displayName.toString()
+        val email = user?.email.toString()
+
+        myRef.child("users").child(user?.uid).setValue(User(firstName,email,null,null,null,null,null))
     }
 
 }

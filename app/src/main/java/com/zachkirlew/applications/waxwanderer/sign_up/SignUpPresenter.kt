@@ -10,6 +10,9 @@ import java.text.DateFormat
 import java.util.*
 import java.util.regex.Matcher
 import java.util.regex.Pattern
+import com.google.firebase.auth.UserProfileChangeRequest
+
+
 
 
 class SignUpPresenter(private @NonNull var signUpView: SignUpContract.View) : SignUpContract.Presenter {
@@ -32,7 +35,7 @@ class SignUpPresenter(private @NonNull var signUpView: SignUpContract.View) : Si
 
         if (user != null) {
             Log.d(TAG, "User is Signed In")
-            signUpView.startStylesActivity()
+            signUpView.startMatchDetailsActivity()
         } else {
             Log.d(TAG, "User is Signed Out")
         }
@@ -55,9 +58,6 @@ class SignUpPresenter(private @NonNull var signUpView: SignUpContract.View) : Si
         } else if (!validatePassword(password)) {
             signUpView.showPasswordErrorMessage("Please enter a longer password!")
         }
-        else if (dob==null) {
-            signUpView.showDOBErrorMessage("Please enter a date of birth!")
-        }
         else {
 
             mFirebaseAuth.createUserWithEmailAndPassword(email, password)
@@ -65,8 +65,8 @@ class SignUpPresenter(private @NonNull var signUpView: SignUpContract.View) : Si
                         if (task.isSuccessful) {
                             // Sign in success
                             Log.d(TAG, "createUserWithEmail:success")
-                            saveUserDetails(name, email, dob!!)
-                            signUpView.startStylesActivity()
+                            saveUserDetails(name, email)
+                            signUpView.startMatchDetailsActivity()
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "createUserWithEmail:failure", task.exception)
@@ -76,27 +76,18 @@ class SignUpPresenter(private @NonNull var signUpView: SignUpContract.View) : Si
         }
     }
 
-    private fun saveUserDetails(name: String, email: String, date: Date) {
+    private fun saveUserDetails(name: String, email: String) {
         val myRef = database.reference
 
         val user = mFirebaseAuth.currentUser
 
-        myRef.child("users").child(user?.uid).setValue(User(name,email,date,null))
+        val profileUpdates = UserProfileChangeRequest.Builder()
+                .setDisplayName(name).build()
+
+        user?.updateProfile(profileUpdates)
+
+        myRef.child("users").child(user?.uid).setValue(User(name,email,null,null,null,null,null))
     }
-
-    override fun getFormattedDate(year: Int, month: Int, day: Int) {
-        val cal = Calendar.getInstance()
-        cal.timeInMillis = 0
-        cal.set(year, month, day, 0, 0, 0)
-
-        dob = cal.time
-
-        val dfMediumUK = DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.UK)
-        val dateFormatted = dfMediumUK.format(dob)
-
-        signUpView.showDateFormatted(dateFormatted)
-    }
-
 
     override fun validateEmail(email: String) : Boolean {
         matcher = pattern.matcher(email);

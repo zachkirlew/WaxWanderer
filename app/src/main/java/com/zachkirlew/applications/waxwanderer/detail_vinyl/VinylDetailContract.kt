@@ -17,6 +17,8 @@ interface VinylDetailContract {
         fun showRating(starRating: Double)
 
         fun showMessage(message : String)
+
+        fun editButtonColor(vinylIsInFavourites : Boolean)
     }
 
     interface Presenter {
@@ -24,5 +26,8 @@ interface VinylDetailContract {
         fun loadVinylRelease(releaseId : String)
 
         fun addToFavourites(vinylRelease: VinylRelease)
+
+        fun checkInFavourites(releaseId: String)
+
     }
 }

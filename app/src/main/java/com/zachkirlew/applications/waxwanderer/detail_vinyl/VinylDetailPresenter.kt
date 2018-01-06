@@ -17,7 +17,6 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 
 class VinylDetailPresenter(private @NonNull var vinylRepository: VinylRepository, private @NonNull var vinylDetailView: VinylDetailContract.View) : VinylDetailContract.Presenter {
-
     private val TAG = VinylDetailActivity::class.java.simpleName
 
     private val mFirebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
@@ -64,9 +63,11 @@ class VinylDetailPresenter(private @NonNull var vinylRepository: VinylRepository
                 if (dataSnapshot.exists()) {
                     myRef.setValue(null)
                     vinylDetailView.showMessage("Removed from favourites")
+                    vinylDetailView.editButtonColor(false)
                 } else {
                     myRef.setValue(vinylRelease)
                     vinylDetailView.showMessage("Successfully added to favourites")
+                    vinylDetailView.editButtonColor(true)
                 }
             }
 
@@ -74,6 +75,27 @@ class VinylDetailPresenter(private @NonNull var vinylRepository: VinylRepository
                 Log.e(TAG, "onCancelled", databaseError.toException())
             }
         })
-
     }
+
+    override fun checkInFavourites(releaseId: String) {
+        val user = mFirebaseAuth.currentUser
+
+        val myRef = database.reference.child("users").child(user?.uid).child("favourites").child(releaseId)
+
+        myRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                //if user has already favourited track
+                if (dataSnapshot.exists()) {
+                    vinylDetailView.editButtonColor(true)
+                } else {
+                    vinylDetailView.editButtonColor(false)
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                Log.e(TAG, "onCancelled", databaseError.toException())
+            }
+        })
+    }
+
 }

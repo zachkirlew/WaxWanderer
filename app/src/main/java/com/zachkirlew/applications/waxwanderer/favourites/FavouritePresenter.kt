@@ -36,7 +36,10 @@ class FavouritePresenter(private @NonNull var favouriteView: FavouriteContract.V
                     child.getValue<VinylRelease>(VinylRelease::class.java)?.let { vinyls.add(it) }
                 }
 
-                favouriteView.showFavouriteVinyls(vinyls)
+                if(vinyls.isEmpty())
+                    favouriteView.showNoVinylsView()
+                else
+                    favouriteView.showFavouriteVinyls(vinyls)
             }
 
             override fun onCancelled(databaseError: DatabaseError) {

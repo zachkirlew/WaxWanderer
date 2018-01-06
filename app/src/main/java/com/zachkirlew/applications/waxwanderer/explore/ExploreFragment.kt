@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.*
+import android.widget.TextView
 import com.squareup.picasso.Picasso
 import com.zachkirlew.applications.waxwanderer.R
 import com.zachkirlew.applications.waxwanderer.data.VinylRepository
@@ -22,6 +23,8 @@ class ExploreFragment: Fragment(), ExploreContract.View {
     private lateinit var explorePresenter : ExploreContract.Presenter
 
     private lateinit var exploreAdapter: ExploreFragment.ExploreAdapter
+
+    private var noFavouritesText: TextView? = null
 
     override fun onCreate(@Nullable savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,12 +52,19 @@ class ExploreFragment: Fragment(), ExploreContract.View {
         val spacingInPixels = resources.getDimensionPixelSize(R.dimen.list_item_padding)
         exploreList.addItemDecoration(RecyclerItemDecoration(spacingInPixels))
 
+        noFavouritesText = root.findViewById<TextView>(R.id.text_no_favourites) as TextView
+
         return root
     }
 
 
     override fun setPresenter(presenter: ExploreContract.Presenter) {
         explorePresenter = presenter
+    }
+
+    override fun showNoVinylsView() {
+        noFavouritesText?.text = "No vinyls matching your prefences to display. Edit your preferences"
+        noFavouritesText?.visibility = View.VISIBLE
     }
 
     override fun showVinylReleases(vinyls: List<VinylRelease>) {

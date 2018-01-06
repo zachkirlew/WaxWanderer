@@ -11,13 +11,10 @@ import android.support.v7.widget.Toolbar
 import android.view.MenuItem
 import com.google.firebase.auth.FirebaseAuth
 import com.zachkirlew.applications.waxwanderer.R
-import com.zachkirlew.applications.waxwanderer.data.VinylRepository
-import com.zachkirlew.applications.waxwanderer.data.remote.VinylsRemoteSource
 import com.zachkirlew.applications.waxwanderer.favourites.FavouriteFragment
 import com.zachkirlew.applications.waxwanderer.login.LoginActivity
+import com.zachkirlew.applications.waxwanderer.settings.SettingsFragment
 import com.zachkirlew.applications.waxwanderer.util.ActivityUtils
-import android.view.SubMenu
-
 
 
 class ExploreActivity : AppCompatActivity() {
@@ -99,6 +96,11 @@ class ExploreActivity : AppCompatActivity() {
                 R.id.favourites_navigation_menu_item ->{
                     ActivityUtils.changeFragment(
                             supportFragmentManager, FavouriteFragment(), R.id.content)
+                }
+
+                R.id.match_navigation_menu_item ->{
+                    ActivityUtils.changeFragment(
+                            supportFragmentManager, SettingsFragment(), R.id.content)
                 }
             }
 

@@ -14,6 +14,8 @@ interface ExploreContract {
 
         fun showVinylReleaseDetailsUI()
 
+        fun showNoVinylsView()
+
     }
 
     interface Presenter : BasePresenter {

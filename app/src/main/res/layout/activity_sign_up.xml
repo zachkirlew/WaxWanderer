@@ -32,7 +32,7 @@
                 android:id="@+id/input_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="First name"
+                android:hint="Name"
                 android:inputType="textCapWords" />
         </android.support.design.widget.TextInputLayout>
 
@@ -53,21 +53,6 @@
         </android.support.design.widget.TextInputLayout>
 
         <!-- DOB Label -->
-        <android.support.design.widget.TextInputLayout
-            android:id="@+id/text_input_layout_dob"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginTop="8dp"
-            android:clickable="false">
-
-            <EditText
-                android:id="@+id/input_dob"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:editable="false"
-                android:hint="DOB" />
-        </android.support.design.widget.TextInputLayout>
 
         <!-- Password Label -->
         <android.support.design.widget.TextInputLayout

@@ -42,5 +42,20 @@
     <string name="log_out_title">Log out</string>
     <string name="submit_style_preferences_button_text">Submit</string>
     <string name="favourites_title">Favourites</string>
+    <string name="favourites_no_favourites_text">No favourites to display</string>
+    <string name="match_title">Match</string>
+    <string name="settings_title">Settings</string>
+    <string name="title_activity_settings">Settings</string>
+
+    <!-- Strings related to Settings -->
+    <string-array name="spinner_user_genders">
+        <item>Male</item>
+        <item>Female</item>
+    </string-array>
+    <string-array name="spinner_matching_genders">
+        <item>Males</item>
+        <item>Females</item>
+        <item>Everyone!</item>
+    </string-array>
 
 </resources>

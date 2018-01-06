@@ -1,5 +1,6 @@
 package com.zachkirlew.applications.waxwanderer.detail_vinyl
 
+import android.animation.ArgbEvaluator
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -18,9 +19,18 @@ import com.zachkirlew.applications.waxwanderer.data.model.discogs.detail.Trackli
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.detail.Video
 import com.zachkirlew.applications.waxwanderer.data.remote.VinylsRemoteSource
 import com.zachkirlew.applications.waxwanderer.login.LoginActivity
+import android.content.res.ColorStateList
+import android.support.v4.view.ViewCompat.setBackgroundTintList
+import android.animation.ValueAnimator
+import android.animation.ObjectAnimator
+import android.graphics.Color
+import android.view.animation.DecelerateInterpolator
+
+
 
 
 class VinylDetailActivity : AppCompatActivity(), VinylDetailContract.View, View.OnClickListener {
+
 
     private val vinyl by lazy { intent.getSerializableExtra("selected vinyl") as VinylRelease }
     private lateinit var presenter: VinylDetailPresenter
@@ -76,6 +86,7 @@ class VinylDetailActivity : AppCompatActivity(), VinylDetailContract.View, View.
         favouriteButton.setOnClickListener(this)
 
         presenter.loadVinylRelease(vinyl.id.toString())
+        presenter.checkInFavourites(vinyl.id.toString())
     }
 
     override fun showTrackList(trackList: List<Tracklist>?) {
@@ -104,6 +115,13 @@ class VinylDetailActivity : AppCompatActivity(), VinylDetailContract.View, View.
 
     override fun showMessage(message: String) {
         Snackbar.make(coordinatorLayout, message, Snackbar.LENGTH_LONG).show()
+    }
+
+    override fun editButtonColor(vinylIsInFavourites: Boolean) {
+        if(vinylIsInFavourites)
+            favouriteButton.backgroundTintList = resources.getColorStateList(R.color.colorAccent)
+        else
+            favouriteButton.backgroundTintList = resources.getColorStateList(R.color.com_facebook_button_background_color_disabled)
     }
 
     override fun showDetailVinylInfo(detailVinylRelease: DetailVinylRelease) {

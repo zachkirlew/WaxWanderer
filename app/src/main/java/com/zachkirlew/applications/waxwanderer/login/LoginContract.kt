@@ -12,7 +12,7 @@ interface LoginContract {
 
         fun startStylesActivity()
 
-        fun startDOBActivity()
+        fun startMatchDetailsActivity()
 
         fun showMessage(message: String)
     }

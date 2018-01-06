@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.*
+import android.widget.TextView
 import com.squareup.picasso.Picasso
 import com.zachkirlew.applications.waxwanderer.R
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
@@ -20,6 +21,8 @@ class FavouriteFragment: Fragment(), FavouriteContract.View {
     private lateinit var favouritePresenter : FavouriteContract.Presenter
 
     private lateinit var favouriteAdapter: FavouriteFragment.FavouriteAdapter
+
+    private var noFavouritesText: TextView? = null
 
     override fun onCreate(@Nullable savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,6 +51,8 @@ class FavouriteFragment: Fragment(), FavouriteContract.View {
         val spacingInPixels = resources.getDimensionPixelSize(R.dimen.list_item_padding)
         exploreList.addItemDecoration(RecyclerItemDecoration(spacingInPixels))
 
+        noFavouritesText = root.findViewById<TextView>(R.id.text_no_favourites) as TextView
+
 
         return root
     }
@@ -63,6 +68,10 @@ class FavouriteFragment: Fragment(), FavouriteContract.View {
     }
     override fun showVinylReleaseDetailsUI() {
 
+    }
+
+    override fun showNoVinylsView() {
+        noFavouritesText?.visibility = View.VISIBLE
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

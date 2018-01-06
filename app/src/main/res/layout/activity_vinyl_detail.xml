@@ -277,6 +277,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        android:src="@drawable/ic_favorite" />
+        android:src="@drawable/ic_favorite"
+        app:backgroundTint="@color/com_facebook_button_background_color_disabled" />
 
 </android.support.design.widget.CoordinatorLayout>

@@ -3,7 +3,7 @@ package com.zachkirlew.applications.waxwanderer.sign_up
 interface SignUpContract {
     interface View {
 
-        fun startStylesActivity()
+        fun startMatchDetailsActivity()
 
         fun showCreateUserFailedMessage(message : String)
 
@@ -11,16 +11,10 @@ interface SignUpContract {
 
         fun showEmailErrorMessage(message : String)
 
-        fun showDOBErrorMessage(message: String)
-
         fun showPasswordErrorMessage(message : String)
-
-        fun showDateFormatted(date : String)
     }
 
     interface Presenter {
-
-        fun getFormattedDate(year : Int, month : Int, day : Int)
 
         fun validateName(name : String): Boolean
 
