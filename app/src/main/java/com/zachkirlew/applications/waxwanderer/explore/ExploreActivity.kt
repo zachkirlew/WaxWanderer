@@ -3,18 +3,33 @@ package com.zachkirlew.applications.waxwanderer.explore
 import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.NavigationView
+import android.support.v4.app.Fragment
 import android.support.v4.view.GravityCompat
+import android.support.v4.view.MenuItemCompat
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.SearchView
 import android.support.v7.widget.Toolbar
+import android.view.Menu
 import android.view.MenuItem
+import android.widget.ImageView
+import android.widget.TextView
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
+import com.squareup.picasso.Picasso
 import com.zachkirlew.applications.waxwanderer.R
+import com.zachkirlew.applications.waxwanderer.data.model.User
 import com.zachkirlew.applications.waxwanderer.favourites.FavouriteFragment
 import com.zachkirlew.applications.waxwanderer.login.LoginActivity
 import com.zachkirlew.applications.waxwanderer.settings.SettingsFragment
+import com.zachkirlew.applications.waxwanderer.similar_users.SimilarUsersFragment
 import com.zachkirlew.applications.waxwanderer.util.ActivityUtils
+import com.zachkirlew.applications.waxwanderer.util.BorderedCircleTransform
+import kotlinx.android.synthetic.main.activity_main.*
 
 
 class ExploreActivity : AppCompatActivity() {
@@ -45,7 +60,7 @@ class ExploreActivity : AppCompatActivity() {
 
         setupDrawerContent(navigationView)
 
-        var exploreFrag: ExploreFragment? = supportFragmentManager.findFragmentById(R.id.content) as ExploreFragment?
+        var exploreFrag: Fragment? = supportFragmentManager.findFragmentById(R.id.content)
 
         if (exploreFrag == null) {
 
@@ -58,8 +73,33 @@ class ExploreActivity : AppCompatActivity() {
     }
 
     public override fun onSaveInstanceState(bundle: Bundle?) {
-
         super.onSaveInstanceState(bundle)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        val inflater = menuInflater
+        inflater.inflate(R.menu.search_menu, menu)
+
+        val searchItem = menu.findItem(R.id.action_search)
+        val searchView = MenuItemCompat.getActionView(searchItem) as SearchView
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
+            override fun onQueryTextSubmit(query: String?): Boolean {
+
+                val fragment = supportFragmentManager.findFragmentById(R.id.content)
+                if (fragment is OnSearchSubmitted)
+                    fragment.searchSubmitted(query)
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                return true
+            }
+
+
+        })
+
+        return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -74,6 +114,15 @@ class ExploreActivity : AppCompatActivity() {
     }
 
     private fun setupDrawerContent(navigationView: NavigationView) {
+
+        getDisplayPicture()
+
+        val header = navigationView.getHeaderView(0)
+
+        val nameText = header?.findViewById<TextView>(R.id.name) as TextView
+
+        nameText.text = FirebaseAuth.getInstance().currentUser?.displayName
+
         navigationView.setNavigationItemSelectedListener { menuItem ->
 
             uncheckAllMenuItems(navigationView)
@@ -100,6 +149,11 @@ class ExploreActivity : AppCompatActivity() {
 
                 R.id.match_navigation_menu_item ->{
                     ActivityUtils.changeFragment(
+                            supportFragmentManager, SimilarUsersFragment(), R.id.content)
+                }
+
+                R.id.settings_navigation_menu_item ->{
+                    ActivityUtils.changeFragment(
                             supportFragmentManager, SettingsFragment(), R.id.content)
                 }
             }
@@ -108,6 +162,44 @@ class ExploreActivity : AppCompatActivity() {
             mDrawerLayout.closeDrawers()
             true
         }
+    }
+
+    private fun getDisplayPicture(){
+
+        val mFirebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
+        val database = FirebaseDatabase.getInstance()
+
+        val myRef = database.reference
+
+        val user = mFirebaseAuth.currentUser
+
+        val ref = myRef.child("users").child(user?.uid)
+
+        ref.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+
+                val currentUser = dataSnapshot.getValue(User::class.java)
+
+                if(!currentUser?.imageurl.isNullOrEmpty()) {
+
+                    val header = nav_view.getHeaderView(0)
+
+                    val profileImage = header?.findViewById<ImageView>(R.id.profile_image) as ImageView
+
+                    Picasso.with(this@ExploreActivity)
+                            .load(currentUser?.imageurl)
+                            .resize(160, 160)
+                            .centerCrop()
+                            .transform(BorderedCircleTransform())
+                            .into(profileImage)
+                }
+
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+            }
+        })
+
     }
 
     private fun uncheckAllMenuItems(navigationView: NavigationView) {

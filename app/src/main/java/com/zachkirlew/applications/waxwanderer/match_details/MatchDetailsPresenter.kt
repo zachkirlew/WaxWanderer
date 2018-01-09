@@ -47,10 +47,24 @@ class MatchDetailsPresenter(private @NonNull var matchDetailsView: MatchDetailsC
 
             val user = mFirebaseAuth.currentUser
 
-            val firstName = user?.displayName.toString()
+            val name = user?.displayName.toString()
             val email = user?.email.toString()
 
-            myRef.child("users").child(user?.uid).setValue(User(firstName,email,dob,userGender,userLocation, MatchPreference(matchGender,matchAge),null))
+            val updatedUser = User()
+
+            updatedUser.name = name
+            updatedUser.email = email
+            updatedUser.dob = dob
+            updatedUser.gender = userGender
+            updatedUser.location = userLocation
+
+            val matchPreference = MatchPreference()
+            matchPreference.gender = matchGender
+            matchPreference.ageRange = matchAge
+
+            updatedUser.matchPreference = matchPreference
+
+            myRef.child("users").child(user?.uid).setValue(updatedUser)
 
             matchDetailsView.startStylesActivity()
         }

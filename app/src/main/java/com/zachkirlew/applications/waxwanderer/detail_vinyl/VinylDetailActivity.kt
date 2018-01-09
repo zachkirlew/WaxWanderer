@@ -27,8 +27,6 @@ import android.graphics.Color
 import android.view.animation.DecelerateInterpolator
 
 
-
-
 class VinylDetailActivity : AppCompatActivity(), VinylDetailContract.View, View.OnClickListener {
 
 
@@ -242,7 +240,6 @@ class VinylDetailActivity : AppCompatActivity(), VinylDetailContract.View, View.
 
             return disMinu + ":" + disSec
         }
-
     }
 
 

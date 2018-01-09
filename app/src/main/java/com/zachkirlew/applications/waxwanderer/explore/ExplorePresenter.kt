@@ -7,6 +7,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.zachkirlew.applications.waxwanderer.data.VinylRepository
+import com.zachkirlew.applications.waxwanderer.data.model.User
 import com.zachkirlew.applications.waxwanderer.data.model.VinylPreference
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.DiscogsResponse
 import io.reactivex.Observer
@@ -55,6 +56,39 @@ class ExplorePresenter(private @NonNull var vinylRepository: VinylRepository, pr
                 })
     }
 
+    override fun searchVinylReleases(searchText: String?) {
+        if(!searchText.isNullOrEmpty()){
+
+            vinylRepository.searchVinyl(searchText!!)
+                    .subscribeOn(Schedulers.newThread())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(object : Observer<DiscogsResponse>{
+                        override fun onNext(response: DiscogsResponse) {
+
+                            if(response.results?.isEmpty()!!)
+                                exploreView.showNoVinylsView()
+                            else
+                                exploreView.showVinylReleases(response.results!!)
+
+                        }
+
+                        override fun onError(e: Throwable) {
+
+                        }
+
+                        override fun onComplete() {
+
+                        }
+
+                        override fun onSubscribe(d: Disposable) {
+
+                        }
+
+                    })
+
+        }
+    }
+
     private fun getUserVinylPreference(){
         val myRef = database.reference
 
@@ -65,11 +99,9 @@ class ExplorePresenter(private @NonNull var vinylRepository: VinylRepository, pr
         ref.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
 
-                val preferenceMap = dataSnapshot.children.asIterable().toList()
-                val genre = preferenceMap[0].value.toString()
-                val styles = preferenceMap[1].children.map { it.value } as List <String>
+                val vinylPref = dataSnapshot.getValue(VinylPreference::class.java)
 
-                loadVinylReleases(VinylPreference(genre,styles))
+                loadVinylReleases(vinylPref!!)
             }
 
             override fun onCancelled(databaseError: DatabaseError) {

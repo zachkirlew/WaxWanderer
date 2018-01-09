@@ -14,6 +14,9 @@ class VinylRepository private constructor(private @NonNull val vinylRemoteDataSo
         return vinylRemoteDataSource.getVinyl(releaseId)
     }
 
+    override fun searchVinyl(searchText: String): Observable<DiscogsResponse> {
+        return vinylRemoteDataSource.searchVinyl(searchText)
+    }
 
     override fun getVinyls(preference: VinylPreference): Observable<DiscogsResponse> {
         return vinylRemoteDataSource.getVinyls(preference)

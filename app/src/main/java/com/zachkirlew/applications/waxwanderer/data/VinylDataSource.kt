@@ -11,4 +11,6 @@ interface VinylDataSource {
     fun getVinyls(preference: VinylPreference): Observable<DiscogsResponse>
 
     fun getVinyl(releaseId: String): Single<DetailVinylRelease>
+
+    fun searchVinyl(searchText: String): Observable<DiscogsResponse>
 }

@@ -6,7 +6,10 @@ import android.support.annotation.Nullable
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.view.*
+import android.view.LayoutInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import android.widget.TextView
 import com.squareup.picasso.Picasso
 import com.zachkirlew.applications.waxwanderer.R
@@ -17,8 +20,7 @@ import com.zachkirlew.applications.waxwanderer.detail_vinyl.VinylDetailActivity
 import com.zachkirlew.applications.waxwanderer.util.RecyclerItemDecoration
 import kotlinx.android.synthetic.main.explore_item.view.*
 
-
-class ExploreFragment: Fragment(), ExploreContract.View {
+class ExploreFragment: Fragment(), ExploreContract.View, OnSearchSubmitted{
 
     private lateinit var explorePresenter : ExploreContract.Presenter
 
@@ -28,6 +30,7 @@ class ExploreFragment: Fragment(), ExploreContract.View {
 
     override fun onCreate(@Nullable savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
         exploreAdapter = ExploreAdapter(listOf<VinylRelease>())
     }
 
@@ -57,13 +60,17 @@ class ExploreFragment: Fragment(), ExploreContract.View {
         return root
     }
 
+    override fun searchSubmitted(searchText: String?) {
+        explorePresenter.searchVinylReleases(searchText)
+    }
 
     override fun setPresenter(presenter: ExploreContract.Presenter) {
         explorePresenter = presenter
     }
 
     override fun showNoVinylsView() {
-        noFavouritesText?.text = "No vinyls matching your prefences to display. Edit your preferences"
+        exploreAdapter.removeVinyls()
+        noFavouritesText?.text = "No vinyls to display. Please search again or change your vinyl preferences"
         noFavouritesText?.visibility = View.VISIBLE
     }
 
@@ -76,9 +83,6 @@ class ExploreFragment: Fragment(), ExploreContract.View {
 
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        //inflater.inflate(R.menu.tasks_fragment_menu, menu)
-    }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
@@ -97,7 +101,11 @@ class ExploreFragment: Fragment(), ExploreContract.View {
         fun addVinyls(vinyls : List<VinylRelease>){
             this.vinyls = vinyls
             notifyDataSetChanged()
+        }
 
+        fun removeVinyls(){
+            this.vinyls = emptyList()
+            notifyDataSetChanged()
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ExploreAdapter.ViewHolder {

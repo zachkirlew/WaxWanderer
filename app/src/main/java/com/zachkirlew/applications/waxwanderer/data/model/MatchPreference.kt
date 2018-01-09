@@ -1,3 +1,10 @@
 package com.zachkirlew.applications.waxwanderer.data.model
 
-data class MatchPreference(val gender : String, val ageRange : String)
+import java.io.Serializable
+
+class MatchPreference : Serializable {
+
+     var gender : String? = null
+
+    var ageRange : String? = null
+}

@@ -10,7 +10,7 @@ import com.zachkirlew.applications.waxwanderer.R
 import com.zachkirlew.applications.waxwanderer.styles.StylesActivity
 import java.util.*
 
-class MatchDetailsActivity : AppCompatActivity(), MatchDetailsContract.View, DatePicker.OnDateChangedListener, DatePickerDialog.OnDateSetListener {
+class MatchDetailsActivity : AppCompatActivity(), MatchDetailsContract.View,DatePickerDialog.OnDateSetListener {
 
     private lateinit var presenter: MatchDetailsPresenter
 
@@ -127,10 +127,6 @@ class MatchDetailsActivity : AppCompatActivity(), MatchDetailsContract.View, Dat
         presenter.getFormattedDate(year, month, day)
     }
 
-
-    override fun onDateChanged(p0: DatePicker?, p1: Int, p2: Int, p3: Int) {
-
-    }
 
     override fun showDateFormatted(date: String) {
         editTextDOB.setText(date)

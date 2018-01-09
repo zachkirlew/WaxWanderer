@@ -22,7 +22,6 @@ class LoginPresenter(private @NonNull var loginView: LoginContract.View) : Login
 
     private val mFirebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
 
-
     private val mAuthListener = FirebaseAuth.AuthStateListener { firebaseAuth ->
         // Check if user is signed in (non-null) and update UI accordingly.
         val user = firebaseAuth.currentUser
@@ -111,7 +110,7 @@ class LoginPresenter(private @NonNull var loginView: LoginContract.View) : Login
                 if (dataSnapshot.child(user?.uid).child("gender").exists()) {
 
                     //if user has entered in styles
-                    if (dataSnapshot.child(user?.uid).child("styles").exists()) {
+                    if (dataSnapshot.child(user?.uid).child("vinyl preferences").exists()) {
                         loginView.startExploreActivity()
                     } else {
                         loginView.startStylesActivity()
@@ -134,10 +133,16 @@ class LoginPresenter(private @NonNull var loginView: LoginContract.View) : Login
 
         val user = mFirebaseAuth.currentUser
 
-        val firstName = user?.displayName.toString()
+        val name = user?.displayName.toString()
         val email = user?.email.toString()
 
-        myRef.child("users").child(user?.uid).setValue(User(firstName,email,null,null,null,null,null))
+        val updatedUser = User()
+
+        updatedUser.name = name
+        updatedUser.email = email
+        updatedUser.id = user?.uid
+
+        myRef.child("users").child(user?.uid).setValue(updatedUser)
     }
 
 }

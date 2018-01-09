@@ -1,3 +1,10 @@
 package com.zachkirlew.applications.waxwanderer.data.model
 
-data class VinylPreference(val genre : String, val styles : List<String>)
+import java.io.Serializable
+
+class VinylPreference : Serializable {
+
+    var genre : String? = null
+
+    var styles : List<String>? = null
+}

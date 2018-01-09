@@ -15,6 +15,11 @@
             android:id="@+id/match_navigation_menu_item"
             android:icon="@mipmap/ic_launcher"
             android:title="@string/match_title" />
+
+        <item
+            android:id="@+id/matches_navigation_menu_item"
+            android:icon="@mipmap/ic_launcher"
+            android:title="@string/matches_title" />
     </group>
 
     <item android:title=" ">

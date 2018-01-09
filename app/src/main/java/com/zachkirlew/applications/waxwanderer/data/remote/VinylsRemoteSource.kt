@@ -13,6 +13,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class VinylsRemoteSource private constructor() : VinylDataSource{
 
+
     private val discogsService : DiscogsApiService
 
     init {
@@ -31,18 +32,32 @@ class VinylsRemoteSource private constructor() : VinylDataSource{
 
     override fun getVinyls(preference: VinylPreference): Observable<DiscogsResponse> {
 
-
         val parameters : HashMap<String, String> = HashMap()
 
         val genre = preference.genre
 
         val styles = preference.styles
 
-        parameters.put("genre",genre)
+        if (genre != null) {
+            parameters.put("genre",genre)
+        }
 
         val commaSeparatedStyles = android.text.TextUtils.join(",", styles)
 
         parameters.put("style",commaSeparatedStyles)
+
+        parameters.put("per_page","50")
+        parameters.put("format","vinyl")
+        parameters.put("type","release")
+
+        return discogsService.searchReleases(parameters)
+    }
+
+    override fun searchVinyl(searchText: String): Observable<DiscogsResponse> {
+
+        val parameters : HashMap<String, String> = HashMap()
+
+        parameters.put("q",searchText)
 
         parameters.put("per_page","50")
         parameters.put("format","vinyl")

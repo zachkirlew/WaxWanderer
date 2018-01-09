@@ -36,6 +36,7 @@ class FavouriteFragment: Fragment(), FavouriteContract.View {
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
+
         //reuse explore frgment layout as similar
         val root = inflater?.inflate(R.layout.fragment_explore, container, false)
 
@@ -63,7 +64,6 @@ class FavouriteFragment: Fragment(), FavouriteContract.View {
     }
 
     override fun showFavouriteVinyls(vinyls: List<VinylRelease>) {
-        vinyls.forEach { println(it.style) }
         favouriteAdapter.addVinyls(vinyls)
     }
     override fun showVinylReleaseDetailsUI() {
@@ -132,7 +132,6 @@ class FavouriteFragment: Fragment(), FavouriteContract.View {
                 }
             }
         }
-
     }
 
 

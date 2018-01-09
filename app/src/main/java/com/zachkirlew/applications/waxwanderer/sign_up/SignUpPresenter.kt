@@ -86,7 +86,13 @@ class SignUpPresenter(private @NonNull var signUpView: SignUpContract.View) : Si
 
         user?.updateProfile(profileUpdates)
 
-        myRef.child("users").child(user?.uid).setValue(User(name,email,null,null,null,null,null))
+        val updatedUser = User()
+
+        updatedUser.name = name
+        updatedUser.email = email
+        updatedUser.id = user?.uid
+
+        myRef.child("users").child(user?.uid).setValue(updatedUser)
     }
 
     override fun validateEmail(email: String) : Boolean {

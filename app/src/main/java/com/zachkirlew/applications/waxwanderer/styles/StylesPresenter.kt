@@ -73,7 +73,12 @@ class StylesPresenter(private @NonNull var stylesView: StylesContract.View) : St
         val myRef = database.reference
         val user = mFirebaseAuth.currentUser
 
-        myRef.child("users").child(user?.uid).child("vinyl preferences").setValue(VinylPreference(selectedGenre,selectedStyles))
+        val vinylPref = VinylPreference()
+
+        vinylPref.genre = selectedGenre
+        vinylPref.styles = selectedStyles
+
+        myRef.child("users").child(user?.uid).child("vinyl preferences").setValue(vinylPref)
 
         stylesView.startExploreActivity()
     }
