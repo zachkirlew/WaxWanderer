@@ -48,6 +48,8 @@ class SimilarUsersFragment : Fragment(), SimilarUsersContract.View {
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
 
+        activity.title = "Match"
+
         val root = inflater?.inflate(R.layout.fragment_similar_users, container, false)
 
         cardStack = root?.findViewById<SwipeDeck>(R.id.swipe_deck) as SwipeDeck

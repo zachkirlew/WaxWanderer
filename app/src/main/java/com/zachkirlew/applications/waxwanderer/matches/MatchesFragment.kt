@@ -12,6 +12,7 @@ import com.lucasurbas.listitemview.ListItemView
 import com.squareup.picasso.Picasso
 import com.zachkirlew.applications.waxwanderer.R
 import com.zachkirlew.applications.waxwanderer.data.model.User
+import com.zachkirlew.applications.waxwanderer.message.MessageActivity
 import com.zachkirlew.applications.waxwanderer.user_detail.UserDetailActivity
 import com.zachkirlew.applications.waxwanderer.util.CircleTransform
 import com.zachkirlew.applications.waxwanderer.util.RecyclerItemDecoration
@@ -19,7 +20,6 @@ import kotlinx.android.synthetic.main.match_item.view.*
 
 
 class MatchesFragment: Fragment(), MatchesContract.View {
-
     private lateinit var matchesPresenter : MatchesContract.Presenter
 
     private lateinit var matchesAdapter: MatchesFragment.MatchesAdapter
@@ -31,16 +31,13 @@ class MatchesFragment: Fragment(), MatchesContract.View {
         matchesAdapter = MatchesAdapter(ArrayList<User>(0))
     }
 
-    override fun onResume() {
-        super.onResume()
-        matchesPresenter.start()
-    }
-
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
 
         //reuse explore frgment layout as similar
         val root = inflater?.inflate(R.layout.fragment_matches, container, false)
+
+        activity.title = "Matches"
 
         matchesPresenter = MatchesPresenter(this)
 
@@ -56,6 +53,8 @@ class MatchesFragment: Fragment(), MatchesContract.View {
 
         noMatchesText = root.findViewById<TextView>(R.id.text_no_matches) as TextView
 
+        matchesPresenter.loadMatches()
+
         return root
     }
 
@@ -67,21 +66,20 @@ class MatchesFragment: Fragment(), MatchesContract.View {
     override fun addMatch(match: User) {
         matchesAdapter.addMatch(match)
     }
-    override fun showVinylReleaseDetailsUI() {
 
+    override fun startMessagesActivity() {
+        val intent = Intent(activity, MessageActivity::class.java)
+        startActivity(intent)
     }
+
 
     override fun showNoMatchesView() {
         noMatchesText?.visibility = View.VISIBLE
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        //inflater.inflate(R.menu.tasks_fragment_menu, menu)
-    }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-//            R.id.menu_clear -> mPresenter.clearCompletedTasks()
 //            R.id.menu_filter -> showFilteringPopUpMenu()
 //            R.id.menu_refresh -> mPresenter.loadTasks(true)
         }
@@ -126,17 +124,25 @@ class MatchesFragment: Fragment(), MatchesContract.View {
                 itemView.list_item_view.title = match.name
                 itemView.list_item_view.subtitle = match.location
 
+
                 Picasso.with(itemView.context)
                         .load(match.imageurl)
                         .placeholder(R.drawable.ic_male_user_profile_picture)
                         .transform(CircleTransform())
                         .into(itemView.list_item_view.avatarView)
 
-//                itemView.album_name.text = match.title
-//                itemView.artist_name.text=match.year
-//                itemView.code.text = match.catno
-//
 
+                itemView.list_item_view.setOnMenuItemClickListener { item ->
+                    when (item.itemId) {
+                        R.id.action_message -> {
+
+                            val intent = Intent(itemView.context, MessageActivity::class.java)
+                            intent.putExtra("matchId",match.id)
+                            itemView.context.startActivity(intent)
+                        }
+                        R.id.action_remove -> println("Removed")
+                    }
+                }
             }
         }
     }

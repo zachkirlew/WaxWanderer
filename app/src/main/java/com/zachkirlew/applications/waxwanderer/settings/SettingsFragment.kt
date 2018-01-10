@@ -46,6 +46,8 @@ class SettingsFragment : Fragment(), SettingsContract.View, DatePickerDialog.OnD
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
 
+        activity.title = "Settings"
+
         val root = inflater?.inflate(R.layout.fragment_settings, container, false)
 
         userGenderSpinner = root?.findViewById<Spinner>(R.id.user_gender_spinner) as Spinner

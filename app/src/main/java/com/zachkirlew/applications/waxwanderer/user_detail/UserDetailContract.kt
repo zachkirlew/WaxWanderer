@@ -13,12 +13,10 @@ interface UserDetailContract {
         fun showUserFavourites(favourites : List<VinylRelease>)
 
         fun showNoFavouritesView()
-
     }
 
     interface Presenter : BasePresenter {
 
         fun loadUserFavourites(user : User)
-
     }
 }

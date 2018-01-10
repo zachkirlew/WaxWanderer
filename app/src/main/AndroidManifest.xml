@@ -50,6 +50,8 @@
 
         <activity android:name=".user_detail.UserDetailActivity"></activity>
 
+        <activity android:name=".message.MessageActivity"></activity>
+
     </application>
 
 </manifest>

@@ -49,6 +49,9 @@
     <string name="matches_title">Matches</string>
     <string name="search_title">Search...</string>
     <string name="matches_no_matches_text">No matches yet! Go out there and get some!</string>
+    <string name="action_settings">Messages</string>
+    <string name="matches_action_message">Message</string>
+    <string name="matches_action_remove">Remove</string>
 
     <!-- Strings related to Settings -->
     <string-array name="spinner_user_genders">

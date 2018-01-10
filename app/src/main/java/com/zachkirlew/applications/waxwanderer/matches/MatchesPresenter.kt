@@ -17,13 +17,8 @@ class MatchesPresenter(private @NonNull var matchesView: MatchesContract.View) :
         matchesView.setPresenter(this)
     }
 
-    override fun start() {
-        loadMatches()
-    }
 
     override fun loadMatches() {
-
-
 
         val myRef = database.reference
 
@@ -35,11 +30,6 @@ class MatchesPresenter(private @NonNull var matchesView: MatchesContract.View) :
             override fun onDataChange(dataSnapshot: DataSnapshot) {
 
                 if(dataSnapshot.exists()){
-
-                    for(match in dataSnapshot.children){
-                        getMatchInfo(match.key)
-                        println("loading matches")
-                    }
 
                     dataSnapshot.children.forEach { getMatchInfo(it.key) }
                 }
@@ -70,6 +60,9 @@ class MatchesPresenter(private @NonNull var matchesView: MatchesContract.View) :
                     val matchedUser = dataSnapshot.getValue(User::class.java)
 
                     if (matchedUser != null) {
+
+                        println("hey")
+
                         matchesView.addMatch(matchedUser)
                     }
                 }
