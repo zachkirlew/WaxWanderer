@@ -24,6 +24,7 @@ import com.squareup.picasso.Picasso
 import com.zachkirlew.applications.waxwanderer.R
 import com.zachkirlew.applications.waxwanderer.data.model.User
 import com.zachkirlew.applications.waxwanderer.favourites.FavouriteFragment
+import com.zachkirlew.applications.waxwanderer.matches.MatchesFragment
 import com.zachkirlew.applications.waxwanderer.login.LoginActivity
 import com.zachkirlew.applications.waxwanderer.settings.SettingsFragment
 import com.zachkirlew.applications.waxwanderer.similar_users.SimilarUsersFragment
@@ -150,6 +151,11 @@ class ExploreActivity : AppCompatActivity() {
                 R.id.match_navigation_menu_item ->{
                     ActivityUtils.changeFragment(
                             supportFragmentManager, SimilarUsersFragment(), R.id.content)
+                }
+
+                R.id.matches_navigation_menu_item ->{
+                    ActivityUtils.changeFragment(
+                            supportFragmentManager, MatchesFragment(), R.id.content)
                 }
 
                 R.id.settings_navigation_menu_item ->{

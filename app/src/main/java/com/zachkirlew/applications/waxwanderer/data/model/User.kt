@@ -1,5 +1,6 @@
 package com.zachkirlew.applications.waxwanderer.data.model
 
+import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
 import java.io.Serializable
 import java.util.*
 
@@ -12,6 +13,7 @@ class User : Serializable{
     var imageurl : String? = null
     var gender: String? = null
     var location: String? = null
+    var favourites: Map<String,VinylRelease>? = null
     var matchPreference: MatchPreference? = null
     var vinylPreference: VinylPreference? = null
 }

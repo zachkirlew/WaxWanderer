@@ -9,7 +9,7 @@ android {
     buildToolsVersion "26.0.1"
     defaultConfig {
         applicationId "com.zachkirlew.applications.waxwanderer"
-        minSdkVersion 15
+        minSdkVersion 17
         targetSdkVersion 26
         versionCode 1
         versionName "1.0"
@@ -22,6 +22,10 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+
+    packagingOptions {
+        exclude 'META-INF/rxjava.properties'
     }
 }
 
@@ -69,6 +73,10 @@ dependencies {
     compile 'com.facebook.android:facebook-android-sdk:4.28.0'
 
     compile 'joda-time:joda-time:2.9.9'
+
+    compile 'com.daprlabs.aaron:swipedeck:2.0.6'
+
+    compile 'com.lucasurbas:listitemview:1.0.5'
 }
 
 

@@ -8,6 +8,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.zachkirlew.applications.waxwanderer.data.model.User
+import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
 import org.joda.time.LocalDate
 import org.joda.time.Period
 import org.joda.time.PeriodType
@@ -97,5 +98,6 @@ class SimilarUsersPresenter(private @NonNull var matchView: SimilarUsersContract
 
         return Period(birthDate, todaysDate, PeriodType.yearMonthDay()).years
     }
+
 
 }
