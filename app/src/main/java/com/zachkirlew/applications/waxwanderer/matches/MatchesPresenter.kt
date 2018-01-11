@@ -70,7 +70,7 @@ class MatchesPresenter(private @NonNull var matchesView: MatchesContract.View) :
         })
     }
 
-    override fun deleteMatch(match: User) {
+    override fun deleteMatch(matchId: String) {
 
         val myRef = database.reference
 
@@ -79,10 +79,10 @@ class MatchesPresenter(private @NonNull var matchesView: MatchesContract.View) :
         //remove match from users account first
         myRef.child("users").child(userUid)
                 .child("connections").child("matches")
-                .child(match.id).setValue(null)
+                .child(matchId).setValue(null)
 
         //then remove from connections account
-        myRef.child("users").child(match.id)
+        myRef.child("users").child(matchId)
                 .child("connections").child("matches")
                 .child(userUid).setValue(null)
 

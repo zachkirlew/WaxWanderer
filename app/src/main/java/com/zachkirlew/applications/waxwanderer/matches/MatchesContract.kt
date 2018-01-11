@@ -20,6 +20,6 @@ interface MatchesContract {
 
         fun loadMatches()
 
-        fun deleteMatch(match : User)
+        fun deleteMatch(matchId : String)
     }
 }

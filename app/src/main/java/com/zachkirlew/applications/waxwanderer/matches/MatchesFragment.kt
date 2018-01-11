@@ -82,8 +82,9 @@ class MatchesFragment: Fragment(), MatchesContract.View{
         noMatchesText?.visibility = View.VISIBLE
     }
 
-    private fun onMatchDeleted(position: Int) {
+    private fun onMatchDeleted(position: Int, matchId: String?) {
         matchesAdapter.remove(position)
+        matchId?.let { matchesPresenter.deleteMatch(it) }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -155,7 +156,9 @@ class MatchesFragment: Fragment(), MatchesContract.View{
                             itemView.context.startActivity(intent)
                         }
 
-                        R.id.action_remove -> matchesFragment.onMatchDeleted(adapterPosition)
+                        R.id.action_remove -> {
+                            matchesFragment.onMatchDeleted(adapterPosition, match.id)
+                        }
                     }
                 }
             }
