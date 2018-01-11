@@ -13,10 +13,13 @@ interface MatchesContract {
         fun showNoMatchesView()
 
         fun startMessagesActivity()
+
     }
 
     interface Presenter{
 
         fun loadMatches()
+
+        fun deleteMatch(match : User)
     }
 }

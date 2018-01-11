@@ -70,4 +70,23 @@ class MatchesPresenter(private @NonNull var matchesView: MatchesContract.View) :
         })
     }
 
+    override fun deleteMatch(match: User) {
+
+        val myRef = database.reference
+
+        val userUid = mFirebaseAuth.currentUser?.uid
+
+        //remove match from users account first
+        myRef.child("users").child(userUid)
+                .child("connections").child("matches")
+                .child(match.id).setValue(null)
+
+        //then remove from connections account
+        myRef.child("users").child(match.id)
+                .child("connections").child("matches")
+                .child(userUid).setValue(null)
+
+    }
+
+
 }

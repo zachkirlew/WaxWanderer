@@ -1,15 +1,17 @@
 package com.zachkirlew.applications.waxwanderer.data.model
 
-import com.google.firebase.database.IgnoreExtraProperties
-
-@IgnoreExtraProperties
 class Message {
 
-    var userID: String? = null
-    var username: String? = null
-    var message: String? = null
-    var timestamp: Long? = null
-    var isNotification: Boolean? = null
+     lateinit var message: String
+     lateinit var author: String
+
+    // Default constructor is required for Firebase object mapping
+    constructor() {}
+
+    constructor(message: String, author: String) {
+        this.message = message
+        this.author = author
+    }
 
 
 }

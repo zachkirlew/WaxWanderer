@@ -13,7 +13,7 @@ import com.zachkirlew.applications.waxwanderer.data.model.Message
 class MessagePresenter(private @NonNull var messageView: MessageContract.View) : MessageContract.Presenter {
 
     private val mFirebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
-    private val database = FirebaseDatabase.getInstance()
+    private val database : FirebaseDatabase = FirebaseDatabase.getInstance()
 
 
     override fun loadMessages() {
@@ -32,9 +32,9 @@ class MessagePresenter(private @NonNull var messageView: MessageContract.View) :
 
             override fun onChildRemoved(dataSnapshot: DataSnapshot) {
 
-                Log.d("REMOVED", dataSnapshot.getValue<Message>(Message::class.java)!!.toString())
-
-                messageView.removeMessage(dataSnapshot.getValue<Message>(Message::class.java)!!)
+//                Log.d("REMOVED", dataSnapshot.getValue<Message>(Message::class.java)!!.toString())
+//
+//                messageView.removeMessage(dataSnapshot.getValue<Message>(Message::class.java)!!)
             }
 
             override fun onChildMoved(dataSnapshot: DataSnapshot, s: String?) {
@@ -48,22 +48,11 @@ class MessagePresenter(private @NonNull var messageView: MessageContract.View) :
 
     }
 
-    override fun sendNewMessage(messageText: String, isNotification: Boolean) {
-        if (!messageText.isEmpty()) {
-
-
-
-            val message = Message()
-            message.userID = mFirebaseAuth.currentUser?.uid!!
-            message.username = mFirebaseAuth.currentUser?.displayName!!
-            message.message = messageText
-            message.timestamp = System.currentTimeMillis() / 1000L
-            message.isNotification = isNotification
-            val key = database.reference.child("messages").push().key
-            database.reference.child("messages").child(key).setValue(message)
-        }
-
+    override fun sendMessage(message: Message) {
+        val key = database.reference.child("messages").push().key
+        database.reference.child("messages").child(key).setValue(message)
     }
+
 
 
     override fun start() {}

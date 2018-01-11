@@ -6,7 +6,10 @@ import android.support.annotation.Nullable
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.view.*
+import android.view.LayoutInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import android.widget.TextView
 import com.lucasurbas.listitemview.ListItemView
 import com.squareup.picasso.Picasso
@@ -19,7 +22,8 @@ import com.zachkirlew.applications.waxwanderer.util.RecyclerItemDecoration
 import kotlinx.android.synthetic.main.match_item.view.*
 
 
-class MatchesFragment: Fragment(), MatchesContract.View {
+class MatchesFragment: Fragment(), MatchesContract.View{
+
     private lateinit var matchesPresenter : MatchesContract.Presenter
 
     private lateinit var matchesAdapter: MatchesFragment.MatchesAdapter
@@ -28,7 +32,7 @@ class MatchesFragment: Fragment(), MatchesContract.View {
 
     override fun onCreate(@Nullable savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        matchesAdapter = MatchesAdapter(ArrayList<User>(0))
+        matchesAdapter = MatchesAdapter(ArrayList<User>(0),this)
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
@@ -67,16 +71,20 @@ class MatchesFragment: Fragment(), MatchesContract.View {
         matchesAdapter.addMatch(match)
     }
 
+
+
     override fun startMessagesActivity() {
         val intent = Intent(activity, MessageActivity::class.java)
         startActivity(intent)
     }
 
-
     override fun showNoMatchesView() {
         noMatchesText?.visibility = View.VISIBLE
     }
 
+    private fun onMatchDeleted(position: Int) {
+        matchesAdapter.remove(position)
+    }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
@@ -86,18 +94,25 @@ class MatchesFragment: Fragment(), MatchesContract.View {
         return true
     }
 
+
     //Explore adapter
 
-    class MatchesAdapter(private var matches: ArrayList<User>) : RecyclerView.Adapter<MatchesAdapter.ViewHolder>() {
+    class MatchesAdapter(private var matches: ArrayList<User>, val matchesFragment: MatchesFragment) : RecyclerView.Adapter<MatchesAdapter.ViewHolder>() {
+
 
         fun addMatch(match : User){
             this.matches.add(match)
             notifyDataSetChanged()
         }
 
+        fun remove(position: Int) {
+            this.matches.removeAt(position)
+            notifyDataSetChanged()
+        }
+
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MatchesAdapter.ViewHolder {
             val v = LayoutInflater.from(parent.context).inflate(R.layout.match_item, parent, false) as ListItemView
-            return ViewHolder(v)
+            return ViewHolder(v, matchesFragment)
         }
 
         override fun onBindViewHolder(holder: MatchesAdapter.ViewHolder, position: Int) {
@@ -117,13 +132,12 @@ class MatchesFragment: Fragment(), MatchesContract.View {
             return matches.size
         }
 
-        class ViewHolder(itemView: ListItemView) : RecyclerView.ViewHolder(itemView) {
+        class ViewHolder(itemView: ListItemView, var matchesFragment: MatchesFragment) : RecyclerView.ViewHolder(itemView) {
 
             fun bindItems(match: User) {
 
                 itemView.list_item_view.title = match.name
                 itemView.list_item_view.subtitle = match.location
-
 
                 Picasso.with(itemView.context)
                         .load(match.imageurl)
@@ -140,11 +154,15 @@ class MatchesFragment: Fragment(), MatchesContract.View {
                             intent.putExtra("matchId",match.id)
                             itemView.context.startActivity(intent)
                         }
-                        R.id.action_remove -> println("Removed")
+
+                        R.id.action_remove -> matchesFragment.onMatchDeleted(adapterPosition)
                     }
                 }
             }
         }
+
+
+
     }
 
 
