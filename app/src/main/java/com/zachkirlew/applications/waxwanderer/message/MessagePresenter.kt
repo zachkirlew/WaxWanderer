@@ -3,22 +3,39 @@ package com.zachkirlew.applications.waxwanderer.message
 import android.support.annotation.NonNull
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.ChildEventListener
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.*
 import com.zachkirlew.applications.waxwanderer.data.model.Message
 
 
 class MessagePresenter(private @NonNull var messageView: MessageContract.View) : MessageContract.Presenter {
 
-    private val mFirebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private val database : FirebaseDatabase = FirebaseDatabase.getInstance()
+    private val mFirebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
 
+    private lateinit var chatId : String
 
-    override fun loadMessages() {
+    override fun loadMatch(matchedUserId: String?) {
 
-        database.reference.child("messages").addChildEventListener(object : ChildEventListener {
+        val myRef = database.reference
+        val user = mFirebaseAuth.currentUser
+
+        val ref = myRef.child("users").child(user?.uid).child("connections").child("matches").child(matchedUserId)
+
+        ref.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                chatId = dataSnapshot.value as String
+
+                loadMessages(chatId)
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+            }
+        })
+    }
+
+    override fun loadMessages(chatId : String ) {
+
+        database.reference.child("chat").child(chatId).addChildEventListener(object : ChildEventListener {
             override fun onChildAdded(dataSnapshot: DataSnapshot, s: String?) {
 
                 val message = dataSnapshot.getValue<Message>(Message::class.java)
@@ -49,8 +66,8 @@ class MessagePresenter(private @NonNull var messageView: MessageContract.View) :
     }
 
     override fun sendMessage(message: Message) {
-        val key = database.reference.child("messages").push().key
-        database.reference.child("messages").child(key).setValue(message)
+        val key = database.reference.child("chat").child(chatId).push().key
+        database.reference.child("chat").child(chatId).child(key).setValue(message)
     }
 
 

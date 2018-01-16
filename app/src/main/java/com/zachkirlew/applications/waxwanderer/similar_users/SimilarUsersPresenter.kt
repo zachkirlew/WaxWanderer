@@ -8,23 +8,22 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.zachkirlew.applications.waxwanderer.data.model.User
-import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
 import org.joda.time.LocalDate
 import org.joda.time.Period
 import org.joda.time.PeriodType
 import java.util.*
 
 
-class SimilarUsersPresenter(private @NonNull var matchView: SimilarUsersContract.View) : SimilarUsersContract.Presenter  {
+class SimilarUsersPresenter(private @NonNull var matchView: SimilarUsersContract.View) : SimilarUsersContract.Presenter {
 
     private val mFirebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private val database = FirebaseDatabase.getInstance()
 
-    lateinit var userInfo : User
+    lateinit var userInfo: User
 
     lateinit var user: FirebaseUser
 
-    init{
+    init {
         matchView.setPresenter(this)
     }
 
@@ -49,7 +48,7 @@ class SimilarUsersPresenter(private @NonNull var matchView: SimilarUsersContract
         })
     }
 
-    override fun loadSimilarUsers(userInfo : User) {
+    override fun loadSimilarUsers(userInfo: User) {
         val usersRef = FirebaseDatabase.getInstance().reference.child("users")
 
         usersRef.addValueEventListener(object : ValueEventListener {
@@ -61,23 +60,29 @@ class SimilarUsersPresenter(private @NonNull var matchView: SimilarUsersContract
                     child.getValue<User>(User::class.java)?.let { users.add(it) }
                 }
 
+                Collections.shuffle(users)
+
                 val filterGender = userInfo.matchPreference?.gender
                 val filterAge = userInfo.matchPreference?.ageRange
 
-                val lowerAgeLimit : Int = filterAge?.split(" - ")?.get(0)?.toInt()!!
-                val upperAgeLimit : Int = filterAge.split(" - ")[1].toInt()
+                val lowerAgeLimit: Int = filterAge?.split(" - ")?.get(0)?.toInt()!!
+                val upperAgeLimit: Int = filterAge.split(" - ")[1].toInt()
 
                 //filter users by age and gender
-
-                val filteredUsers = users.filter { user.uid != it.id }
+                var filteredUsers = users.filter { user.uid != it.id }
                         .filter { dobToAge(it.dob) in lowerAgeLimit..upperAgeLimit }
+
+                //remove any users that that the current user has already matched with
+                if(userInfo.connections?.matches!=null){
+                    filteredUsers = filteredUsers.filter { !userInfo.connections?.matches?.containsKey(it.id)!! }
+                }
 
                 when (filterGender) {
                     "Males" -> {
-                        matchView.showSimilarUsers(filteredUsers.filter{it.gender=="Male"})
+                        matchView.showSimilarUsers(filteredUsers.filter { it.gender == "Male" })
                     }
                     "Females" -> {
-                        matchView.showSimilarUsers(filteredUsers.filter{it.gender=="Female"})
+                        matchView.showSimilarUsers(filteredUsers.filter { it.gender == "Female" })
                     }
                     else -> {
                         matchView.showSimilarUsers(filteredUsers)
@@ -90,7 +95,56 @@ class SimilarUsersPresenter(private @NonNull var matchView: SimilarUsersContract
         })
     }
 
-    private fun dobToAge(date : Date?): Int {
+    override fun handleLike(likedUser: User) {
+
+        val myRef = database.reference
+
+        val userUid = mFirebaseAuth.currentUser?.uid
+
+        //if liked user doesn't have any likes
+        if (likedUser.connections?.likes !== null) {
+
+            //if liked user has current user in their likes
+            if (likedUser.connections?.likes?.containsKey(userUid)!!) {
+                //It's a match!
+
+                likedUser.name?.let { matchView.showMatchDialog(it) }
+
+                val chatKey = myRef.child("chat").push().key
+
+                //add to both accounts and set chat id
+                myRef.child("users").child(userUid)
+                        .child("connections").child("matches")
+                        .child(likedUser.id).setValue(chatKey)
+
+                myRef.child("users").child(likedUser.id)
+                        .child("connections").child("matches")
+                        .child(userUid).setValue(chatKey)
+
+                //remove old like from liked user's account
+                myRef.child("users").child(likedUser.id)
+                        .child("connections").child("likes")
+                        .child(userUid).setValue(null)
+
+            } else {
+                likeUser(userUid, likedUser.id)
+            }
+        } else {
+            likeUser(userUid, likedUser.id)
+        }
+    }
+
+    private fun likeUser(currentUserId: String?, likedUserId: String?) {
+
+        val myRef = database.reference
+
+        myRef.child("users").child(currentUserId)
+                .child("connections").child("likes")
+                .child(likedUserId).setValue(true)
+    }
+
+
+    private fun dobToAge(date: Date?): Int {
 
         val birthDate = LocalDate(date)
 

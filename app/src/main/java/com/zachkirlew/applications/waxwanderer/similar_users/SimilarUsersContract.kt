@@ -11,10 +11,14 @@ interface SimilarUsersContract {
     interface View: BaseView<Presenter> {
 
         fun showSimilarUsers(users: List<User>)
+        fun showMatchDialog(likedUserName : String)
+
+        fun showMessage(message : String)
     }
 
     interface Presenter : BasePresenter {
 
         fun loadSimilarUsers(userInfo : User)
+        fun handleLike(likedUser : User)
     }
 }

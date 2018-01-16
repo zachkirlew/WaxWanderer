@@ -134,6 +134,11 @@ class SettingsFragment : Fragment(), SettingsContract.View, DatePickerDialog.OnD
         return root
     }
 
+    override fun showMessage(message: String) {
+        Toast.makeText(activity, message,
+                Toast.LENGTH_LONG).show()
+    }
+
     private fun profilePicSelection() {
 
         //DISPLAY DIALOG TO CHOOSE CAMERA OR GALLERY

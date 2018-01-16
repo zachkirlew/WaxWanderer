@@ -43,6 +43,8 @@ class ExploreFragment: Fragment(), ExploreContract.View, OnSearchSubmitted{
                               savedInstanceState: Bundle?): View? {
         val root = inflater?.inflate(R.layout.fragment_explore, container, false)
 
+        activity.title = "Explore"
+
         explorePresenter = ExplorePresenter(VinylRepository.getInstance(VinylsRemoteSource.instance),this)
 
         val exploreList = root?.findViewById<RecyclerView>(R.id.explore_list) as RecyclerView
@@ -55,7 +57,7 @@ class ExploreFragment: Fragment(), ExploreContract.View, OnSearchSubmitted{
         val spacingInPixels = resources.getDimensionPixelSize(R.dimen.list_item_padding)
         exploreList.addItemDecoration(RecyclerItemDecoration(spacingInPixels))
 
-        noFavouritesText = root.findViewById<TextView>(R.id.text_no_favourites) as TextView
+        noFavouritesText = root.findViewById<TextView>(R.id.text_no_favourites)
 
         return root
     }

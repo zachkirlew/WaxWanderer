@@ -6,6 +6,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.zachkirlew.applications.waxwanderer.data.model.Match
 import com.zachkirlew.applications.waxwanderer.data.model.User
 
 class MatchesPresenter(private @NonNull var matchesView: MatchesContract.View) : MatchesContract.Presenter  {
@@ -31,7 +32,7 @@ class MatchesPresenter(private @NonNull var matchesView: MatchesContract.View) :
 
                 if(dataSnapshot.exists()){
 
-                    dataSnapshot.children.forEach { getMatchInfo(it.key) }
+                    dataSnapshot.children.forEach { getMatchInfo(Match(it.key,it.value as String)) }
                 }
                 else{
                     matchesView.showNoMatchesView()
@@ -43,11 +44,11 @@ class MatchesPresenter(private @NonNull var matchesView: MatchesContract.View) :
         })
     }
 
-    private fun getMatchInfo(key: String?){
+    private fun getMatchInfo(match : Match){
 
         val myRef = database.reference
 
-        val ref = myRef.child("users").child(key)
+        val ref = myRef.child("users").child(match.matchedWithId)
 
         ref.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onCancelled(p0: DatabaseError?) {
@@ -60,8 +61,6 @@ class MatchesPresenter(private @NonNull var matchesView: MatchesContract.View) :
                     val matchedUser = dataSnapshot.getValue(User::class.java)
 
                     if (matchedUser != null) {
-
-                        println("hey")
 
                         matchesView.addMatch(matchedUser)
                     }

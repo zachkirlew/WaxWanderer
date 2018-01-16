@@ -16,6 +16,8 @@ interface SettingsContract {
 
         fun showDateFormatted(date : String)
 
+        fun showMessage(message : String)
+
     }
 
     interface Presenter : BasePresenter {

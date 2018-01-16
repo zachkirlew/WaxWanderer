@@ -15,5 +15,6 @@ class User : Serializable{
     var location: String? = null
     var favourites: Map<String,VinylRelease>? = null
     var matchPreference: MatchPreference? = null
+    var connections: Connections? = null
     var vinylPreference: VinylPreference? = null
 }

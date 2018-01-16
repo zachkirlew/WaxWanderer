@@ -13,7 +13,7 @@ import java.text.DateFormat
 import java.util.*
 
 
-class SettingsPresenter(private @NonNull var matchView: SettingsContract.View) : SettingsContract.Presenter  {
+class SettingsPresenter(private @NonNull var settingsView: SettingsContract.View) : SettingsContract.Presenter  {
 
     private val mFirebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private val database = FirebaseDatabase.getInstance()
@@ -21,7 +21,7 @@ class SettingsPresenter(private @NonNull var matchView: SettingsContract.View) :
     private var dob: Date? = null
 
     init{
-        matchView.setPresenter(this)
+        settingsView.setPresenter(this)
     }
 
     override fun start() {
@@ -43,7 +43,7 @@ class SettingsPresenter(private @NonNull var matchView: SettingsContract.View) :
 
                 dob = userInfo?.dob
 
-                matchView.showUserDetails(userInfo!!)
+                settingsView.showUserDetails(userInfo!!)
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
@@ -61,7 +61,7 @@ class SettingsPresenter(private @NonNull var matchView: SettingsContract.View) :
         val dfMediumUK = DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.UK)
         val dateFormatted = dfMediumUK.format(dob)
 
-        matchView.showDateFormatted(dateFormatted)
+        settingsView.showDateFormatted(dateFormatted)
     }
 
     override fun submitDetails(name : String, userGender : String, matchGender : String, matchAge : String) {
@@ -75,6 +75,8 @@ class SettingsPresenter(private @NonNull var matchView: SettingsContract.View) :
 
         userRef.child("matchPreference").child("ageRange").setValue(matchAge)
         userRef.child("matchPreference").child("gender").setValue(matchGender)
+
+        settingsView.showMessage("Profile updated")
     }
 
     override fun saveProfileImage(imageHoldUri: Uri?) {
@@ -92,6 +94,8 @@ class SettingsPresenter(private @NonNull var matchView: SettingsContract.View) :
                 val imageUrl = taskSnapshot.downloadUrl
 
                 userDatabse.child("imageurl").setValue(imageUrl?.toString())
+
+                settingsView.showMessage("Profile picture changed")
             })
         }
     }

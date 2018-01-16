@@ -5,6 +5,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
 import com.google.firebase.database.DataSnapshot
+import com.zachkirlew.applications.waxwanderer.data.model.User
 
 class FavouritePresenter(private @NonNull var favouriteView: FavouriteContract.View) : FavouriteContract.Presenter  {
 
@@ -15,9 +16,6 @@ class FavouritePresenter(private @NonNull var favouriteView: FavouriteContract.V
         favouriteView.setPresenter(this)
     }
 
-    override fun start() {
-        loadFavouriteVinyls()
-    }
 
     override fun loadFavouriteVinyls() {
 
@@ -45,7 +43,6 @@ class FavouritePresenter(private @NonNull var favouriteView: FavouriteContract.V
             override fun onCancelled(databaseError: DatabaseError) {
             }
         })
-
-
     }
+
 }

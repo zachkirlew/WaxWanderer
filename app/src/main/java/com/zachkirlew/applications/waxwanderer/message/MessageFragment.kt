@@ -1,18 +1,23 @@
 package com.zachkirlew.applications.waxwanderer.message
 
 
+import android.media.Image
 import android.os.Bundle
-import android.support.design.widget.FloatingActionButton
 import android.support.v4.app.Fragment
+import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.ImageButton
+import android.widget.ImageView
 import com.google.firebase.auth.FirebaseAuth
 import com.zachkirlew.applications.waxwanderer.R
 import com.zachkirlew.applications.waxwanderer.data.model.Message
+import com.zachkirlew.applications.waxwanderer.data.model.User
+import java.util.*
 
 class MessageFragment : Fragment(), MessageContract.View {
 
@@ -24,6 +29,8 @@ class MessageFragment : Fragment(), MessageContract.View {
     private lateinit var chatList:RecyclerView
 
     private lateinit var messageInput:EditText
+
+    private lateinit var emojiButton : ImageView
 
     private var presenter: MessageContract.Presenter? = null
 
@@ -42,7 +49,7 @@ class MessageFragment : Fragment(), MessageContract.View {
 
         messageInput = view.findViewById<EditText>(R.id.input_message)
 
-        val sendFab = view.findViewById<FloatingActionButton>(R.id.button_sent)
+        val sendFab = view.findViewById<ImageButton>(R.id.button_sent)
 
         sendFab.setOnClickListener {
             sendMessage() }
@@ -50,7 +57,12 @@ class MessageFragment : Fragment(), MessageContract.View {
         setupAdapter()
         setupList()
 
-        presenter?.loadMessages()
+        val matchedUser = activity.intent.getSerializableExtra("matchedUserId") as User
+
+        println(matchedUser.name)
+        activity.title = matchedUser.name
+
+        presenter?.loadMatch(matchedUser.id)
 
         return view
     }
@@ -80,7 +92,7 @@ class MessageFragment : Fragment(), MessageContract.View {
     private fun sendMessage() {
         val message = messageInput.text.toString()
         if (!message.isEmpty())
-            presenter?.sendMessage(Message(message, uid))
+            presenter?.sendMessage(Message(message, uid,System.currentTimeMillis().toString()))
 
         messageInput.setText("")
     }

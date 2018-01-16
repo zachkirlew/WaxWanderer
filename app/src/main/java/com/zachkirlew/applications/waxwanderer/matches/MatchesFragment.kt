@@ -151,8 +151,9 @@ class MatchesFragment: Fragment(), MatchesContract.View{
                     when (item.itemId) {
                         R.id.action_message -> {
 
+
                             val intent = Intent(itemView.context, MessageActivity::class.java)
-                            intent.putExtra("matchId",match.id)
+                            intent.putExtra("matchedUserId",match)
                             itemView.context.startActivity(intent)
                         }
 

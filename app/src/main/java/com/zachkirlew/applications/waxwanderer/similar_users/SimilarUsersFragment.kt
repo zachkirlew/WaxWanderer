@@ -9,21 +9,22 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.*
-import android.widget.ArrayAdapter
-import android.widget.BaseAdapter
-import android.widget.ImageView
-import android.widget.TextView
+import android.widget.*
 import com.daprlabs.aaron.swipedeck.SwipeDeck
 import com.squareup.picasso.Picasso
 import com.zachkirlew.applications.waxwanderer.R
 import com.zachkirlew.applications.waxwanderer.data.model.User
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
 import com.zachkirlew.applications.waxwanderer.detail_vinyl.VinylDetailActivity
+import com.zachkirlew.applications.waxwanderer.favourites.FavouriteActivity
 import kotlinx.android.synthetic.main.explore_item.view.*
 import org.joda.time.LocalDate
 import org.joda.time.Period
 import org.joda.time.PeriodType
 import java.util.*
+import android.view.LayoutInflater
+import android.content.DialogInterface
+import android.support.v7.app.AlertDialog
 
 
 class SimilarUsersFragment : Fragment(), SimilarUsersContract.View {
@@ -60,19 +61,34 @@ class SimilarUsersFragment : Fragment(), SimilarUsersContract.View {
 
         cardStack.setCallback(object : SwipeDeck.SwipeDeckCallback {
             override fun cardSwipedLeft(stableId: Long) {
-                Log.i("MainActivity", "card was swiped left, position in adapter: " + stableId)
+                showMessage("Skipped")
             }
 
             override fun cardSwipedRight(stableId: Long) {
-                Log.i("MainActivity", "card was swiped right, position in adapter: " + stableId)
+                showMessage("Liked")
+
+                val likedUser = swipeAdapter.getItem(stableId.toInt()) as User
+                similarUsersPresenter.handleLike(likedUser)
             }
 
         })
 
-
         return root
     }
 
+    override fun showMessage(message: String) {
+        Toast.makeText(activity, message,
+                Toast.LENGTH_SHORT).show()
+    }
+
+    override fun showMatchDialog(likedUserName: String) {
+        val builder = AlertDialog.Builder(activity)
+        builder.setMessage("You matched with $likedUserName")
+                .setPositiveButton("Okay", { dialog, id ->
+                    dialog.dismiss()
+                })
+        builder.create().show()
+    }
 
     override fun setPresenter(presenter: SimilarUsersContract.Presenter) {
         similarUsersPresenter = presenter
@@ -121,13 +137,23 @@ class SimilarUsersFragment : Fragment(), SimilarUsersContract.View {
             var v: View? = convertView
 
             if (v == null) {
-                val inflater = layoutInflater
+                val inflater = activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
                 // normally use a viewholder
 
                 v = inflater.inflate(R.layout.card_similar_user, parent, false)
             }
 
-            val imageView = v?.findViewById<ImageView>(R.id.offer_image) as ImageView
+            val likeButton = v?.findViewById<ImageButton>(R.id.button_like) as ImageButton
+            likeButton.setOnClickListener {
+                cardStack.swipeTopCardRight(500)
+            }
+
+            val dislikeButton = v.findViewById<ImageButton>(R.id.button_dislike) as ImageButton
+            dislikeButton.setOnClickListener {
+                cardStack.swipeTopCardLeft(500)
+            }
+
+            val imageView = v.findViewById<ImageView>(R.id.offer_image) as ImageView
 
             val user = getItem(position) as User
 
@@ -155,7 +181,13 @@ class SimilarUsersFragment : Fragment(), SimilarUsersContract.View {
                 favouriteAdapter.addVinyls(tenFavourites)
             }
 
+            val topTracksText = v.findViewById<TextView>(R.id.text_top_tracks) as TextView
+            topTracksText.setOnClickListener {
 
+                val intent = Intent(context, FavouriteActivity::class.java)
+                intent.putExtra("selected user", user)
+                context.startActivity(intent)
+            }
 
             Picasso.with(context)
                         .load(user.imageurl)

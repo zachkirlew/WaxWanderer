@@ -70,5 +70,7 @@
     <string name="welcome">Bienvenido! </string>
     <string name="hello">Hola</string>
     <string name="sent_message">write a message!</string>
+    <string name="explore_no_vinyls_text">No vinyl releases to display</string>
+    <string name="type_your_message">Type your message...</string>
 
 </resources>

@@ -10,6 +10,7 @@ import android.view.*
 import android.widget.TextView
 import com.squareup.picasso.Picasso
 import com.zachkirlew.applications.waxwanderer.R
+import com.zachkirlew.applications.waxwanderer.data.model.User
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
 import com.zachkirlew.applications.waxwanderer.detail_vinyl.VinylDetailActivity
 import com.zachkirlew.applications.waxwanderer.util.RecyclerItemDecoration
@@ -24,22 +25,22 @@ class FavouriteFragment: Fragment(), FavouriteContract.View {
 
     private var noFavouritesText: TextView? = null
 
+
+    private var user: User? = null
+
     override fun onCreate(@Nullable savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         favouriteAdapter = FavouriteAdapter(listOf<VinylRelease>())
+
+        user = activity.intent.getSerializableExtra("selected user") as User?
     }
 
-    override fun onResume() {
-        super.onResume()
-        favouritePresenter.start()
-    }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
 
-
         //reuse explore frgment layout as similar
-        val root = inflater?.inflate(R.layout.fragment_explore, container, false)
+        val root = inflater?.inflate(R.layout.fragment_favourites, container, false)
 
         activity.title = "Favourites"
 
@@ -55,8 +56,20 @@ class FavouriteFragment: Fragment(), FavouriteContract.View {
         val spacingInPixels = resources.getDimensionPixelSize(R.dimen.list_item_padding)
         exploreList.addItemDecoration(RecyclerItemDecoration(spacingInPixels))
 
-        noFavouritesText = root.findViewById<TextView>(R.id.text_no_favourites) as TextView
+        noFavouritesText = root.findViewById<TextView>(R.id.text_no_favourites)
 
+        //user is viewing someone else's favourite list
+        if(user!=null){
+            val userFavourites = user?.favourites?.map { it.value }
+            if(userFavourites!=null)
+                showFavouriteVinyls(userFavourites)
+            else
+                showNoVinylsView()
+        }
+        //user is viewing their own list
+        else{
+            favouritePresenter.loadFavouriteVinyls()
+        }
 
         return root
     }

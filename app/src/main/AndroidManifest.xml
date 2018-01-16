@@ -52,6 +52,8 @@
 
         <activity android:name=".message.MessageActivity"></activity>
 
+        <activity android:name=".favourites.FavouriteActivity"></activity>
+
     </application>
 
 </manifest>

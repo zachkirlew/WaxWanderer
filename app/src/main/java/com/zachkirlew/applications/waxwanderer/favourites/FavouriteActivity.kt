@@ -1,4 +1,4 @@
-package com.zachkirlew.applications.waxwanderer.message
+package com.zachkirlew.applications.waxwanderer.favourites
 
 import android.os.Bundle
 import android.support.design.widget.CoordinatorLayout
@@ -9,19 +9,28 @@ import com.zachkirlew.applications.waxwanderer.R
 import com.zachkirlew.applications.waxwanderer.data.model.User
 
 
-class MessageActivity : AppCompatActivity() {
+class FavouriteActivity : AppCompatActivity() {
 
     private val coordinatorLayout by lazy{findViewById<CoordinatorLayout>(R.id.main_content)}
 
+    private val user by lazy { intent.getSerializableExtra("selected user") as User }
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_messages)
+        setContentView(R.layout.activity_favourites)
 
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        val firstName = user.name?.let { getFirstName(it) }
+
+        title = "$firstName's Top Tracks"
+    }
+
+    private fun getFirstName(fullName : String): String {
+        return fullName.split(" ")[0]
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
