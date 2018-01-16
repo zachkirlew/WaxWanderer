@@ -5,10 +5,11 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.annotation.Nullable
 import android.support.v4.app.Fragment
+import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.*
+import android.view.LayoutInflater
 import android.widget.*
 import com.daprlabs.aaron.swipedeck.SwipeDeck
 import com.squareup.picasso.Picasso
@@ -22,9 +23,6 @@ import org.joda.time.LocalDate
 import org.joda.time.Period
 import org.joda.time.PeriodType
 import java.util.*
-import android.view.LayoutInflater
-import android.content.DialogInterface
-import android.support.v7.app.AlertDialog
 
 
 class SimilarUsersFragment : Fragment(), SimilarUsersContract.View {
@@ -112,11 +110,26 @@ class SimilarUsersFragment : Fragment(), SimilarUsersContract.View {
         return true
     }
 
+    override fun showUserFavourites(vinyls: List<VinylRelease>, viewPosition: Int) {
+        swipeAdapter.update(vinyls,viewPosition)
+    }
+
+    override fun showNoUserFavourites() {
+
+    }
 
     inner class SwipeDeckAdapter(private var similarUsers: List<User>, private val context: Context) : BaseAdapter() {
 
+        private var favouriteVinyls : List<VinylRelease>? = null
+        private var currentViewPosition : Int? = null
+
         fun addUsers(users : List<User>){
             this.similarUsers = users
+            notifyDataSetChanged()
+        }
+
+        fun update(vinyls: List<VinylRelease>, viewPosition: Int) {
+            favouriteVinyls = vinyls
             notifyDataSetChanged()
         }
 
@@ -134,6 +147,8 @@ class SimilarUsersFragment : Fragment(), SimilarUsersContract.View {
 
         override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
 
+            favouriteVinyls?.forEach { println(it.title) }
+
             var v: View? = convertView
 
             if (v == null) {
@@ -142,6 +157,8 @@ class SimilarUsersFragment : Fragment(), SimilarUsersContract.View {
 
                 v = inflater.inflate(R.layout.card_similar_user, parent, false)
             }
+
+            view?.tag = position
 
             val likeButton = v?.findViewById<ImageButton>(R.id.button_like) as ImageButton
             likeButton.setOnClickListener {
@@ -157,6 +174,8 @@ class SimilarUsersFragment : Fragment(), SimilarUsersContract.View {
 
             val user = getItem(position) as User
 
+            similarUsersPresenter.loadUserFavourites(user.id,position)
+
             val userNameText = v.findViewById<TextView>(R.id.text_user_name) as TextView
             userNameText.text = user.name
 
@@ -165,8 +184,10 @@ class SimilarUsersFragment : Fragment(), SimilarUsersContract.View {
             val userAgeLocationText = v.findViewById<TextView>(R.id.text_age_location) as TextView
             userAgeLocationText.text = "$userAge, ${user.location}"
 
+            println(currentViewPosition)
+            println(position)
 
-            val tenFavourites = user.favourites?.map { it.value }?.take(10)
+            val tenFavourites = favouriteVinyls?.take(10)
 
             val recyclerView = v.findViewById<RecyclerView>(R.id.list_user_favourites) as RecyclerView
 
@@ -178,8 +199,9 @@ class SimilarUsersFragment : Fragment(), SimilarUsersContract.View {
             recyclerView.adapter = favouriteAdapter
 
             if(tenFavourites!=null){
-                favouriteAdapter.addVinyls(tenFavourites)
+                    favouriteAdapter.addVinyls(tenFavourites)
             }
+
 
             val topTracksText = v.findViewById<TextView>(R.id.text_top_tracks) as TextView
             topTracksText.setOnClickListener {

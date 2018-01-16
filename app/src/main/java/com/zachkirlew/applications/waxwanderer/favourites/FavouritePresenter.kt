@@ -16,14 +16,13 @@ class FavouritePresenter(private @NonNull var favouriteView: FavouriteContract.V
         favouriteView.setPresenter(this)
     }
 
-
     override fun loadFavouriteVinyls() {
 
         val myRef = database.reference
 
         val user = mFirebaseAuth.currentUser
 
-        val ref = myRef.child("users").child(user?.uid).child("favourites")
+        val ref = myRef.child("favourites").child(user?.uid)
 
         ref.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {

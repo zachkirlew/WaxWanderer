@@ -55,7 +55,7 @@ class VinylDetailPresenter(private @NonNull var vinylRepository: VinylRepository
 
         val user = mFirebaseAuth.currentUser
 
-        val myRef = database.reference.child("users").child(user?.uid).child("favourites").child(vinylRelease.id.toString())
+        val myRef = database.reference.child("favourites").child(user?.uid).child(vinylRelease.id.toString())
 
         myRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
@@ -80,7 +80,7 @@ class VinylDetailPresenter(private @NonNull var vinylRepository: VinylRepository
     override fun checkInFavourites(releaseId: String) {
         val user = mFirebaseAuth.currentUser
 
-        val myRef = database.reference.child("users").child(user?.uid).child("favourites").child(releaseId)
+        val myRef = database.reference.child("favourites").child(user?.uid).child(releaseId)
 
         myRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {

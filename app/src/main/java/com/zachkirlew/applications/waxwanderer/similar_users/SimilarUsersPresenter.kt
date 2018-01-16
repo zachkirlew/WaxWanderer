@@ -8,13 +8,14 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.zachkirlew.applications.waxwanderer.data.model.User
+import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
 import org.joda.time.LocalDate
 import org.joda.time.Period
 import org.joda.time.PeriodType
 import java.util.*
 
 
-class SimilarUsersPresenter(private @NonNull var matchView: SimilarUsersContract.View) : SimilarUsersContract.Presenter {
+class SimilarUsersPresenter(private @NonNull var similarUsersView: SimilarUsersContract.View) : SimilarUsersContract.Presenter {
 
     private val mFirebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private val database = FirebaseDatabase.getInstance()
@@ -24,7 +25,7 @@ class SimilarUsersPresenter(private @NonNull var matchView: SimilarUsersContract
     lateinit var user: FirebaseUser
 
     init {
-        matchView.setPresenter(this)
+        similarUsersView.setPresenter(this)
     }
 
     override fun start() {
@@ -79,13 +80,13 @@ class SimilarUsersPresenter(private @NonNull var matchView: SimilarUsersContract
 
                 when (filterGender) {
                     "Males" -> {
-                        matchView.showSimilarUsers(filteredUsers.filter { it.gender == "Male" })
+                        similarUsersView.showSimilarUsers(filteredUsers.filter { it.gender == "Male" })
                     }
                     "Females" -> {
-                        matchView.showSimilarUsers(filteredUsers.filter { it.gender == "Female" })
+                        similarUsersView.showSimilarUsers(filteredUsers.filter { it.gender == "Female" })
                     }
                     else -> {
-                        matchView.showSimilarUsers(filteredUsers)
+                        similarUsersView.showSimilarUsers(filteredUsers)
                     }
                 }
             }
@@ -108,7 +109,7 @@ class SimilarUsersPresenter(private @NonNull var matchView: SimilarUsersContract
             if (likedUser.connections?.likes?.containsKey(userUid)!!) {
                 //It's a match!
 
-                likedUser.name?.let { matchView.showMatchDialog(it) }
+                likedUser.name?.let { similarUsersView.showMatchDialog(it) }
 
                 val chatKey = myRef.child("chat").push().key
 
@@ -132,6 +133,32 @@ class SimilarUsersPresenter(private @NonNull var matchView: SimilarUsersContract
         } else {
             likeUser(userUid, likedUser.id)
         }
+    }
+
+    override fun loadUserFavourites(userId: String?,viewPosition : Int) {
+
+        val myRef = database.reference
+
+        val ref = myRef.child("favourites").child(userId)
+
+        ref.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+
+                val vinyls = ArrayList<VinylRelease>()
+
+                for (child in dataSnapshot.children) {
+                    child.getValue<VinylRelease>(VinylRelease::class.java)?.let { vinyls.add(it) }
+                }
+
+                if(vinyls.isEmpty())
+                    similarUsersView.showNoUserFavourites()
+                else
+                    similarUsersView.showUserFavourites(vinyls,viewPosition)
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+            }
+        })
     }
 
     private fun likeUser(currentUserId: String?, likedUserId: String?) {

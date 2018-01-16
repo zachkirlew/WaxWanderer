@@ -14,11 +14,17 @@ interface SimilarUsersContract {
         fun showMatchDialog(likedUserName : String)
 
         fun showMessage(message : String)
+
+        fun showUserFavourites(vinyls : List<VinylRelease>, viewPosition: Int)
+
+        fun showNoUserFavourites()
     }
 
     interface Presenter : BasePresenter {
 
         fun loadSimilarUsers(userInfo : User)
         fun handleLike(likedUser : User)
+
+        fun loadUserFavourites(userId : String?, viewPosition : Int)
     }
 }
