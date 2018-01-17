@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
 import android.widget.TextView
 import com.squareup.picasso.Picasso
 import com.zachkirlew.applications.waxwanderer.R
@@ -26,17 +27,14 @@ class ExploreFragment: Fragment(), ExploreContract.View, OnSearchSubmitted{
 
     private lateinit var exploreAdapter: ExploreFragment.ExploreAdapter
 
+    private lateinit var progressBar : ProgressBar
+
     private var noFavouritesText: TextView? = null
 
     override fun onCreate(@Nullable savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-        exploreAdapter = ExploreAdapter(listOf<VinylRelease>())
-    }
-
-    override fun onResume() {
-        super.onResume()
-        explorePresenter.start()
+        exploreAdapter = ExploreAdapter(ArrayList<VinylRelease>(0))
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
@@ -59,10 +57,17 @@ class ExploreFragment: Fragment(), ExploreContract.View, OnSearchSubmitted{
 
         noFavouritesText = root.findViewById<TextView>(R.id.text_no_favourites)
 
+        progressBar = root.findViewById<ProgressBar>(R.id.progress_bar_explore)
+
+        progressBar.visibility = View.VISIBLE
+
+        explorePresenter.start()
+
         return root
     }
 
     override fun searchSubmitted(searchText: String?) {
+        exploreAdapter.removeVinyls()
         explorePresenter.searchVinylReleases(searchText)
     }
 
@@ -71,20 +76,20 @@ class ExploreFragment: Fragment(), ExploreContract.View, OnSearchSubmitted{
     }
 
     override fun showNoVinylsView() {
+        progressBar.visibility = View.GONE
         exploreAdapter.removeVinyls()
         noFavouritesText?.text = "No vinyls to display. Please search again or change your vinyl preferences"
         noFavouritesText?.visibility = View.VISIBLE
     }
 
     override fun showVinylReleases(vinyls: List<VinylRelease>) {
-        vinyls.forEach { println(it.style) }
+        progressBar.visibility = View.GONE
         exploreAdapter.addVinyls(vinyls)
     }
 
     override fun showVinylReleaseDetailsUI() {
 
     }
-
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
@@ -97,16 +102,16 @@ class ExploreFragment: Fragment(), ExploreContract.View, OnSearchSubmitted{
 
     //Explore adapter
 
-    class ExploreAdapter(private var vinyls: List<VinylRelease>) : RecyclerView.Adapter<ExploreAdapter.ViewHolder>() {
+    class ExploreAdapter(private var vinyls: ArrayList<VinylRelease>) : RecyclerView.Adapter<ExploreAdapter.ViewHolder>() {
 
 
         fun addVinyls(vinyls : List<VinylRelease>){
-            this.vinyls = vinyls
+            this.vinyls.addAll(vinyls)
             notifyDataSetChanged()
         }
 
         fun removeVinyls(){
-            this.vinyls = emptyList()
+            this.vinyls.clear()
             notifyDataSetChanged()
         }
 

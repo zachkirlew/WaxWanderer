@@ -23,6 +23,10 @@ class StylesActivity : AppCompatActivity(), StylesContract.View, AdapterView.OnI
     private val spinner by lazy{findViewById<Spinner>(R.id.spinner_genres)}
     private val submitButton by lazy{findViewById<Button>(R.id.btn_submit_preferences)}
 
+    private val selectedStylesText by lazy{findViewById<TextView>(R.id.text_selected_styles)}
+
+    private val selectedStyles : ArrayList<String> = ArrayList(0)
+
     private lateinit var stylesAdapter: StylesAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,7 +34,6 @@ class StylesActivity : AppCompatActivity(), StylesContract.View, AdapterView.OnI
         setContentView(R.layout.activity_styles)
 
         presenter = StylesPresenter(this)
-
 
         val linearLayoutManager = LinearLayoutManager(this)
         recyclerView.layoutManager = linearLayoutManager
@@ -89,6 +92,29 @@ class StylesActivity : AppCompatActivity(), StylesContract.View, AdapterView.OnI
         presenter.savePreferences(selectedGenre,selectedStyles)
     }
 
+    fun addStyleToSelectedList(style : String){
+        selectedStyles.add(style)
+
+        val commaSeparatedStyles = android.text.TextUtils.join(", ", selectedStyles)
+        selectedStylesText.text = commaSeparatedStyles
+        checkStylesList()
+    }
+
+    fun removeStyleFromSelectedList(style : String){
+        selectedStyles.remove(style)
+        val commaSeparatedStyles = android.text.TextUtils.join(", ", selectedStyles)
+        selectedStylesText.text = commaSeparatedStyles
+        checkStylesList()
+    }
+
+    private fun checkStylesList(){
+
+        if(selectedStyles.isNotEmpty())
+            submitButton.visibility = View.VISIBLE
+        else
+            submitButton.visibility = View.GONE
+    }
+
     companion object {
 
         private val TAG = StylesActivity::class.java.simpleName
@@ -121,28 +147,25 @@ class StylesActivity : AppCompatActivity(), StylesContract.View, AdapterView.OnI
             holder.name.text = style.styleName
 
             //in some cases, it will prevent unwanted situations
-            holder.checkBox.setOnCheckedChangeListener(null);
+            holder.checkBox.setOnCheckedChangeListener(null)
 
             //if true, your checkbox will be selected, else unselected
             holder.checkBox.isChecked = styles[position].isSelected
 
+            if(selectedStyles.contains(styles[position].styleName))
+                holder.checkBox.isChecked = true
+
             holder.checkBox.setOnCheckedChangeListener { _, isChecked ->
 
                 styles[holder.adapterPosition].isSelected= isChecked
-                checkCheckboxes()
+
+                if(isChecked)
+                    addStyleToSelectedList(styles[holder.adapterPosition].styleName)
+                else
+                    removeStyleFromSelectedList(styles[holder.adapterPosition].styleName)
             }
         }
 
-        //check how many checkboxes ticked and if 0 hide submit button
-        private fun checkCheckboxes(){
-
-            val checkedBoxes = styles.filter { it.isSelected }
-
-            if(checkedBoxes.isNotEmpty())
-                submitButton.visibility = View.VISIBLE
-            else
-                submitButton.visibility = View.GONE
-        }
 
         override fun getItemCount(): Int {
             return styles.size

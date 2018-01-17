@@ -1,7 +1,6 @@
 package com.zachkirlew.applications.waxwanderer.data
 
 import android.support.annotation.NonNull
-import com.zachkirlew.applications.waxwanderer.data.model.VinylPreference
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.DiscogsResponse
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.detail.DetailVinylRelease
 import io.reactivex.Observable
@@ -18,8 +17,8 @@ class VinylRepository private constructor(private @NonNull val vinylRemoteDataSo
         return vinylRemoteDataSource.searchVinyl(searchText)
     }
 
-    override fun getVinyls(preference: VinylPreference): Observable<DiscogsResponse> {
-        return vinylRemoteDataSource.getVinyls(preference)
+    override fun getVinyls(style : String): Observable<DiscogsResponse> {
+        return vinylRemoteDataSource.getVinyls(style)
     }
 
     companion object {

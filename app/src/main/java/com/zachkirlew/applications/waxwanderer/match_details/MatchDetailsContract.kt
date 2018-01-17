@@ -19,7 +19,7 @@ interface MatchDetailsContract {
 
         fun getFormattedDate(year : Int, month : Int, day : Int)
 
-        fun submitDetails(userGender : String,userLocation : String?,matchGender : String,matchAge : String)
+        fun submitDetails(userGender : String,userLocation : String?,matchGender : String,minMatchAge : Int,maxMatchAge : Int)
 
     }
 }

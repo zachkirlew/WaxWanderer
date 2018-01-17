@@ -17,7 +17,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="@dimen/activity_horizontal_margin"
-            android:text="What genre of vinyl do you like to collect?"
+            android:text="What genres of vinyl do you like to collect?"
             android:textSize="20sp" />
 
         <Spinner
@@ -29,8 +29,15 @@
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recycler_view"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="300dp"
             android:scrollbars="vertical" />
+
+        <TextView
+            android:id="@+id/text_selected_styles"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/activity_horizontal_margin"
+            android:text="" />
 
         <android.support.v7.widget.AppCompatButton
             android:id="@+id/btn_submit_preferences"
@@ -38,7 +45,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="24dp"
-            android:padding="@dimen/activity_horizontal_margin"
+            android:paddingBottom="@dimen/activity_horizontal_margin"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
             android:text="@string/submit_style_preferences_button_text"
             android:visibility="gone" />
 

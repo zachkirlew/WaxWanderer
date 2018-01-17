@@ -1,7 +1,6 @@
 package com.zachkirlew.applications.waxwanderer.data.remote
 
 import com.zachkirlew.applications.waxwanderer.data.VinylDataSource
-import com.zachkirlew.applications.waxwanderer.data.model.VinylPreference
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.DiscogsResponse
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.detail.DetailVinylRelease
 import io.reactivex.Observable
@@ -30,21 +29,11 @@ class VinylsRemoteSource private constructor() : VinylDataSource{
         return discogsService.release(releaseId)
     }
 
-    override fun getVinyls(preference: VinylPreference): Observable<DiscogsResponse> {
+    override fun getVinyls(style: String): Observable<DiscogsResponse> {
 
         val parameters : HashMap<String, String> = HashMap()
 
-        val genre = preference.genre
-
-        val styles = preference.styles
-
-        if (genre != null) {
-            parameters.put("genre",genre)
-        }
-
-        val commaSeparatedStyles = android.text.TextUtils.join(",", styles)
-
-        parameters.put("style",commaSeparatedStyles)
+        parameters.put("style",style)
 
         parameters.put("per_page","50")
         parameters.put("format","vinyl")

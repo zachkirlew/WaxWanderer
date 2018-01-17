@@ -11,6 +11,7 @@ import android.view.*
 import android.widget.*
 import com.squareup.picasso.Picasso
 import com.zachkirlew.applications.waxwanderer.R
+import com.zachkirlew.applications.waxwanderer.data.local.UserPreferences
 import com.zachkirlew.applications.waxwanderer.data.model.User
 import com.zachkirlew.applications.waxwanderer.util.BorderedCircleTransform
 import java.text.DateFormat
@@ -37,6 +38,10 @@ class SettingsFragment : Fragment(), SettingsContract.View, DatePickerDialog.OnD
     lateinit var pickerView : LinearLayout
 
     lateinit var uploadImage : ImageView
+
+    lateinit var fromAgePicker : NumberPicker
+
+    lateinit var toAgePicker : NumberPicker
 
     override fun onResume() {
         super.onResume()
@@ -66,12 +71,12 @@ class SettingsFragment : Fragment(), SettingsContract.View, DatePickerDialog.OnD
         matchGenderAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         matchGenderSpinner.adapter = matchGenderAdapter
 
-        val fromAgePicker = root.findViewById<NumberPicker>(R.id.age_from) as NumberPicker
+        fromAgePicker = root.findViewById<NumberPicker>(R.id.age_from) as NumberPicker
         fromAgePicker.minValue = 18
         fromAgePicker.maxValue = 100
 
 
-        val toAgePicker = root.findViewById<NumberPicker>(R.id.age_to) as NumberPicker
+        toAgePicker = root.findViewById<NumberPicker>(R.id.age_to) as NumberPicker
         toAgePicker.minValue = 18
         toAgePicker.maxValue = 100
 
@@ -109,7 +114,7 @@ class SettingsFragment : Fragment(), SettingsContract.View, DatePickerDialog.OnD
         toAgePicker.minValue = 18
         toAgePicker.maxValue = 100
 
-        favouritePresenter = SettingsPresenter(this)
+        favouritePresenter = SettingsPresenter(this, UserPreferences())
 
         nameText = root.findViewById<EditText>(R.id.input_name)
         dobText = root.findViewById<EditText>(R.id.input_dob)
@@ -147,7 +152,6 @@ class SettingsFragment : Fragment(), SettingsContract.View, DatePickerDialog.OnD
         val builder = AlertDialog.Builder(activity)
         builder.setTitle("Add Photo!")
 
-        //SET ITEMS AND THERE LISTENERS
         builder.setItems(items, DialogInterface.OnClickListener { dialog, item ->
 //            if (items[item] == "Take Photo") {
 //                cameraIntent()
@@ -205,7 +209,7 @@ class SettingsFragment : Fragment(), SettingsContract.View, DatePickerDialog.OnD
         editTextDOB.setText(date)
     }
 
-    override fun showUserDetails(user: User) {
+    override fun showUserDetails(user: User, minMatchAge: Int, maxMatchAge: Int, matchGender: String?) {
 
         nameText.setText(user.name)
 
@@ -222,11 +226,13 @@ class SettingsFragment : Fragment(), SettingsContract.View, DatePickerDialog.OnD
         matchGenders.forEachIndexed { index, gender ->
 
             println(gender)
-            if(gender == user.matchPreference?.gender) matchGenderSpinner.setSelection(index)
+            if(gender == matchGender) matchGenderSpinner.setSelection(index)
 
         }
 
-        ageRangeText.text = user.matchPreference?.ageRange
+        val ageRange = "$minMatchAge - $maxMatchAge"
+
+        ageRangeText.text = ageRange
 
         user.imageurl?.let{setProfileImage(user.imageurl)}
 
@@ -268,9 +274,11 @@ class SettingsFragment : Fragment(), SettingsContract.View, DatePickerDialog.OnD
 
         val matchGender = matchGenderSpinner.selectedItem.toString()
 
-        val matchAge = ageRangeText.text.toString()
 
-        favouritePresenter.submitDetails(name,userGender,matchGender,matchAge)
+        val minMatchAge = fromAgePicker.value
+        val maxMatchAge = toAgePicker.value
+
+        favouritePresenter.submitDetails(name,userGender,matchGender,minMatchAge,maxMatchAge)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

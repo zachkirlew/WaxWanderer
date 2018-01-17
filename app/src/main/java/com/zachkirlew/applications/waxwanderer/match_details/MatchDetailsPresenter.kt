@@ -2,16 +2,13 @@ package com.zachkirlew.applications.waxwanderer.match_details
 
 import android.support.annotation.NonNull
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
-import com.zachkirlew.applications.waxwanderer.data.model.MatchPreference
+import com.zachkirlew.applications.waxwanderer.data.local.UserPreferences
 import com.zachkirlew.applications.waxwanderer.data.model.User
 import java.text.DateFormat
 import java.util.*
 
-class MatchDetailsPresenter(private @NonNull var matchDetailsView: MatchDetailsContract.View) : MatchDetailsContract.Presenter {
+class MatchDetailsPresenter(private @NonNull var matchDetailsView: MatchDetailsContract.View,private @NonNull val preferences: UserPreferences) : MatchDetailsContract.Presenter {
 
 
     private val mFirebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
@@ -34,7 +31,7 @@ class MatchDetailsPresenter(private @NonNull var matchDetailsView: MatchDetailsC
         matchDetailsView.showDateFormatted(dateFormatted)
     }
 
-    override fun submitDetails(userGender : String, userLocation : String?, matchGender : String, matchAge : String) {
+    override fun submitDetails(userGender : String, userLocation : String?, matchGender : String,minMatchAge : Int,maxMatchAge : Int) {
 
         if(userLocation.isNullOrEmpty())
             matchDetailsView.showLocationErrorMessage("Please enter a valid location")
@@ -47,24 +44,13 @@ class MatchDetailsPresenter(private @NonNull var matchDetailsView: MatchDetailsC
 
             val user = mFirebaseAuth.currentUser
 
-            val name = user?.displayName.toString()
-            val email = user?.email.toString()
+            preferences.minMatchAge = minMatchAge
+            preferences.maxMatchAge = maxMatchAge
+            preferences.matchGender = matchGender
 
-            val updatedUser = User()
-
-            updatedUser.name = name
-            updatedUser.email = email
-            updatedUser.dob = dob
-            updatedUser.gender = userGender
-            updatedUser.location = userLocation
-
-            val matchPreference = MatchPreference()
-            matchPreference.gender = matchGender
-            matchPreference.ageRange = matchAge
-
-            updatedUser.matchPreference = matchPreference
-
-            myRef.child("users").child(user?.uid).setValue(updatedUser)
+            myRef.child("users").child(user?.uid).child("location").setValue(userLocation)
+            myRef.child("users").child(user?.uid).child("gender").setValue(userGender)
+            myRef.child("users").child(user?.uid).child("dob").setValue(dob)
 
             matchDetailsView.startStylesActivity()
         }

@@ -8,12 +8,13 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.storage.FirebaseStorage
+import com.zachkirlew.applications.waxwanderer.data.local.UserPreferences
 import com.zachkirlew.applications.waxwanderer.data.model.User
 import java.text.DateFormat
 import java.util.*
 
 
-class SettingsPresenter(private @NonNull var settingsView: SettingsContract.View) : SettingsContract.Presenter  {
+class SettingsPresenter(private @NonNull var settingsView: SettingsContract.View,private @NonNull val preferences: UserPreferences) : SettingsContract.Presenter  {
 
     private val mFirebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private val database = FirebaseDatabase.getInstance()
@@ -43,7 +44,7 @@ class SettingsPresenter(private @NonNull var settingsView: SettingsContract.View
 
                 dob = userInfo?.dob
 
-                settingsView.showUserDetails(userInfo!!)
+                settingsView.showUserDetails(userInfo!!,preferences.minMatchAge,preferences.maxMatchAge,preferences.matchGender)
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
@@ -64,7 +65,7 @@ class SettingsPresenter(private @NonNull var settingsView: SettingsContract.View
         settingsView.showDateFormatted(dateFormatted)
     }
 
-    override fun submitDetails(name : String, userGender : String, matchGender : String, matchAge : String) {
+    override fun submitDetails(name : String, userGender : String, matchGender : String,minMatchAge : Int,maxMatchAge : Int) {
 
         val user = mFirebaseAuth.currentUser
         val userRef = database.reference.child("users").child(user?.uid)
@@ -73,8 +74,10 @@ class SettingsPresenter(private @NonNull var settingsView: SettingsContract.View
         userRef.child("dob").setValue(dob)
         userRef.child("gender").setValue(userGender)
 
-        userRef.child("matchPreference").child("ageRange").setValue(matchAge)
-        userRef.child("matchPreference").child("gender").setValue(matchGender)
+        preferences.minMatchAge = minMatchAge
+        preferences.maxMatchAge = maxMatchAge
+
+        preferences.matchGender = matchGender
 
         settingsView.showMessage("Profile updated")
     }

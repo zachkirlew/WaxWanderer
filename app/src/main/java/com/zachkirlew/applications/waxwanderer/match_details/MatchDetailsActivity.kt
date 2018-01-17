@@ -7,6 +7,7 @@ import android.support.design.widget.TextInputLayout
 import android.support.v7.app.AppCompatActivity
 import android.widget.*
 import com.zachkirlew.applications.waxwanderer.R
+import com.zachkirlew.applications.waxwanderer.data.local.UserPreferences
 import com.zachkirlew.applications.waxwanderer.styles.StylesActivity
 import java.util.*
 
@@ -35,7 +36,7 @@ class MatchDetailsActivity : AppCompatActivity(), MatchDetailsContract.View,Date
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_match_details)
 
-        presenter = MatchDetailsPresenter(this)
+        presenter = MatchDetailsPresenter(this, UserPreferences())
 
         val userGendersAdapter = ArrayAdapter<String>(this,
                 android.R.layout.simple_spinner_item, resources.getStringArray(R.array.spinner_user_genders))
@@ -108,9 +109,11 @@ class MatchDetailsActivity : AppCompatActivity(), MatchDetailsContract.View,Date
 
         val matchGender = matchGenderSpinner.selectedItem.toString()
 
-        val matchAge = textMatchAge.text.toString()
+        val minMatchAge = fromAgePicker.value
+        val maxMatchAge = toAgePicker.value
 
-        presenter.submitDetails(userGender,userLocation,matchGender,matchAge)
+
+        presenter.submitDetails(userGender,userLocation,matchGender,minMatchAge,maxMatchAge)
     }
 
     private fun showDateDialog() {

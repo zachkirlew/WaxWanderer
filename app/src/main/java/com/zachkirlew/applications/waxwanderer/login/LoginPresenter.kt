@@ -13,10 +13,11 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.zachkirlew.applications.waxwanderer.data.local.UserPreferences
 import com.zachkirlew.applications.waxwanderer.data.model.User
 
 
-class LoginPresenter(private @NonNull var loginView: LoginContract.View) : LoginContract.Presenter {
+class LoginPresenter(private @NonNull val loginView: LoginContract.View) : LoginContract.Presenter {
 
     private val TAG = LoginActivity::class.java.simpleName
 
@@ -109,17 +110,33 @@ class LoginPresenter(private @NonNull var loginView: LoginContract.View) : Login
                 //if user has already entered DOB and other details
                 if (dataSnapshot.child(user?.uid).child("gender").exists()) {
 
-                    //if user has entered in styles
-                    if (dataSnapshot.child(user?.uid).child("vinyl preferences").exists()) {
-                        loginView.startExploreActivity()
-                    } else {
-                        loginView.startStylesActivity()
-                    }
-
+                    checkUserHasVinylPreferences()
                 } else {
                     saveUserDetails()
 
                     loginView.startMatchDetailsActivity()
+                }
+            }
+            override fun onCancelled(databaseError: DatabaseError) {
+                Log.e(TAG, "onCancelled", databaseError.toException())
+            }
+        })
+    }
+
+    private fun checkUserHasVinylPreferences(){
+
+        val user = mFirebaseAuth.currentUser
+
+        val database = FirebaseDatabase.getInstance().reference
+        val ref = database.child("vinylPreferences").child(user?.uid)
+
+        ref.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+
+                if (dataSnapshot.exists()) {
+                    loginView.startExploreActivity()
+                } else {
+                    loginView.startStylesActivity()
                 }
             }
             override fun onCancelled(databaseError: DatabaseError) {

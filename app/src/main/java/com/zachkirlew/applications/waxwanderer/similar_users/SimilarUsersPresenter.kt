@@ -7,6 +7,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.zachkirlew.applications.waxwanderer.data.local.UserPreferences
 import com.zachkirlew.applications.waxwanderer.data.model.User
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
 import org.joda.time.LocalDate
@@ -15,7 +16,7 @@ import org.joda.time.PeriodType
 import java.util.*
 
 
-class SimilarUsersPresenter(private @NonNull var similarUsersView: SimilarUsersContract.View) : SimilarUsersContract.Presenter {
+class SimilarUsersPresenter(private @NonNull var similarUsersView: SimilarUsersContract.View,private @NonNull val preferences: UserPreferences) : SimilarUsersContract.Presenter {
 
     private val mFirebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private val database = FirebaseDatabase.getInstance()
@@ -63,20 +64,19 @@ class SimilarUsersPresenter(private @NonNull var similarUsersView: SimilarUsersC
 
                 Collections.shuffle(users)
 
-                val filterGender = userInfo.matchPreference?.gender
-                val filterAge = userInfo.matchPreference?.ageRange
+                val filterGender = preferences.matchGender
 
-                val lowerAgeLimit: Int = filterAge?.split(" - ")?.get(0)?.toInt()!!
-                val upperAgeLimit: Int = filterAge.split(" - ")[1].toInt()
+                val lowerAgeLimit = preferences.minMatchAge
+                val upperAgeLimit = preferences.maxMatchAge
 
                 //filter users by age and gender
                 var filteredUsers = users.filter { user.uid != it.id }
                         .filter { dobToAge(it.dob) in lowerAgeLimit..upperAgeLimit }
 
                 //remove any users that that the current user has already matched with
-                if(userInfo.connections?.matches!=null){
-                    filteredUsers = filteredUsers.filter { !userInfo.connections?.matches?.containsKey(it.id)!! }
-                }
+//                if(userInfo.connections?.matches!=null){
+//                    filteredUsers = filteredUsers.filter { !userInfo.connections?.matches?.containsKey(it.id)!! }
+//                }
 
                 when (filterGender) {
                     "Males" -> {

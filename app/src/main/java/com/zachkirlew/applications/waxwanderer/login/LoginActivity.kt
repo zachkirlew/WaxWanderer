@@ -19,6 +19,7 @@ import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.SignInButton
 import com.google.android.gms.common.api.GoogleApiClient
 import com.zachkirlew.applications.waxwanderer.R
+import com.zachkirlew.applications.waxwanderer.data.local.UserPreferences
 import com.zachkirlew.applications.waxwanderer.match_details.MatchDetailsActivity
 import com.zachkirlew.applications.waxwanderer.explore.ExploreActivity
 import com.zachkirlew.applications.waxwanderer.sign_up.SignUpActivity

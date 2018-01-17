@@ -7,7 +7,6 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.zachkirlew.applications.waxwanderer.data.model.Style
-import com.zachkirlew.applications.waxwanderer.data.model.VinylPreference
 
 
 class StylesPresenter(private @NonNull var stylesView: StylesContract.View) : StylesContract.Presenter {
@@ -73,12 +72,8 @@ class StylesPresenter(private @NonNull var stylesView: StylesContract.View) : St
         val myRef = database.reference
         val user = mFirebaseAuth.currentUser
 
-        val vinylPref = VinylPreference()
 
-        vinylPref.genre = selectedGenre
-        vinylPref.styles = selectedStyles
-
-        myRef.child("users").child(user?.uid).child("vinyl preferences").setValue(vinylPref)
+        myRef.child("vinylPreferences").child(user?.uid).setValue(selectedStyles)
 
         stylesView.startExploreActivity()
     }

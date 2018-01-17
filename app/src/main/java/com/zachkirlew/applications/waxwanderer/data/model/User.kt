@@ -13,7 +13,4 @@ class User : Serializable{
     var imageurl : String? = null
     var gender: String? = null
     var location: String? = null
-    var matchPreference: MatchPreference? = null
-    var connections: Connections? = null
-    var vinylPreference: VinylPreference? = null
 }

@@ -21,6 +21,7 @@ import com.mindorks.placeholderview.annotations.Resolve
 import com.mindorks.placeholderview.annotations.swipe.*
 import com.squareup.picasso.Picasso
 import com.zachkirlew.applications.waxwanderer.R
+import com.zachkirlew.applications.waxwanderer.data.local.UserPreferences
 import com.zachkirlew.applications.waxwanderer.data.model.User
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
 import com.zachkirlew.applications.waxwanderer.detail_vinyl.VinylDetailActivity
@@ -65,7 +66,7 @@ class SimilarUsersFragment : Fragment(), SimilarUsersContract.View {
         mContext = getApplicationContext()
 
 
-        similarUsersPresenter = SimilarUsersPresenter(this)
+        similarUsersPresenter = SimilarUsersPresenter(this, UserPreferences())
 
         likeButton = root.findViewById<ImageButton>(R.id.acceptBtn) as ImageButton
         dislikeButton = root.findViewById<ImageButton>(R.id.rejectBtn) as ImageButton

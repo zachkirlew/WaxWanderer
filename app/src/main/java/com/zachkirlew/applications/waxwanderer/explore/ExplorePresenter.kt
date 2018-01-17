@@ -1,26 +1,26 @@
 package com.zachkirlew.applications.waxwanderer.explore
 
 import android.support.annotation.NonNull
+import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.zachkirlew.applications.waxwanderer.data.VinylRepository
-import com.zachkirlew.applications.waxwanderer.data.model.User
-import com.zachkirlew.applications.waxwanderer.data.model.VinylPreference
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.DiscogsResponse
+import io.reactivex.Observable
 import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 
-class ExplorePresenter(private @NonNull var vinylRepository: VinylRepository, private @NonNull var exploreView: ExploreContract.View) : ExploreContract.Presenter  {
+class ExplorePresenter(private @NonNull var vinylRepository: VinylRepository, private @NonNull var exploreView: ExploreContract.View) : ExploreContract.Presenter {
 
     private val mFirebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private val database = FirebaseDatabase.getInstance()
 
-    init{
+    init {
         exploreView.setPresenter(this)
     }
 
@@ -28,17 +28,18 @@ class ExplorePresenter(private @NonNull var vinylRepository: VinylRepository, pr
         getUserVinylPreference()
     }
 
-    override fun loadVinylReleases(vinylPreference: VinylPreference) {
+    override fun loadVinylReleases(styles: List<String>) {
 
-        vinylRepository.getVinyls(vinylPreference)
+        Observable.fromIterable(styles).flatMap { style -> vinylRepository.getVinyls(style) }
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(object : Observer<DiscogsResponse>{
+                .subscribe(object : Observer<DiscogsResponse> {
                     override fun onNext(response: DiscogsResponse) {
 
+                        println(response.results?.size)
 
                         val results = response.results
-                        results?.let {exploreView.showVinylReleases(results)  }
+                        results?.let { exploreView.showVinylReleases(results) }
                     }
 
                     override fun onError(e: Throwable) {
@@ -46,6 +47,7 @@ class ExplorePresenter(private @NonNull var vinylRepository: VinylRepository, pr
                     }
 
                     override fun onComplete() {
+                        Log.v("Explore Presenter","Loading of vinyls complete")
 
                     }
 
@@ -57,15 +59,15 @@ class ExplorePresenter(private @NonNull var vinylRepository: VinylRepository, pr
     }
 
     override fun searchVinylReleases(searchText: String?) {
-        if(!searchText.isNullOrEmpty()){
+        if (!searchText.isNullOrEmpty()) {
 
             vinylRepository.searchVinyl(searchText!!)
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(object : Observer<DiscogsResponse>{
+                    .subscribe(object : Observer<DiscogsResponse> {
                         override fun onNext(response: DiscogsResponse) {
 
-                            if(response.results?.isEmpty()!!)
+                            if (response.results?.isEmpty()!!)
                                 exploreView.showNoVinylsView()
                             else
                                 exploreView.showVinylReleases(response.results!!)
@@ -83,25 +85,23 @@ class ExplorePresenter(private @NonNull var vinylRepository: VinylRepository, pr
                         override fun onSubscribe(d: Disposable) {
 
                         }
-
                     })
-
         }
     }
 
-    private fun getUserVinylPreference(){
+    private fun getUserVinylPreference() {
         val myRef = database.reference
 
         val user = mFirebaseAuth.currentUser
 
-        val ref = myRef.child("users").child(user?.uid).child("vinyl preferences")
+        val ref = myRef.child("vinylPreferences").child(user?.uid)
 
         ref.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-
-                val vinylPref = dataSnapshot.getValue(VinylPreference::class.java)
-
-                loadVinylReleases(vinylPref!!)
+                if (dataSnapshot.exists()) {
+                    val styles = dataSnapshot.children.map { it.value as String }
+                    loadVinylReleases(styles)
+                }
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
