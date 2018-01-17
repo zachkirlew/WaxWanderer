@@ -25,7 +25,7 @@ class MatchesPresenter(private @NonNull var matchesView: MatchesContract.View) :
 
         val user = mFirebaseAuth.currentUser
 
-        val ref = myRef.child("users").child(user?.uid).child("connections").child("matches")
+        val ref = myRef.child("matches").child(user?.uid)
 
         ref.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {

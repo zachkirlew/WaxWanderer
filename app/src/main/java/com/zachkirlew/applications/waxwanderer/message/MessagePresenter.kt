@@ -19,13 +19,16 @@ class MessagePresenter(private @NonNull var messageView: MessageContract.View) :
         val myRef = database.reference
         val user = mFirebaseAuth.currentUser
 
-        val ref = myRef.child("users").child(user?.uid).child("connections").child("matches").child(matchedUserId)
+        val ref = myRef.child("matches").child(user?.uid).child(matchedUserId)
 
         ref.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                chatId = dataSnapshot.value as String
 
-                loadMessages(chatId)
+                if(dataSnapshot.exists()) {
+                    chatId = dataSnapshot.value as String
+
+                    loadMessages(chatId)
+                }
             }
 
             override fun onCancelled(databaseError: DatabaseError) {

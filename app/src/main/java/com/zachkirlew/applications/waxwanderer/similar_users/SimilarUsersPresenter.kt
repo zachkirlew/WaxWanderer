@@ -102,37 +102,36 @@ class SimilarUsersPresenter(private @NonNull var similarUsersView: SimilarUsersC
 
         val userUid = mFirebaseAuth.currentUser?.uid
 
-        //if liked user doesn't have any likes
-        if (likedUser.connections?.likes !== null) {
+        myRef.child("likes").child(likedUser.id).child(userUid).addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                //liked user has current user in likes
+                if(dataSnapshot.exists()){
+                    //It's a match!
+                    likedUser.name?.let { similarUsersView.showMatchDialog(it) }
 
-            //if liked user has current user in their likes
-            if (likedUser.connections?.likes?.containsKey(userUid)!!) {
-                //It's a match!
+                    val chatKey = myRef.child("chat").push().key
 
-                likedUser.name?.let { similarUsersView.showMatchDialog(it) }
+                    //add to both accounts and set chat id
+                    myRef.child("matches").child(userUid)
+                            .child(likedUser.id).setValue(chatKey)
 
-                val chatKey = myRef.child("chat").push().key
+                    myRef.child("matches").child(likedUser.id)
+                            .child(userUid).setValue(chatKey)
 
-                //add to both accounts and set chat id
-                myRef.child("users").child(userUid)
-                        .child("connections").child("matches")
-                        .child(likedUser.id).setValue(chatKey)
-
-                myRef.child("users").child(likedUser.id)
-                        .child("connections").child("matches")
-                        .child(userUid).setValue(chatKey)
-
-                //remove old like from liked user's account
-                myRef.child("users").child(likedUser.id)
-                        .child("connections").child("likes")
-                        .child(userUid).setValue(null)
-
-            } else {
-                likeUser(userUid, likedUser.id)
+                    //remove old like from liked user's account
+                    myRef.child("likes").child(likedUser.id)
+                            .child(userUid).setValue(null)
+                }
+                //user doesn't have current user in their likes
+                else{
+                    myRef.child("likes").child(userUid)
+                            .child(likedUser.id).setValue(true)
+                }
             }
-        } else {
-            likeUser(userUid, likedUser.id)
-        }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+            }
+        })
     }
 
     override fun loadUserFavourites(userId: String?,viewPosition : Int) {
@@ -159,15 +158,6 @@ class SimilarUsersPresenter(private @NonNull var similarUsersView: SimilarUsersC
             override fun onCancelled(databaseError: DatabaseError) {
             }
         })
-    }
-
-    private fun likeUser(currentUserId: String?, likedUserId: String?) {
-
-        val myRef = database.reference
-
-        myRef.child("users").child(currentUserId)
-                .child("connections").child("likes")
-                .child(likedUserId).setValue(true)
     }
 
 
