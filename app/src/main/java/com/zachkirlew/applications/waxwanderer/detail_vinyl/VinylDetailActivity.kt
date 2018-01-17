@@ -1,6 +1,5 @@
 package com.zachkirlew.applications.waxwanderer.detail_vinyl
 
-import android.animation.ArgbEvaluator
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -17,14 +16,11 @@ import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.detail.DetailVinylRelease
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.detail.Tracklist
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.detail.Video
+import com.zachkirlew.applications.waxwanderer.data.recommendation.RecombeeSingleton
+import com.zachkirlew.applications.waxwanderer.data.recommendation.RecommenderImp
 import com.zachkirlew.applications.waxwanderer.data.remote.VinylsRemoteSource
 import com.zachkirlew.applications.waxwanderer.login.LoginActivity
-import android.content.res.ColorStateList
-import android.support.v4.view.ViewCompat.setBackgroundTintList
-import android.animation.ValueAnimator
-import android.animation.ObjectAnimator
-import android.graphics.Color
-import android.view.animation.DecelerateInterpolator
+import com.zachkirlew.applications.waxwanderer.util.ConfigHelper
 
 
 class VinylDetailActivity : AppCompatActivity(), VinylDetailContract.View, View.OnClickListener {
@@ -49,7 +45,8 @@ class VinylDetailActivity : AppCompatActivity(), VinylDetailContract.View, View.
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_vinyl_detail)
 
-        presenter = VinylDetailPresenter(VinylRepository.getInstance(VinylsRemoteSource.instance), this)
+        presenter = VinylDetailPresenter(VinylRepository.getInstance(VinylsRemoteSource.instance),
+                                        this, RecommenderImp(this))
 
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)

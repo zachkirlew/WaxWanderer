@@ -22,8 +22,11 @@ interface SimilarUsersContract {
 
     interface Presenter : BasePresenter {
 
-        fun loadSimilarUsers(userInfo : User)
+        fun loadSimilarUsers()
+        fun filterSimilarUsers(similarUserList : List<User>)
         fun handleLike(likedUser : User)
+        fun getFavouriteCount(userId : String)
+        fun loadUsers()
 
         fun loadUserFavourites(userId : String?, viewPosition : Int)
     }

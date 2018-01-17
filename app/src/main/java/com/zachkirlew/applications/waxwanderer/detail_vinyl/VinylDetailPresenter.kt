@@ -11,12 +11,17 @@ import com.google.firebase.database.ValueEventListener
 import com.zachkirlew.applications.waxwanderer.data.VinylRepository
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.detail.DetailVinylRelease
+import com.zachkirlew.applications.waxwanderer.data.recommendation.RecommenderImp
 import io.reactivex.SingleObserver
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 
-class VinylDetailPresenter(private @NonNull var vinylRepository: VinylRepository, private @NonNull var vinylDetailView: VinylDetailContract.View) : VinylDetailContract.Presenter {
+
+class VinylDetailPresenter(private @NonNull var vinylRepository: VinylRepository,
+                           private @NonNull var vinylDetailView: VinylDetailContract.View,
+                           private @NonNull var recommender: RecommenderImp) : VinylDetailContract.Presenter {
+
     private val TAG = VinylDetailActivity::class.java.simpleName
 
     private val mFirebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
@@ -64,10 +69,12 @@ class VinylDetailPresenter(private @NonNull var vinylRepository: VinylRepository
                     myRef.setValue(null)
                     vinylDetailView.showMessage("Removed from favourites")
                     vinylDetailView.editButtonColor(false)
+                    removeFavouriteFromRecommender(user?.uid!!,vinylRelease.id.toString())
                 } else {
                     myRef.setValue(vinylRelease)
                     vinylDetailView.showMessage("Successfully added to favourites")
                     vinylDetailView.editButtonColor(true)
+                    addFavouriteToRecommender(user?.uid!!,vinylRelease.id.toString())
                 }
             }
 
@@ -97,5 +104,24 @@ class VinylDetailPresenter(private @NonNull var vinylRepository: VinylRepository
             }
         })
     }
+
+    override fun addFavouriteToRecommender(userId : String, itemId : String) {
+        recommender.addFavourite(userId,itemId)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe{it ->Log.i(TAG,it)}
+
+    }
+
+    override fun removeFavouriteFromRecommender(userId : String, itemId : String) {
+        recommender.removeFavourite(userId,itemId)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe{it ->Log.i(TAG,it)}
+    }
+
+
+
+
 
 }

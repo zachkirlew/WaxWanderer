@@ -24,6 +24,7 @@ import com.zachkirlew.applications.waxwanderer.R
 import com.zachkirlew.applications.waxwanderer.data.local.UserPreferences
 import com.zachkirlew.applications.waxwanderer.data.model.User
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
+import com.zachkirlew.applications.waxwanderer.data.recommendation.RecommenderImp
 import com.zachkirlew.applications.waxwanderer.detail_vinyl.VinylDetailActivity
 import com.zachkirlew.applications.waxwanderer.favourites.FavouriteActivity
 import com.zachkirlew.applications.waxwanderer.util.StringUtils
@@ -66,7 +67,7 @@ class SimilarUsersFragment : Fragment(), SimilarUsersContract.View {
         mContext = getApplicationContext()
 
 
-        similarUsersPresenter = SimilarUsersPresenter(this, UserPreferences())
+        similarUsersPresenter = SimilarUsersPresenter(this, UserPreferences(), RecommenderImp(activity))
 
         likeButton = root.findViewById<ImageButton>(R.id.acceptBtn) as ImageButton
         dislikeButton = root.findViewById<ImageButton>(R.id.rejectBtn) as ImageButton

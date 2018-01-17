@@ -4,6 +4,7 @@ apply plugin: 'kotlin-android'
 
 apply plugin: 'kotlin-android-extensions'
 
+
 android {
     compileSdkVersion 26
     buildToolsVersion "26.0.1"
@@ -28,6 +29,8 @@ android {
         exclude 'META-INF/rxjava.properties'
     }
 }
+
+
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
@@ -74,11 +77,15 @@ dependencies {
 
     compile 'joda-time:joda-time:2.9.9'
 
-
     compile 'com.lucasurbas:listitemview:1.0.5'
 
-
     compile 'com.mindorks:placeholderview:0.7.2'
+
+    compile 'com.recombee:api-client:1.6.2'
+
+    compile 'commons-codec:commons-codec:1.9'
+
+
 }
 
 
