@@ -26,7 +26,7 @@ class FavouriteActivity : AppCompatActivity() {
 
         val firstName = user.name?.let { getFirstName(it) }
 
-        title = "$firstName's Top Tracks"
+        title = "$firstName's Top Vinyls"
     }
 
     private fun getFirstName(fullName : String): String {

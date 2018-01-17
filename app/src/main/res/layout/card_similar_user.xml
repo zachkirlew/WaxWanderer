@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/card_view"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="410dp"
     android:layout_gravity="center"
     android:gravity="center_horizontal"
     android:padding="25dp"
@@ -21,7 +21,7 @@
             android:layout_height="wrap_content">
 
             <ImageView
-                android:id="@+id/offer_image"
+                android:id="@+id/profile_image_view"
                 android:layout_width="match_parent"
                 android:layout_height="240dp"
                 android:adjustViewBounds="true"
@@ -74,28 +74,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:paddingTop="24dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="center_horizontal"
-                    android:orientation="horizontal">
-
-                    <ImageButton
-                        android:id="@+id/button_dislike"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        card_view:srcCompat="@drawable/ic_close" />
-
-                    <ImageButton
-                        android:id="@+id/button_like"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        card_view:srcCompat="@drawable/ic_star" />
-
-                </LinearLayout>
+                android:orientation="vertical">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -108,7 +87,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:paddingBottom="@dimen/activity_horizontal_margin"
-                        android:text="My top tracks"
+                        android:text="My top vinyls"
                         android:textAlignment="center"
                         android:textSize="18sp"
                         android:textStyle="bold" />

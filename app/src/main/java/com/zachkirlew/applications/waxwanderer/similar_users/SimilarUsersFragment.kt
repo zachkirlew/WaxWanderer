@@ -3,15 +3,21 @@ package com.zachkirlew.applications.waxwanderer.similar_users
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.support.annotation.Nullable
 import android.support.v4.app.Fragment
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.*
 import android.view.LayoutInflater
-import android.widget.*
-import com.daprlabs.aaron.swipedeck.SwipeDeck
+import android.widget.ImageButton
+import android.widget.ImageView
+import android.widget.TextView
+import android.widget.Toast
+import com.mindorks.placeholderview.SwipePlaceHolderView
+import com.mindorks.placeholderview.annotations.Layout
+import com.mindorks.placeholderview.annotations.Resolve
+import com.mindorks.placeholderview.annotations.swipe.*
 import com.squareup.picasso.Picasso
 import com.zachkirlew.applications.waxwanderer.R
 import com.zachkirlew.applications.waxwanderer.data.model.User
@@ -29,20 +35,17 @@ class SimilarUsersFragment : Fragment(), SimilarUsersContract.View {
 
     private lateinit var similarUsersPresenter : SimilarUsersContract.Presenter
 
-    private lateinit var swipeAdapter: SimilarUsersFragment.SwipeDeckAdapter
+    private lateinit var mSwipeView: SwipePlaceHolderView
 
-    private lateinit var cardStack : SwipeDeck
+    private lateinit var likeButton: ImageButton
+    private lateinit var dislikeButton: ImageButton
 
-    override fun onCreate(@Nullable savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        swipeAdapter = SwipeDeckAdapter(listOf<User>(),activity)
-    }
+    private lateinit var userCards : List<SimilarUsersFragment.UserCard>
 
     override fun onResume() {
         super.onResume()
         similarUsersPresenter.start()
     }
-
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -51,25 +54,22 @@ class SimilarUsersFragment : Fragment(), SimilarUsersContract.View {
 
         val root = inflater?.inflate(R.layout.fragment_similar_users, container, false)
 
-        cardStack = root?.findViewById<SwipeDeck>(R.id.swipe_deck) as SwipeDeck
+        mSwipeView = root?.findViewById<SwipePlaceHolderView>(R.id.swipeView) as SwipePlaceHolderView
 
-        cardStack.setAdapter(swipeAdapter)
+        SwipeViewBuilderInstance(mSwipeView)
 
         similarUsersPresenter = SimilarUsersPresenter(this)
 
-        cardStack.setCallback(object : SwipeDeck.SwipeDeckCallback {
-            override fun cardSwipedLeft(stableId: Long) {
-                showMessage("Skipped")
-            }
+        likeButton = root.findViewById<ImageButton>(R.id.acceptBtn) as ImageButton
+        dislikeButton = root.findViewById<ImageButton>(R.id.rejectBtn) as ImageButton
 
-            override fun cardSwipedRight(stableId: Long) {
-                showMessage("Liked")
+        likeButton.setOnClickListener {
+            mSwipeView.doSwipe(true)
+        }
 
-                val likedUser = swipeAdapter.getItem(stableId.toInt()) as User
-                similarUsersPresenter.handleLike(likedUser)
-            }
-
-        })
+        dislikeButton.setOnClickListener {
+            mSwipeView.doSwipe(false)
+        }
 
         return root
     }
@@ -92,10 +92,14 @@ class SimilarUsersFragment : Fragment(), SimilarUsersContract.View {
         similarUsersPresenter = presenter
     }
 
-    override fun showSimilarUsers(users: List<User>) {
-        swipeAdapter.addUsers(users)
-    }
 
+    override fun showSimilarUsers(users: List<User>) {
+        userCards = users.mapIndexed { index, user ->
+            UserCard(activity, user, mSwipeView,index)
+        }
+
+        userCards.forEach{ mSwipeView.addView(it) }
+    }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         //inflater.inflate(R.menu.tasks_fragment_menu, menu)
@@ -111,118 +115,76 @@ class SimilarUsersFragment : Fragment(), SimilarUsersContract.View {
     }
 
     override fun showUserFavourites(vinyls: List<VinylRelease>, viewPosition: Int) {
-        swipeAdapter.update(vinyls,viewPosition)
+        userCards[viewPosition].showVinyls(vinyls)
+
     }
 
     override fun showNoUserFavourites() {
 
     }
 
-    inner class SwipeDeckAdapter(private var similarUsers: List<User>, private val context: Context) : BaseAdapter() {
+    @Layout(R.layout.card_similar_user)
+    inner class UserCard(private val mContext: Context, private val user: User, private val mSwipeView: SwipePlaceHolderView,private val viewPosition : Int)
+    {
 
-        private var favouriteVinyls : List<VinylRelease>? = null
-        private var currentViewPosition : Int? = null
 
-        fun addUsers(users : List<User>){
-            this.similarUsers = users
-            notifyDataSetChanged()
-        }
+        @com.mindorks.placeholderview.annotations.View(R.id.profile_image_view)
+        private val profileImageView: ImageView? = null
 
-        fun update(vinyls: List<VinylRelease>, viewPosition: Int) {
-            favouriteVinyls = vinyls
-            notifyDataSetChanged()
-        }
+        @com.mindorks.placeholderview.annotations.View(R.id.text_user_name)
+        private val nameTxt: TextView? = null
 
-        override fun getCount(): Int {
-            return similarUsers.size
-        }
+        @com.mindorks.placeholderview.annotations.View(R.id.text_top_tracks)
+        private val topTracksText: TextView? = null
 
-        override fun getItem(position: Int): Any {
-            return similarUsers[position]
-        }
+        @com.mindorks.placeholderview.annotations.View(R.id.text_age_location)
+        private val locationNameTxt: TextView? = null
 
-        override fun getItemId(position: Int): Long {
-            return position.toLong()
-        }
+        @com.mindorks.placeholderview.annotations.View(R.id.list_user_favourites)
+        private val recyclerView: RecyclerView? = null
 
-        override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
 
-            favouriteVinyls?.forEach { println(it.title) }
 
-            var v: View? = convertView
+        fun showVinyls(favouriteVinyls :List<VinylRelease>){
 
-            if (v == null) {
-                val inflater = activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-                // normally use a viewholder
-
-                v = inflater.inflate(R.layout.card_similar_user, parent, false)
-            }
-
-            view?.tag = position
-
-            val likeButton = v?.findViewById<ImageButton>(R.id.button_like) as ImageButton
-            likeButton.setOnClickListener {
-                cardStack.swipeTopCardRight(500)
-            }
-
-            val dislikeButton = v.findViewById<ImageButton>(R.id.button_dislike) as ImageButton
-            dislikeButton.setOnClickListener {
-                cardStack.swipeTopCardLeft(500)
-            }
-
-            val imageView = v.findViewById<ImageView>(R.id.offer_image) as ImageView
-
-            val user = getItem(position) as User
-
-            similarUsersPresenter.loadUserFavourites(user.id,position)
-
-            val userNameText = v.findViewById<TextView>(R.id.text_user_name) as TextView
-            userNameText.text = user.name
-
-            val userAge = dobToAge(user.dob)
-
-            val userAgeLocationText = v.findViewById<TextView>(R.id.text_age_location) as TextView
-            userAgeLocationText.text = "$userAge, ${user.location}"
-
-            println(currentViewPosition)
-            println(position)
-
-            val tenFavourites = favouriteVinyls?.take(10)
-
-            val recyclerView = v.findViewById<RecyclerView>(R.id.list_user_favourites) as RecyclerView
+            val tenFavourites = favouriteVinyls.take(10)
 
             val mLayoutManager = LinearLayoutManager(activity)
 
             val favouriteAdapter = FavouriteAdapter(listOf<VinylRelease>())
 
-            recyclerView.layoutManager = mLayoutManager
-            recyclerView.adapter = favouriteAdapter
+            recyclerView?.layoutManager = mLayoutManager
+            recyclerView?.adapter = favouriteAdapter
 
-            if(tenFavourites!=null){
-                    favouriteAdapter.addVinyls(tenFavourites)
-            }
+            favouriteAdapter.addVinyls(tenFavourites)
+            favouriteAdapter.notifyDataSetChanged()
+        }
+
+        @Resolve
+        private fun onResolved() {
+
+            Picasso.with(mContext)
+                    .load(user.imageurl)
+                    .placeholder(R.drawable.ic_male_user_profile_picture)
+                    .fit()
+                    .centerCrop()
+                    .into(profileImageView)
+
+            nameTxt?.text = user.name
+
+            val userAge = dobToAge(user.dob)
+
+            locationNameTxt?.text = "$userAge, ${user.location}"
 
 
-            val topTracksText = v.findViewById<TextView>(R.id.text_top_tracks) as TextView
-            topTracksText.setOnClickListener {
+            topTracksText?.setOnClickListener {
 
                 val intent = Intent(context, FavouriteActivity::class.java)
                 intent.putExtra("selected user", user)
                 context.startActivity(intent)
             }
 
-            Picasso.with(context)
-                        .load(user.imageurl)
-                        .placeholder(R.drawable.ic_male_user_profile_picture)
-                        .fit()
-                        .centerCrop()
-                        .into(imageView)
-
-            v.setOnClickListener(View.OnClickListener {
-
-
-            })
-            return v
+            similarUsersPresenter.loadUserFavourites(user.id,viewPosition)
         }
 
         private fun dobToAge(date : Date?) : String{
@@ -233,6 +195,38 @@ class SimilarUsersFragment : Fragment(), SimilarUsersContract.View {
 
             return period.years.toString()
         }
+
+        @SwipeOut
+        private fun onSwipedOut() {
+            Log.d("EVENT", "onSwipedOut")
+            showMessage("Skipped")
+            mSwipeView.addView(this)
+        }
+
+        @SwipeCancelState
+        private fun onSwipeCancelState() {
+            Log.d("EVENT", "onSwipeCancelState")
+        }
+
+        @SwipeIn
+        private fun onSwipeIn() {
+            Log.d("EVENT", "onSwipedIn")
+
+            showMessage("Liked")
+
+            similarUsersPresenter.handleLike(user)
+        }
+
+        @SwipeInState
+        private fun onSwipeInState() {
+            Log.d("EVENT", "onSwipeInState")
+        }
+
+        @SwipeOutState
+        private fun onSwipeOutState() {
+            Log.d("EVENT", "onSwipeOutState")
+        }
+    }
 
         inner class FavouriteAdapter(private var vinyls: List<VinylRelease>) : RecyclerView.Adapter<FavouriteAdapter.ViewHolder>() {
 
@@ -278,7 +272,4 @@ class SimilarUsersFragment : Fragment(), SimilarUsersContract.View {
                 }
             }
         }
-    }
-
-
 }

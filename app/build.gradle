@@ -74,12 +74,11 @@ dependencies {
 
     compile 'joda-time:joda-time:2.9.9'
 
-    compile 'com.daprlabs.aaron:swipedeck:2.0.6'
 
     compile 'com.lucasurbas:listitemview:1.0.5'
 
 
-    compile 'com.mindorks:placeholderview:0.7.1'
+    compile 'com.mindorks:placeholderview:0.7.2'
 }
 
 
