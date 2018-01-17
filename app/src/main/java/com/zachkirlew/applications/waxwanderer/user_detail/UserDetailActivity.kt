@@ -15,11 +15,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import com.lucasurbas.listitemview.ListItemView
 import com.squareup.picasso.Picasso
 import com.zachkirlew.applications.waxwanderer.R
 import com.zachkirlew.applications.waxwanderer.data.model.User
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
 import com.zachkirlew.applications.waxwanderer.detail_vinyl.VinylDetailActivity
+import com.zachkirlew.applications.waxwanderer.util.CircleTransform
 import kotlinx.android.synthetic.main.vinyl_favourite_item.view.*
 import org.joda.time.LocalDate
 import org.joda.time.Period
@@ -131,7 +133,7 @@ class UserDetailActivity : AppCompatActivity(), UserDetailContract.View  {
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FavouriteAdapter.ViewHolder {
-            val v = LayoutInflater.from(parent.context).inflate(R.layout.vinyl_favourite_item, parent, false)
+            val v = LayoutInflater.from(parent.context).inflate(R.layout.vinyl_favourite_item, parent, false) as ListItemView
             return ViewHolder(v)
         }
 
@@ -155,12 +157,20 @@ class UserDetailActivity : AppCompatActivity(), UserDetailContract.View  {
         class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
             fun bindItems(vinyl: VinylRelease) {
-                itemView.text_title.text = vinyl.title
-                itemView.text_release_date.text=vinyl.year
-                itemView.text_label.text=vinyl.year
+                itemView.vinyl_favourite_item_view.title = vinyl.title
+                itemView.vinyl_favourite_item_view.subtitle=vinyl.year
 
-                if(!vinyl.thumb.isNullOrEmpty()) {
-                    Picasso.with(itemView.context).load(vinyl.thumb).into(itemView.cover_art)
+                val thumbUrl = vinyl.thumb
+
+                thumbUrl?.let {
+                    if(thumbUrl.isNotEmpty())
+                        Picasso.with(itemView.context)
+                                .load(vinyl.thumb)
+                                .placeholder(R.mipmap.ic_launcher)
+                                .into(itemView.vinyl_favourite_item_view.avatarView)
+                    else{
+                        itemView.vinyl_favourite_item_view.avatarView.setImageResource(R.mipmap.ic_launcher)
+                    }
                 }
             }
         }

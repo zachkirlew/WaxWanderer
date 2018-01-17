@@ -7,6 +7,7 @@ import android.support.v7.widget.Toolbar
 import android.view.MenuItem
 import com.zachkirlew.applications.waxwanderer.R
 import com.zachkirlew.applications.waxwanderer.data.model.User
+import com.zachkirlew.applications.waxwanderer.util.StringUtils
 
 
 class FavouriteActivity : AppCompatActivity() {
@@ -24,13 +25,9 @@ class FavouriteActivity : AppCompatActivity() {
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        val firstName = user.name?.let { getFirstName(it) }
+        val firstName = user.name?.let { StringUtils.getFirstName(it) }
 
         title = "$firstName's Top Vinyls"
-    }
-
-    private fun getFirstName(fullName : String): String {
-        return fullName.split(" ")[0]
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

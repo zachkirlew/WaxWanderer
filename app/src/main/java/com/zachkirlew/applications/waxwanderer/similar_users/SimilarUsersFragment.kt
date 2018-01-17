@@ -14,6 +14,7 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import com.facebook.FacebookSdk.getApplicationContext
 import com.mindorks.placeholderview.SwipePlaceHolderView
 import com.mindorks.placeholderview.annotations.Layout
 import com.mindorks.placeholderview.annotations.Resolve
@@ -24,7 +25,8 @@ import com.zachkirlew.applications.waxwanderer.data.model.User
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
 import com.zachkirlew.applications.waxwanderer.detail_vinyl.VinylDetailActivity
 import com.zachkirlew.applications.waxwanderer.favourites.FavouriteActivity
-import kotlinx.android.synthetic.main.explore_item.view.*
+import com.zachkirlew.applications.waxwanderer.util.StringUtils
+import kotlinx.android.synthetic.main.top_ten_vinyl_item.view.*
 import org.joda.time.LocalDate
 import org.joda.time.Period
 import org.joda.time.PeriodType
@@ -39,6 +41,8 @@ class SimilarUsersFragment : Fragment(), SimilarUsersContract.View {
 
     private lateinit var likeButton: ImageButton
     private lateinit var dislikeButton: ImageButton
+
+    private lateinit var mContext: Context
 
     private lateinit var userCards : List<SimilarUsersFragment.UserCard>
 
@@ -57,6 +61,9 @@ class SimilarUsersFragment : Fragment(), SimilarUsersContract.View {
         mSwipeView = root?.findViewById<SwipePlaceHolderView>(R.id.swipeView) as SwipePlaceHolderView
 
         SwipeViewBuilderInstance(mSwipeView)
+
+        mContext = getApplicationContext()
+
 
         similarUsersPresenter = SimilarUsersPresenter(this)
 
@@ -95,10 +102,11 @@ class SimilarUsersFragment : Fragment(), SimilarUsersContract.View {
 
     override fun showSimilarUsers(users: List<User>) {
         userCards = users.mapIndexed { index, user ->
-            UserCard(activity, user, mSwipeView,index)
+            UserCard(mContext, user, mSwipeView,index)
+
         }
 
-        userCards.forEach{ mSwipeView.addView(it) }
+        userCards.forEach{ mSwipeView.addView(it)}
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -143,18 +151,18 @@ class SimilarUsersFragment : Fragment(), SimilarUsersContract.View {
         @com.mindorks.placeholderview.annotations.View(R.id.list_user_favourites)
         private val recyclerView: RecyclerView? = null
 
-
-
         fun showVinyls(favouriteVinyls :List<VinylRelease>){
 
             val tenFavourites = favouriteVinyls.take(10)
 
-            val mLayoutManager = LinearLayoutManager(activity)
+            val mLayoutManager = LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL, false);
 
             val favouriteAdapter = FavouriteAdapter(listOf<VinylRelease>())
 
             recyclerView?.layoutManager = mLayoutManager
             recyclerView?.adapter = favouriteAdapter
+
+
 
             favouriteAdapter.addVinyls(tenFavourites)
             favouriteAdapter.notifyDataSetChanged()
@@ -170,7 +178,7 @@ class SimilarUsersFragment : Fragment(), SimilarUsersContract.View {
                     .centerCrop()
                     .into(profileImageView)
 
-            nameTxt?.text = user.name
+            nameTxt?.text = StringUtils.getFirstName(user.name)
 
             val userAge = dobToAge(user.dob)
 
@@ -230,15 +238,13 @@ class SimilarUsersFragment : Fragment(), SimilarUsersContract.View {
 
         inner class FavouriteAdapter(private var vinyls: List<VinylRelease>) : RecyclerView.Adapter<FavouriteAdapter.ViewHolder>() {
 
-
             fun addVinyls(vinyls : List<VinylRelease>){
                 this.vinyls = vinyls
                 notifyDataSetChanged()
-
             }
 
             override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FavouriteAdapter.ViewHolder {
-                val v = LayoutInflater.from(parent.context).inflate(R.layout.explore_item, parent, false)
+                val v = LayoutInflater.from(parent.context).inflate(R.layout.top_ten_vinyl_item, parent, false)
                 return ViewHolder(v)
             }
 
@@ -263,8 +269,6 @@ class SimilarUsersFragment : Fragment(), SimilarUsersContract.View {
 
                 fun bindItems(vinyl: VinylRelease) {
                     itemView.album_name.text = vinyl.title
-                    itemView.artist_name.text=vinyl.year
-                    itemView.code.text = vinyl.catno
 
                     if(!vinyl.thumb.isNullOrEmpty()) {
                         Picasso.with(itemView.context).load(vinyl.thumb).into(itemView.cover_art)

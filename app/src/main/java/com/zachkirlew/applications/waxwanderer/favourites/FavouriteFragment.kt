@@ -60,11 +60,8 @@ class FavouriteFragment: Fragment(), FavouriteContract.View {
 
         //user is viewing someone else's favourite list
         if(user!=null){
-            val userFavourites = user?.favourites?.map { it.value }
-            if(userFavourites!=null)
-                showFavouriteVinyls(userFavourites)
-            else
-                showNoVinylsView()
+            val userId = user?.id
+            favouritePresenter.loadFavouriteVinyls(userId!!)
         }
         //user is viewing their own list
         else{

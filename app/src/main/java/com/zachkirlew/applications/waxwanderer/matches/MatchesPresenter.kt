@@ -85,6 +85,7 @@ class MatchesPresenter(private @NonNull var matchesView: MatchesContract.View) :
                 .child("connections").child("matches")
                 .child(userUid).setValue(null)
 
+
     }
 
 

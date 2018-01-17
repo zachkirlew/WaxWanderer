@@ -9,6 +9,7 @@ import com.zachkirlew.applications.waxwanderer.data.model.User
 
 class FavouritePresenter(private @NonNull var favouriteView: FavouriteContract.View) : FavouriteContract.Presenter  {
 
+
     private val mFirebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private val database = FirebaseDatabase.getInstance()
 
@@ -17,12 +18,20 @@ class FavouritePresenter(private @NonNull var favouriteView: FavouriteContract.V
     }
 
     override fun loadFavouriteVinyls() {
+        val user = mFirebaseAuth.currentUser
+
+        getVinyls(user?.uid)
+    }
+
+    override fun loadFavouriteVinyls(userId: String) {
+        getVinyls(userId)
+    }
+
+    private fun getVinyls(uid : String?){
 
         val myRef = database.reference
 
-        val user = mFirebaseAuth.currentUser
-
-        val ref = myRef.child("favourites").child(user?.uid)
+        val ref = myRef.child("favourites").child(uid)
 
         ref.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
@@ -42,6 +51,7 @@ class FavouritePresenter(private @NonNull var favouriteView: FavouriteContract.V
             override fun onCancelled(databaseError: DatabaseError) {
             }
         })
+
     }
 
 }

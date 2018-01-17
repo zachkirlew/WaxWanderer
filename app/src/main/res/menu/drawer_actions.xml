@@ -4,21 +4,21 @@
     <group>
         <item
             android:id="@+id/explore_navigation_menu_item"
-            android:icon="@mipmap/ic_launcher"
+            android:icon="@drawable/ic_menu_explore"
             android:title="@string/explore_title" />
         <item
             android:id="@+id/favourites_navigation_menu_item"
-            android:icon="@mipmap/ic_launcher"
+            android:icon="@drawable/ic_menu_heart"
             android:title="@string/favourites_title" />
 
         <item
             android:id="@+id/match_navigation_menu_item"
-            android:icon="@mipmap/ic_launcher"
+            android:icon="@drawable/ic_menu_match"
             android:title="@string/match_title" />
 
         <item
             android:id="@+id/matches_navigation_menu_item"
-            android:icon="@mipmap/ic_launcher"
+            android:icon="@drawable/ic_menu_matches"
             android:title="@string/matches_title" />
     </group>
 
@@ -27,11 +27,11 @@
 
             <item
                 android:id="@+id/settings_navigation_menu_item"
-                android:icon="@mipmap/ic_launcher"
+                android:icon="@drawable/ic_menu_settings"
                 android:title="@string/settings_title" />
             <item
                 android:id="@+id/log_out_navigation_menu_item"
-                android:icon="@mipmap/ic_launcher"
+                android:icon="@drawable/ic_menu_log_out"
                 android:title="@string/log_out_title" />
         </menu>
     </item>

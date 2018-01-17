@@ -81,26 +81,6 @@
             android:orientation="vertical"
             android:paddingTop="24dp">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center_horizontal"
-                android:orientation="horizontal">
-
-                <ImageButton
-                    android:id="@+id/button_like"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:srcCompat="@drawable/ic_favorite" />
-
-                <ImageButton
-                    android:id="@+id/button_dislike"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:srcCompat="@drawable/ic_favorite" />
-
-            </LinearLayout>
-
             <android.support.v7.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -115,8 +95,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:paddingBottom="@dimen/activity_horizontal_margin"
-                        android:text="My top tracks"
+                        android:text="View my favourite vinyls"
                         android:textAlignment="center"
                         android:textSize="18sp"
                         android:textStyle="bold" />

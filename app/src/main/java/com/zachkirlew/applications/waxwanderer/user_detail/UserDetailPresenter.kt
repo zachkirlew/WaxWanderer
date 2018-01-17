@@ -21,8 +21,7 @@ class UserDetailPresenter(private @NonNull var userDetailView: UserDetailContrac
 
         val myRef = database.reference
 
-        val ref = myRef.child("users").child(user.id).child("favourites")
-
+        val ref = myRef.child("favourites").child(user.id)
         ref.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
 

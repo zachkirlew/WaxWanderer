@@ -18,7 +18,7 @@ interface FavouriteContract {
     }
 
     interface Presenter {
-
         fun loadFavouriteVinyls()
+        fun loadFavouriteVinyls(userId : String)
     }
 }
