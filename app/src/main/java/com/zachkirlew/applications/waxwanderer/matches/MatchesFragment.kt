@@ -18,7 +18,7 @@ import com.zachkirlew.applications.waxwanderer.data.model.User
 import com.zachkirlew.applications.waxwanderer.message.MessageActivity
 import com.zachkirlew.applications.waxwanderer.user_detail.UserDetailActivity
 import com.zachkirlew.applications.waxwanderer.util.CircleTransform
-import com.zachkirlew.applications.waxwanderer.util.RecyclerItemDecoration
+import com.zachkirlew.applications.waxwanderer.util.EqualSpaceItemDecoration
 import kotlinx.android.synthetic.main.match_item.view.*
 
 
@@ -53,7 +53,7 @@ class MatchesFragment: Fragment(), MatchesContract.View{
         exploreList.adapter = matchesAdapter
 
         val spacingInPixels = resources.getDimensionPixelSize(R.dimen.list_item_padding)
-        exploreList.addItemDecoration(RecyclerItemDecoration(spacingInPixels))
+        exploreList.addItemDecoration(EqualSpaceItemDecoration(spacingInPixels))
 
         noMatchesText = root.findViewById<TextView>(R.id.text_no_matches) as TextView
 

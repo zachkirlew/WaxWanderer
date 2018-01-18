@@ -1,7 +1,6 @@
 package com.zachkirlew.applications.waxwanderer.similar_users
 
 import android.support.annotation.NonNull
-import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DataSnapshot
@@ -11,8 +10,8 @@ import com.google.firebase.database.ValueEventListener
 import com.zachkirlew.applications.waxwanderer.data.local.UserPreferences
 import com.zachkirlew.applications.waxwanderer.data.model.User
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
-import com.zachkirlew.applications.waxwanderer.data.recommendation.FallbackRecommender
 import com.zachkirlew.applications.waxwanderer.data.recommendation.RecommenderImp
+import durdinapps.rxfirebase2.RxFirebaseDatabase
 import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -21,18 +20,16 @@ import org.joda.time.LocalDate
 import org.joda.time.Period
 import org.joda.time.PeriodType
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 class SimilarUsersPresenter(private @NonNull var similarUsersView: SimilarUsersContract.View,
                             private @NonNull val preferences: UserPreferences,
                             private @NonNull val recommender: RecommenderImp) : SimilarUsersContract.Presenter {
 
-    private val mFirebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private val database = FirebaseDatabase.getInstance()
 
-    lateinit var userInfo: User
-
-    lateinit var user: FirebaseUser
+    private val user: FirebaseUser = FirebaseAuth.getInstance().currentUser!!
 
     private var matchedUserIds : List<String>? = null
 
@@ -42,41 +39,36 @@ class SimilarUsersPresenter(private @NonNull var similarUsersView: SimilarUsersC
 
     override fun start() {
 
+        val lowerAgeLimit = preferences.minMatchAge
+        val upperAgeLimit = preferences.maxMatchAge
+
         val myRef = database.reference
 
-        user = mFirebaseAuth.currentUser!!
+        val matchesRef = myRef.child("matches").child(user.uid)
+        val usersRef = myRef.child("users")
 
-        val userRef = myRef.child("users").child(user.uid)
-
-        userRef.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-
-                userInfo = dataSnapshot.getValue(User::class.java)!!
-//                getFavouriteCount(userInfo.id!!)
-
-                loadAlreadyMatched()
-            }
-
-            override fun onCancelled(databaseError: DatabaseError) {
-            }
-        })
+        RxFirebaseDatabase.observeValueEvent(matchesRef, {dataSnapshot -> matchedUserIds = dataSnapshot.children.map{it.key}})
+                .flatMap { RxFirebaseDatabase.observeValueEvent(usersRef,{dataSnapshot -> dataSnapshot.children.map { it.getValue<User>(User::class.java)!!}}) }
+                .map { userList -> filterGenders(userList) } // remove users according to current users match gender prefs
+                .map { list -> list.filter {user.uid != it.id} } //remove current user from list
+                .map { list -> list.filter{dobToAge(it.dob) in lowerAgeLimit..upperAgeLimit} } //remove anyone not in user match age range
+                .map {list -> list.filter{!matchedUserIds!!.contains(it.id)}} // filter any already matched users
+                .toObservable()
+                .subscribe(object : Observer<List<User>>{
+                    override fun onNext(similarUserList: List<User>) {
+                        similarUsersView.showSimilarUsers(similarUserList)
+                    }
+                    override fun onSubscribe(d: Disposable) {
+                    }
+                    override fun onError(e: Throwable) {
+                        similarUsersView.showMessage("Could not load users")
+                    }
+                    override fun onComplete() {
+                    }
+                })
     }
 
-    override  fun loadAlreadyMatched() {
-        val myRef = database.reference
-        val userRef = myRef.child("matches").child(user.uid)
 
-        userRef.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                if(dataSnapshot.exists()) {
-                    matchedUserIds = dataSnapshot.children.map { it.key }
-                }
-                loadUsers()
-            }
-            override fun onCancelled(databaseError: DatabaseError) {
-            }
-        })
-    }
 
 //    override fun getFavouriteCount(userId: String) {
 //        val myRef = database.reference
@@ -104,12 +96,12 @@ class SimilarUsersPresenter(private @NonNull var similarUsersView: SimilarUsersC
 //    }
 
     override fun loadSimilarUsers() {
-        recommender.recommendUserToUser(user.uid,50)
+        recommender.recommendUserToUser(user.uid,5)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(object : Observer<List<String>>{
                     override fun onNext(ids: List<String>) {
-
+                        ids.forEach {println(it)}
                     }
                     override fun onComplete() {
                     }
@@ -120,32 +112,7 @@ class SimilarUsersPresenter(private @NonNull var similarUsersView: SimilarUsersC
                 })
     }
 
-    override fun loadUsers() {
 
-        val usersRef = FirebaseDatabase.getInstance().reference.child("users")
-
-        usersRef.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-
-                val users = ArrayList<User>()
-
-                for (child in dataSnapshot.children) {
-                    child.getValue<User>(User::class.java)?.let { users.add(it) }
-                }
-
-
-                val fallbackRecommender = FallbackRecommender()
-
-//                users.sortedWith(compareBy { fallbackRecommender.calculateJaccardSimilarity(it.) })
-
-//                Collections.shuffle(users)
-                filterSimilarUsers(users)
-            }
-
-            override fun onCancelled(databaseError: DatabaseError) {
-            }
-        })
-    }
 
 //    private fun loadVinylPreferences(userId : String){
 //
@@ -168,41 +135,27 @@ class SimilarUsersPresenter(private @NonNull var similarUsersView: SimilarUsersC
 //        })
 //    }
 
-    override fun filterSimilarUsers(similarUserList: List<User>) {
-
+    override fun filterGenders(similarUserList: List<User>) : List<User> {
         val filterGender = preferences.matchGender
 
-        val lowerAgeLimit = preferences.minMatchAge
-        val upperAgeLimit = preferences.maxMatchAge
-
-        //filter users by age and gender
-        var filteredUsers = similarUserList.filter { user.uid != it.id }
-                .filter { dobToAge(it.dob) in lowerAgeLimit..upperAgeLimit }
-
-        //remove any users that that the current user has already matched with
-        if(matchedUserIds!=null){
-            filteredUsers = filteredUsers.filter { !matchedUserIds!!.contains(it.id)}
-        }
-
-        when (filterGender) {
+        return when (filterGender) {
             "Males" -> {
-                similarUsersView.showSimilarUsers(filteredUsers.filter { it.gender == "Male" })
+                similarUserList.filter { it.gender == "Male" }
             }
             "Females" -> {
-                similarUsersView.showSimilarUsers(filteredUsers.filter { it.gender == "Female" })
+                similarUserList.filter { it.gender == "Female" }
             }
             else -> {
-                similarUsersView.showSimilarUsers(filteredUsers)
+                similarUserList
             }
         }
-
     }
 
     override fun handleLike(likedUser: User) {
 
         val myRef = database.reference
 
-        val userUid = mFirebaseAuth.currentUser?.uid
+        val userUid = user.uid
 
         myRef.child("likes").child(likedUser.id).child(userUid).addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {

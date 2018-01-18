@@ -85,6 +85,8 @@ dependencies {
 
     compile 'commons-codec:commons-codec:1.9'
 
+    compile 'com.github.frangsierra:rx2firebase:1.1.3'
+
 
 }
 

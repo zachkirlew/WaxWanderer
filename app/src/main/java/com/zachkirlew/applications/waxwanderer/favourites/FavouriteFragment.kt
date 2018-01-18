@@ -13,7 +13,7 @@ import com.zachkirlew.applications.waxwanderer.R
 import com.zachkirlew.applications.waxwanderer.data.model.User
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
 import com.zachkirlew.applications.waxwanderer.detail_vinyl.VinylDetailActivity
-import com.zachkirlew.applications.waxwanderer.util.RecyclerItemDecoration
+import com.zachkirlew.applications.waxwanderer.util.EqualSpaceItemDecoration
 import kotlinx.android.synthetic.main.explore_item.view.*
 
 
@@ -54,7 +54,7 @@ class FavouriteFragment: Fragment(), FavouriteContract.View {
         exploreList.adapter = favouriteAdapter
 
         val spacingInPixels = resources.getDimensionPixelSize(R.dimen.list_item_padding)
-        exploreList.addItemDecoration(RecyclerItemDecoration(spacingInPixels))
+        exploreList.addItemDecoration(EqualSpaceItemDecoration(spacingInPixels))
 
         noFavouritesText = root.findViewById<TextView>(R.id.text_no_favourites)
 
