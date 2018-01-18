@@ -75,6 +75,6 @@ class StylesPresenter(private @NonNull var stylesView: StylesContract.View) : St
 
         myRef.child("vinylPreferences").child(user?.uid).setValue(selectedStyles)
 
-        stylesView.startExploreActivity()
+        stylesView.startNextActivity()
     }
 }

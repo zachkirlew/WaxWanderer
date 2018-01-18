@@ -29,7 +29,6 @@ class MatchDetailsActivity : AppCompatActivity(), MatchDetailsContract.View,Date
     private val submitButton by lazy {findViewById<Button>(R.id.button_submit_details)}
 
     private val fromAgePicker by lazy{findViewById<NumberPicker>(R.id.age_from) as NumberPicker}
-
     private val toAgePicker by lazy{findViewById<NumberPicker>(R.id.age_to) as NumberPicker}
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,7 +54,6 @@ class MatchDetailsActivity : AppCompatActivity(), MatchDetailsContract.View,Date
 
         submitButton.setOnClickListener{getDetails()}
 
-
         fromAgePicker.minValue = 18
         fromAgePicker.maxValue = 100
         
@@ -63,12 +61,9 @@ class MatchDetailsActivity : AppCompatActivity(), MatchDetailsContract.View,Date
 
             toAgePicker.minValue = newVal
 
-
             val oldAgeRange = textMatchAge.text.toString()
 
             val split = oldAgeRange.split(" - ")
-
-
 
             if(newVal > Integer.parseInt(split[1])){
                 textMatchAge.text = newVal.toString() + " - " + newVal
@@ -89,7 +84,6 @@ class MatchDetailsActivity : AppCompatActivity(), MatchDetailsContract.View,Date
 
             textMatchAge.text = newAgeRange
         }
-        
 
         toAgePicker.minValue = 18
         toAgePicker.maxValue = 100
@@ -111,7 +105,6 @@ class MatchDetailsActivity : AppCompatActivity(), MatchDetailsContract.View,Date
 
         val minMatchAge = fromAgePicker.value
         val maxMatchAge = toAgePicker.value
-
 
         presenter.submitDetails(userGender,userLocation,matchGender,minMatchAge,maxMatchAge)
     }

@@ -6,10 +6,7 @@ import android.support.annotation.Nullable
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.view.LayoutInflater
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.ProgressBar
 import android.widget.TextView
 import com.squareup.picasso.Picasso
@@ -88,7 +85,6 @@ class ExploreFragment: Fragment(), ExploreContract.View, OnSearchSubmitted{
     }
 
     override fun showVinylReleaseDetailsUI() {
-
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -101,9 +97,7 @@ class ExploreFragment: Fragment(), ExploreContract.View, OnSearchSubmitted{
     }
 
     //Explore adapter
-
     class ExploreAdapter(private var vinyls: ArrayList<VinylRelease>) : RecyclerView.Adapter<ExploreAdapter.ViewHolder>() {
-
 
         fun addVinyls(vinyls : List<VinylRelease>){
             this.vinyls.addAll(vinyls)
@@ -114,6 +108,7 @@ class ExploreFragment: Fragment(), ExploreContract.View, OnSearchSubmitted{
             this.vinyls.clear()
             notifyDataSetChanged()
         }
+
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ExploreAdapter.ViewHolder {
             val v = LayoutInflater.from(parent.context).inflate(R.layout.explore_item, parent, false)
@@ -149,8 +144,5 @@ class ExploreFragment: Fragment(), ExploreContract.View, OnSearchSubmitted{
                 }
             }
         }
-
     }
-
-
 }

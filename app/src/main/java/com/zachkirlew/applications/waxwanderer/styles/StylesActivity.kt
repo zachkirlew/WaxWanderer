@@ -15,7 +15,7 @@ import android.widget.*
 import com.zachkirlew.applications.waxwanderer.data.model.Style
 
 
-class StylesActivity : AppCompatActivity(), StylesContract.View, AdapterView.OnItemSelectedListener, View.OnClickListener {
+class StylesActivity : AppCompatActivity(), StylesContract.View, AdapterView.OnItemSelectedListener {
 
     private lateinit var presenter: StylesPresenter
 
@@ -29,11 +29,15 @@ class StylesActivity : AppCompatActivity(), StylesContract.View, AdapterView.OnI
 
     private lateinit var stylesAdapter: StylesAdapter
 
+    private var hasComeFromSettings : Boolean = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_styles)
 
         presenter = StylesPresenter(this)
+
+        hasComeFromSettings = intent.getBooleanExtra("fromSettings",false)
 
         val linearLayoutManager = LinearLayoutManager(this)
         recyclerView.layoutManager = linearLayoutManager
@@ -43,7 +47,14 @@ class StylesActivity : AppCompatActivity(), StylesContract.View, AdapterView.OnI
         stylesAdapter = StylesAdapter(emptyList())
         recyclerView.adapter = stylesAdapter
 
-        submitButton.setOnClickListener(this)
+        submitButton.setOnClickListener{
+
+            val selectedGenre = spinner.selectedItem.toString()
+
+            val selectedStyles = stylesAdapter.getAllSelectedStyles()
+
+            presenter.savePreferences(selectedGenre,selectedStyles)
+        }
     }
 
     public override fun onStart() {
@@ -78,18 +89,13 @@ class StylesActivity : AppCompatActivity(), StylesContract.View, AdapterView.OnI
         stylesAdapter.notifyDataSetChanged()
     }
 
-    override fun startExploreActivity() {
-        val intent = Intent(this, ExploreActivity::class.java)
-        startActivity(intent)
-    }
-
-    //handle submitting of styles and genre
-    override fun onClick(p0: View?) {
-        val selectedGenre = spinner.selectedItem.toString()
-
-        val selectedStyles = stylesAdapter.getAllSelectedStyles()
-
-        presenter.savePreferences(selectedGenre,selectedStyles)
+    override fun startNextActivity() {
+        if(hasComeFromSettings)
+            onBackPressed()
+        else{
+            val intent = Intent(this, ExploreActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     fun addStyleToSelectedList(style : String){

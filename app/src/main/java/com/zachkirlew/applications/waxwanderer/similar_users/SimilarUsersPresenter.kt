@@ -34,6 +34,8 @@ class SimilarUsersPresenter(private @NonNull var similarUsersView: SimilarUsersC
 
     lateinit var user: FirebaseUser
 
+    lateinit var matchedUserIds : List<String>
+
     init {
         similarUsersView.setPresenter(this)
     }
@@ -50,7 +52,9 @@ class SimilarUsersPresenter(private @NonNull var similarUsersView: SimilarUsersC
             override fun onDataChange(dataSnapshot: DataSnapshot) {
 
                 userInfo = dataSnapshot.getValue(User::class.java)!!
-                getFavouriteCount(userInfo.id!!)
+//                getFavouriteCount(userInfo.id!!)
+
+                loadAlreadyMatched()
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
@@ -58,28 +62,46 @@ class SimilarUsersPresenter(private @NonNull var similarUsersView: SimilarUsersC
         })
     }
 
-    override fun getFavouriteCount(userId: String) {
+    override  fun loadAlreadyMatched() {
         val myRef = database.reference
-        val userRef = myRef.child("favourites").child(user.uid)
+        val userRef = myRef.child("matches").child(user.uid)
 
         userRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                if(dataSnapshot.exists()){
-                    val favouriteCount = dataSnapshot.children.count()
-
-                    //use recombee
-                    if(favouriteCount > 10)
-                        loadSimilarUsers()
-                    else
-                        loadUsers()
-                }
-                else
+                if(dataSnapshot.exists()) {
+                    matchedUserIds = dataSnapshot.children.map { it.key }
                     loadUsers()
+                }
             }
             override fun onCancelled(databaseError: DatabaseError) {
             }
         })
     }
+
+//    override fun getFavouriteCount(userId: String) {
+//        val myRef = database.reference
+//        val userRef = myRef.child("favourites").child(user.uid)
+//
+//        userRef.addValueEventListener(object : ValueEventListener {
+//            override fun onDataChange(dataSnapshot: DataSnapshot) {
+//                if(dataSnapshot.exists()){
+//                    val favouriteCount = dataSnapshot.children.count()
+//
+//                    loadUsers()
+//
+//                    //use recombee
+//                    if(favouriteCount > 10)
+//                        loadSimilarUsers()
+//                    else
+//                        loadUsers()
+//                }
+//                else
+//                    loadUsers()
+//            }
+//            override fun onCancelled(databaseError: DatabaseError) {
+//            }
+//        })
+//    }
 
     override fun loadSimilarUsers() {
         recommender.recommendUserToUser(user.uid,50)
@@ -110,6 +132,7 @@ class SimilarUsersPresenter(private @NonNull var similarUsersView: SimilarUsersC
                 for (child in dataSnapshot.children) {
                     child.getValue<User>(User::class.java)?.let { users.add(it) }
                 }
+
 
                 val fallbackRecommender = FallbackRecommender()
 
@@ -153,13 +176,14 @@ class SimilarUsersPresenter(private @NonNull var similarUsersView: SimilarUsersC
         val upperAgeLimit = preferences.maxMatchAge
 
         //filter users by age and gender
-        val filteredUsers = similarUserList.filter { user.uid != it.id }
+        var filteredUsers = similarUserList.filter { user.uid != it.id }
                 .filter { dobToAge(it.dob) in lowerAgeLimit..upperAgeLimit }
 
         //remove any users that that the current user has already matched with
-//                if(userInfo.connections?.matches!=null){
-//                    filteredUsers = filteredUsers.filter { !userInfo.connections?.matches?.containsKey(it.id)!! }
-//                }
+                if(matchedUserIds.isNotEmpty()){
+                    filteredUsers = filteredUsers.filter { !matchedUserIds.contains(it.id)}
+                }
+        filteredUsers.forEach { println(it.name) }
 
         when (filterGender) {
             "Males" -> {

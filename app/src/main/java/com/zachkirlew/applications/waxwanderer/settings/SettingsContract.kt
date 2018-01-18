@@ -15,6 +15,8 @@ interface SettingsContract {
 
         fun showMessage(message : String)
 
+        fun startStylesActivity()
+
     }
 
     interface Presenter : BasePresenter {

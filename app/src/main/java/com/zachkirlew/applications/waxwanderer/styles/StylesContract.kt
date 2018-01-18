@@ -5,7 +5,7 @@ import com.zachkirlew.applications.waxwanderer.data.model.Style
 interface StylesContract {
     interface View {
 
-        fun startExploreActivity()
+        fun startNextActivity()
 
         fun showGenres(genres : List<String>)
 

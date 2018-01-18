@@ -13,6 +13,7 @@ import com.squareup.picasso.Picasso
 import com.zachkirlew.applications.waxwanderer.R
 import com.zachkirlew.applications.waxwanderer.data.local.UserPreferences
 import com.zachkirlew.applications.waxwanderer.data.model.User
+import com.zachkirlew.applications.waxwanderer.styles.StylesActivity
 import com.zachkirlew.applications.waxwanderer.util.BorderedCircleTransform
 import java.text.DateFormat
 import java.util.*
@@ -27,7 +28,6 @@ class SettingsFragment : Fragment(), SettingsContract.View, DatePickerDialog.OnD
 
     lateinit var nameText: EditText
     lateinit var dobText: EditText
-
     lateinit var editTextDOB : EditText
 
     lateinit var userGenderSpinner : Spinner
@@ -40,8 +40,9 @@ class SettingsFragment : Fragment(), SettingsContract.View, DatePickerDialog.OnD
     lateinit var uploadImage : ImageView
 
     lateinit var fromAgePicker : NumberPicker
-
     lateinit var toAgePicker : NumberPicker
+
+    lateinit var chooseStylesLayout : LinearLayout
 
     override fun onResume() {
         super.onResume()
@@ -98,6 +99,8 @@ class SettingsFragment : Fragment(), SettingsContract.View, DatePickerDialog.OnD
             else{
                 ageRangeText.text = newVal.toString() + " - " + split[1]
             }
+
+
         }
 
         toAgePicker.setOnValueChangedListener { numberPicker, oldVal, newVal ->
@@ -136,6 +139,7 @@ class SettingsFragment : Fragment(), SettingsContract.View, DatePickerDialog.OnD
         uploadImage = root.findViewById<ImageView>(R.id.image_upload) as ImageView
 
         uploadImage.setOnClickListener{ profilePicSelection() }
+
         return root
     }
 
@@ -165,6 +169,12 @@ class SettingsFragment : Fragment(), SettingsContract.View, DatePickerDialog.OnD
         })
         builder.show()
 
+    }
+
+    override fun startStylesActivity() {
+        val intent = Intent(activity, StylesActivity::class.java)
+        intent.putExtra("fromSettings",true)
+        startActivity(intent)
     }
 
 //    private fun cameraIntent() {
@@ -229,6 +239,9 @@ class SettingsFragment : Fragment(), SettingsContract.View, DatePickerDialog.OnD
             if(gender == matchGender) matchGenderSpinner.setSelection(index)
 
         }
+
+        fromAgePicker.value = minMatchAge
+        toAgePicker.value = maxMatchAge
 
         val ageRange = "$minMatchAge - $maxMatchAge"
 

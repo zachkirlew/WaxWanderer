@@ -25,8 +25,10 @@ interface SimilarUsersContract {
         fun loadSimilarUsers()
         fun filterSimilarUsers(similarUserList : List<User>)
         fun handleLike(likedUser : User)
-        fun getFavouriteCount(userId : String)
+//        fun getFavouriteCount(userId : String)
         fun loadUsers()
+
+        fun loadAlreadyMatched()
 
         fun loadUserFavourites(userId : String?, viewPosition : Int)
     }
