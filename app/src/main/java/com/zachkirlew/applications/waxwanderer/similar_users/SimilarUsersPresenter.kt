@@ -34,7 +34,7 @@ class SimilarUsersPresenter(private @NonNull var similarUsersView: SimilarUsersC
 
     lateinit var user: FirebaseUser
 
-    lateinit var matchedUserIds : List<String>
+    private var matchedUserIds : List<String>? = null
 
     init {
         similarUsersView.setPresenter(this)
@@ -70,8 +70,8 @@ class SimilarUsersPresenter(private @NonNull var similarUsersView: SimilarUsersC
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 if(dataSnapshot.exists()) {
                     matchedUserIds = dataSnapshot.children.map { it.key }
-                    loadUsers()
                 }
+                loadUsers()
             }
             override fun onCancelled(databaseError: DatabaseError) {
             }
@@ -180,10 +180,9 @@ class SimilarUsersPresenter(private @NonNull var similarUsersView: SimilarUsersC
                 .filter { dobToAge(it.dob) in lowerAgeLimit..upperAgeLimit }
 
         //remove any users that that the current user has already matched with
-                if(matchedUserIds.isNotEmpty()){
-                    filteredUsers = filteredUsers.filter { !matchedUserIds.contains(it.id)}
-                }
-        filteredUsers.forEach { println(it.name) }
+        if(matchedUserIds!=null){
+            filteredUsers = filteredUsers.filter { !matchedUserIds!!.contains(it.id)}
+        }
 
         when (filterGender) {
             "Males" -> {

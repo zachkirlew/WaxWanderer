@@ -76,13 +76,11 @@ class MatchesPresenter(private @NonNull var matchesView: MatchesContract.View) :
         val userUid = mFirebaseAuth.currentUser?.uid
 
         //remove match from users account first
-        myRef.child("users").child(userUid)
-                .child("connections").child("matches")
+        myRef.child("matches").child(userUid)
                 .child(matchId).setValue(null)
 
         //then remove from connections account
-        myRef.child("users").child(matchId)
-                .child("connections").child("matches")
+        myRef.child("matches").child(matchId)
                 .child(userUid).setValue(null)
 
 
