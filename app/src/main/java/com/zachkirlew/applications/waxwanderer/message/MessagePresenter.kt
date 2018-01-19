@@ -5,6 +5,7 @@ import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.zachkirlew.applications.waxwanderer.data.model.Message
+import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
 
 
 class MessagePresenter(private @NonNull var messageView: MessageContract.View) : MessageContract.Presenter {
@@ -71,6 +72,26 @@ class MessagePresenter(private @NonNull var messageView: MessageContract.View) :
     override fun sendMessage(message: Message) {
         val key = database.reference.child("chat").child(chatId).push().key
         database.reference.child("chat").child(chatId).child(key).setValue(message)
+    }
+
+    override fun loadFavourites() {
+
+        val myRef = database.reference
+        val user = mFirebaseAuth.currentUser
+
+        val ref = myRef.child("favourites").child(user?.uid)
+
+        ref.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+
+                val userFavourites = dataSnapshot.children.map { it.getValue<VinylRelease>(VinylRelease::class.java)!! }
+                messageView.showChooseRecordDialog(userFavourites)
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+            }
+        })
+
     }
 
 

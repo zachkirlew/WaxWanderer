@@ -2,12 +2,14 @@ package com.zachkirlew.applications.waxwanderer.message
 
 import com.zachkirlew.applications.waxwanderer.base.BasePresenter
 import com.zachkirlew.applications.waxwanderer.data.model.Message
+import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
 
 interface MessageContract {
 
     interface View {
 
         fun showMessage(message : Message)
+        fun showChooseRecordDialog(favourites :List<VinylRelease>)
 
     }
 
@@ -17,6 +19,8 @@ interface MessageContract {
 
         fun loadMessages(chatId : String)
         fun sendMessage(message: Message)
+
+        fun loadFavourites()
 
     }
 }

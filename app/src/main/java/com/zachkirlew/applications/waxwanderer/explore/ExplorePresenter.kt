@@ -9,6 +9,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.zachkirlew.applications.waxwanderer.data.VinylRepository
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.DiscogsResponse
+import com.zachkirlew.applications.waxwanderer.util.InternetConnectionUtil
 import io.reactivex.Observable
 import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -29,6 +30,7 @@ class ExplorePresenter(private @NonNull var vinylRepository: VinylRepository, pr
     }
 
     override fun loadVinylReleases(styles: List<String>) {
+
 
         Observable.fromIterable(styles).flatMap { style -> vinylRepository.getVinyls(style) }
                 .subscribeOn(Schedulers.newThread())

@@ -1,10 +1,8 @@
 package com.zachkirlew.applications.waxwanderer.message
 
 
-import android.media.Image
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -17,9 +15,12 @@ import com.google.firebase.auth.FirebaseAuth
 import com.zachkirlew.applications.waxwanderer.R
 import com.zachkirlew.applications.waxwanderer.data.model.Message
 import com.zachkirlew.applications.waxwanderer.data.model.User
+import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
+import java.io.Serializable
 import java.util.*
 
-class MessageFragment : Fragment(), MessageContract.View {
+
+class MessageFragment : Fragment(), MessageContract.View, ShareVinylDialogFragment.FavouriteAdapter.OnShareClickedListener {
 
     private var messages: ArrayList<Message>? = null
     private lateinit var adapter: MessageAdapter
@@ -30,9 +31,11 @@ class MessageFragment : Fragment(), MessageContract.View {
 
     private lateinit var messageInput:EditText
 
-    private lateinit var emojiButton : ImageView
+    private lateinit var shareVinylButton : ImageView
 
     private var presenter: MessageContract.Presenter? = null
+
+    private var shareVinylDialogFragment : ShareVinylDialogFragment? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,6 +65,9 @@ class MessageFragment : Fragment(), MessageContract.View {
         println(matchedUser.name)
         activity.title = matchedUser.name
 
+        shareVinylButton = view.findViewById<ImageView>(R.id.shareVinylButton)
+        shareVinylButton.setOnClickListener { presenter?.loadFavourites() }
+
         presenter?.loadMatch(matchedUser.id)
 
         return view
@@ -89,13 +95,27 @@ class MessageFragment : Fragment(), MessageContract.View {
         chatList.scrollToPosition(adapter.itemCount - 1)
     }
 
-    private fun sendMessage() {
-        val message = messageInput.text.toString()
-        if (!message.isEmpty())
-            presenter?.sendMessage(Message(message, uid,System.currentTimeMillis().toString()))
+    override fun showChooseRecordDialog(favourites: List<VinylRelease>) {
 
-        messageInput.setText("")
+        shareVinylDialogFragment = ShareVinylDialogFragment()
+        val bundle = Bundle()
+        bundle.putSerializable("favouriteList",favourites as Serializable)
+        shareVinylDialogFragment?.arguments = bundle
+        shareVinylDialogFragment?.setOnShareClickedListener(this)
+        shareVinylDialogFragment?.show(activity.supportFragmentManager,"now")
+    }
+
+    override fun ShareClicked(sharedVinyl: VinylRelease) {
+        shareVinylDialogFragment?.dismiss()
+        presenter?.sendMessage(Message("", uid,sharedVinyl,System.currentTimeMillis().toString()))
     }
 
 
+    private fun sendMessage() {
+        val message = messageInput.text.toString()
+        if (!message.isEmpty())
+            presenter?.sendMessage(Message(message, uid,null,System.currentTimeMillis().toString()))
+
+        messageInput.setText("")
+    }
 }

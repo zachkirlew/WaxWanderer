@@ -42,12 +42,12 @@
         android:paddingRight="20dp"
         android:background="@drawable/input">
 
-        <!--<ImageView-->
-            <!--android:id="@+id/emojiButton"-->
-            <!--android:layout_width="24dp"-->
-            <!--android:layout_height="24dp"-->
-            <!--android:layout_gravity="bottom"-->
-            <!--android:src="@drawable/input_emoji"/>-->
+        <ImageView
+            android:id="@+id/shareVinylButton"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="bottom"
+            android:src="@drawable/ic_share_vinyl"/>
 
         <EditText
             android:id="@+id/input_message"
