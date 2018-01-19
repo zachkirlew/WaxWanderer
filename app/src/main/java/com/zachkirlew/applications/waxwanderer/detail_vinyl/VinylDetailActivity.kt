@@ -46,7 +46,7 @@ class VinylDetailActivity : AppCompatActivity(), VinylDetailContract.View, View.
         setContentView(R.layout.activity_vinyl_detail)
 
         presenter = VinylDetailPresenter(VinylRepository.getInstance(VinylsRemoteSource.instance),
-                                        this, RecommenderImp(this))
+                this, RecommenderImp(this))
 
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
@@ -129,7 +129,9 @@ class VinylDetailActivity : AppCompatActivity(), VinylDetailContract.View, View.
         releaseDateText.text = detailVinylRelease.releasedFormatted
         genreText.text = detailVinylRelease.genres?.get(0)
 
-        stylesText.text = commaSeparateList(detailVinylRelease.styles)
+        detailVinylRelease.styles?.let{
+            stylesText.text = commaSeparateList(detailVinylRelease.styles)
+        }
     }
 
     override fun showRating(starRating: Double) {
@@ -193,7 +195,6 @@ class VinylDetailActivity : AppCompatActivity(), VinylDetailContract.View, View.
             return convertView
         }
     }
-
 
     class VideosAdapter
     (context: Context, resource: Int, videos: List<Video>?) : ArrayAdapter<Video>(context, resource, videos) {
