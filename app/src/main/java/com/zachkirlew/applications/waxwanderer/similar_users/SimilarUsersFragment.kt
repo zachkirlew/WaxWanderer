@@ -66,6 +66,8 @@ class SimilarUsersFragment : Fragment(), SimilarUsersContract.View {
 
         mContext = getApplicationContext()
 
+        setHasOptionsMenu(true)
+
 
         similarUsersPresenter = SimilarUsersPresenter(this, UserPreferences(), RecommenderImp(activity))
 
@@ -81,6 +83,11 @@ class SimilarUsersFragment : Fragment(), SimilarUsersContract.View {
         }
 
         return root
+    }
+
+    @Override
+    override fun onCreateOptionsMenu( menu : Menu,  inflater : MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
     }
 
     override fun showMessage(message: String) {
@@ -111,9 +118,6 @@ class SimilarUsersFragment : Fragment(), SimilarUsersContract.View {
         userCards.forEach{ mSwipeView.addView(it)}
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        //inflater.inflate(R.menu.tasks_fragment_menu, menu)
-    }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
@@ -238,44 +242,44 @@ class SimilarUsersFragment : Fragment(), SimilarUsersContract.View {
         }
     }
 
-        inner class FavouriteAdapter(private var vinyls: List<VinylRelease>) : RecyclerView.Adapter<FavouriteAdapter.ViewHolder>() {
+    inner class FavouriteAdapter(private var vinyls: List<VinylRelease>) : RecyclerView.Adapter<FavouriteAdapter.ViewHolder>() {
 
-            fun addVinyls(vinyls : List<VinylRelease>){
-                this.vinyls = vinyls
-                notifyDataSetChanged()
+        fun addVinyls(vinyls : List<VinylRelease>){
+            this.vinyls = vinyls
+            notifyDataSetChanged()
+        }
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FavouriteAdapter.ViewHolder {
+            val v = LayoutInflater.from(parent.context).inflate(R.layout.top_ten_vinyl_item, parent, false)
+            return ViewHolder(v)
+        }
+
+        override fun onBindViewHolder(holder: FavouriteAdapter.ViewHolder, position: Int) {
+            holder.bindItems(vinyls[position])
+
+            holder.itemView.setOnClickListener {
+
+                val context = holder.itemView.context
+
+                val intent = Intent(context, VinylDetailActivity::class.java)
+                intent.putExtra("selected vinyl", vinyls[position])
+                context.startActivity(intent)
             }
+        }
 
-            override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FavouriteAdapter.ViewHolder {
-                val v = LayoutInflater.from(parent.context).inflate(R.layout.top_ten_vinyl_item, parent, false)
-                return ViewHolder(v)
-            }
+        override fun getItemCount(): Int {
+            return vinyls.size
+        }
 
-            override fun onBindViewHolder(holder: FavouriteAdapter.ViewHolder, position: Int) {
-                holder.bindItems(vinyls[position])
+        inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-                holder.itemView.setOnClickListener {
+            fun bindItems(vinyl: VinylRelease) {
+                itemView.album_name.text = vinyl.title
 
-                    val context = holder.itemView.context
-
-                    val intent = Intent(context, VinylDetailActivity::class.java)
-                    intent.putExtra("selected vinyl", vinyls[position])
-                    context.startActivity(intent)
-                }
-            }
-
-            override fun getItemCount(): Int {
-                return vinyls.size
-            }
-
-            inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-
-                fun bindItems(vinyl: VinylRelease) {
-                    itemView.album_name.text = vinyl.title
-
-                    if(!vinyl.thumb.isNullOrEmpty()) {
-                        Picasso.with(itemView.context).load(vinyl.thumb).into(itemView.cover_art)
-                    }
+                if(!vinyl.thumb.isNullOrEmpty()) {
+                    Picasso.with(itemView.context).load(vinyl.thumb).into(itemView.cover_art)
                 }
             }
         }
+    }
 }

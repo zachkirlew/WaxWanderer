@@ -95,22 +95,22 @@ class SimilarUsersPresenter(private @NonNull var similarUsersView: SimilarUsersC
 //        })
 //    }
 
-    override fun loadSimilarUsers() {
-        recommender.recommendUserToUser(user.uid,5)
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(object : Observer<List<String>>{
-                    override fun onNext(ids: List<String>) {
-                        ids.forEach {println(it)}
-                    }
-                    override fun onComplete() {
-                    }
-                    override fun onSubscribe(d: Disposable) {
-                    }
-                    override fun onError(e: Throwable) {
-                    }
-                })
-    }
+//    override fun loadSimilarUsers() {
+//        recommender.recommendUserToUser(user.uid,5)
+//                .subscribeOn(Schedulers.newThread())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(object : Observer<List<String>>{
+//                    override fun onNext(ids: List<String>) {
+//                        ids.forEach {println(it)}
+//                    }
+//                    override fun onComplete() {
+//                    }
+//                    override fun onSubscribe(d: Disposable) {
+//                    }
+//                    override fun onError(e: Throwable) {
+//                    }
+//                })
+//    }
 
 
 

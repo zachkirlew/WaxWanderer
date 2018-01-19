@@ -11,19 +11,17 @@ import org.joda.time.DateTime
 
 class RecommenderImp (context: Context) : Recommender{
 
-
     private var recombeeClient : RecombeeClient
 
     init {
         val apiIdentifier = ConfigHelper.getConfigValue(context, "api_identifier")
         val secretToken = ConfigHelper.getConfigValue(context, "secret_token")
 
-        recombeeClient = RecombeeSingleton.getInstance(apiIdentifier, secretToken)
+        recombeeClient = RecombeeClient(apiIdentifier, secretToken)
     }
 
     override fun addFavourite(userId: String, itemId: String): Single<String> {
         return Single.create({ e ->
-
             val jodaDate = DateTime()
             val date = jodaDate.toDate()
 
@@ -45,16 +43,16 @@ class RecommenderImp (context: Context) : Recommender{
         })
     }
 
-    override fun recommendUserToUser(userId: String, count: Long) : Observable<List<String>> {
-        return Observable.create ({e->
-
-            val response = recombeeClient.send(RecommendUsersToUser(userId, count))
-            val idList = response.ids.toList()
-
-            e.onNext(idList)
-            e.onComplete()
-        })
-    }
+//    override fun recommendUserToUser(userId: String, count: Long) : Observable<List<String>> {
+//        return Observable.create ({e->
+//
+//            val response = recombeeClient.send(RecommendUsersToUser(userId, count))
+//            val idList = response.ids.toList()
+//
+//            e.onNext(idList)
+//            e.onComplete()
+//        })
+//    }
 
 
 }

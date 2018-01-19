@@ -80,6 +80,8 @@ class ExploreFragment: Fragment(), ExploreContract.View, OnSearchSubmitted{
     }
 
     override fun showVinylReleases(vinyls: List<VinylRelease>) {
+        noFavouritesText?.visibility = View.GONE
+
         progressBar.visibility = View.GONE
         exploreAdapter.addVinyls(vinyls)
     }

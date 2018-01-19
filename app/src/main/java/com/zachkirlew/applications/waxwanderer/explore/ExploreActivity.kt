@@ -37,6 +37,8 @@ class ExploreActivity : AppCompatActivity() {
 
     private val mDrawerLayout: DrawerLayout by lazy { findViewById<DrawerLayout>(R.id.drawer_layout) }
 
+    private var showSearchIcon = true
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -78,28 +80,28 @@ class ExploreActivity : AppCompatActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        val inflater = menuInflater
-        inflater.inflate(R.menu.search_menu, menu)
+        if(showSearchIcon){
+            val inflater = menuInflater
+            inflater.inflate(R.menu.search_menu, menu)
 
-        val searchItem = menu.findItem(R.id.action_search)
-        val searchView = MenuItemCompat.getActionView(searchItem) as SearchView
+            val searchItem = menu.findItem(R.id.action_search)
+            val searchView = MenuItemCompat.getActionView(searchItem) as SearchView
 
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
-            override fun onQueryTextSubmit(query: String?): Boolean {
+            searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
+                override fun onQueryTextSubmit(query: String?): Boolean {
 
-                val fragment = supportFragmentManager.findFragmentById(R.id.content)
-                if (fragment is OnSearchSubmitted)
-                    fragment.searchSubmitted(query)
-                return false
-            }
+                    val fragment = supportFragmentManager.findFragmentById(R.id.content)
+                    if (fragment is OnSearchSubmitted)
+                        fragment.searchSubmitted(query)
+                    return false
+                }
+                override fun onQueryTextChange(newText: String?): Boolean {
+                    return true
+                }
+            })
 
-            override fun onQueryTextChange(newText: String?): Boolean {
-                return true
-            }
-
-
-        })
-
+            return true
+        }
         return true
     }
 
@@ -139,26 +141,31 @@ class ExploreActivity : AppCompatActivity() {
                 }
 
                 R.id.explore_navigation_menu_item ->{
+                    showSearchIcon = true
                     ActivityUtils.changeFragment(
                             supportFragmentManager, ExploreFragment(), R.id.content)
                 }
 
                 R.id.favourites_navigation_menu_item ->{
+                    showSearchIcon = false
                     ActivityUtils.changeFragment(
                             supportFragmentManager, FavouriteFragment(), R.id.content)
                 }
 
                 R.id.match_navigation_menu_item ->{
+                    showSearchIcon = false
                     ActivityUtils.changeFragment(
                             supportFragmentManager, SimilarUsersFragment(), R.id.content)
                 }
 
                 R.id.matches_navigation_menu_item ->{
+                    showSearchIcon = false
                     ActivityUtils.changeFragment(
                             supportFragmentManager, MatchesFragment(), R.id.content)
                 }
 
                 R.id.settings_navigation_menu_item ->{
+                    showSearchIcon = false
                     ActivityUtils.changeFragment(
                             supportFragmentManager, SettingsFragment(), R.id.content)
                 }
@@ -166,6 +173,8 @@ class ExploreActivity : AppCompatActivity() {
 
             menuItem.isChecked = true
             mDrawerLayout.closeDrawers()
+            invalidateOptionsMenu()
+
             true
         }
     }
