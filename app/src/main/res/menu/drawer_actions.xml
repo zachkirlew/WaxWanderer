@@ -20,6 +20,11 @@
             android:id="@+id/matches_navigation_menu_item"
             android:icon="@drawable/ic_menu_matches"
             android:title="@string/matches_title" />
+
+        <item
+            android:id="@+id/leaderboard_navigation_menu_item"
+            android:icon="@drawable/ic_action_format_list_numbered"
+            android:title="@string/leaderboard_title" />
     </group>
 
     <item android:title=" ">

@@ -72,5 +72,6 @@
     <string name="sent_message">write a message!</string>
     <string name="explore_no_vinyls_text">No vinyl releases to display</string>
     <string name="type_your_message">Type your message...</string>
+    <string name="leaderboard_title">Leaderboard</string>
 
 </resources>

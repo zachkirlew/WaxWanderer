@@ -24,8 +24,9 @@ import com.squareup.picasso.Picasso
 import com.zachkirlew.applications.waxwanderer.R
 import com.zachkirlew.applications.waxwanderer.data.model.User
 import com.zachkirlew.applications.waxwanderer.favourites.FavouriteFragment
-import com.zachkirlew.applications.waxwanderer.matches.MatchesFragment
+import com.zachkirlew.applications.waxwanderer.leaderboard.LeaderBoardFragment
 import com.zachkirlew.applications.waxwanderer.login.LoginActivity
+import com.zachkirlew.applications.waxwanderer.matches.MatchesFragment
 import com.zachkirlew.applications.waxwanderer.settings.SettingsFragment
 import com.zachkirlew.applications.waxwanderer.similar_users.SimilarUsersFragment
 import com.zachkirlew.applications.waxwanderer.util.ActivityUtils
@@ -162,6 +163,12 @@ class ExploreActivity : AppCompatActivity() {
                     showSearchIcon = false
                     ActivityUtils.changeFragment(
                             supportFragmentManager, MatchesFragment(), R.id.content)
+                }
+
+                R.id.leaderboard_navigation_menu_item ->{
+                    showSearchIcon = false
+                    ActivityUtils.changeFragment(
+                            supportFragmentManager, LeaderBoardFragment(), R.id.content)
                 }
 
                 R.id.settings_navigation_menu_item ->{
