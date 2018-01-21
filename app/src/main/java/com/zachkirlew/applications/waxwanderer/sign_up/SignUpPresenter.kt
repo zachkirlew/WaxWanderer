@@ -91,6 +91,7 @@ class SignUpPresenter(private @NonNull var signUpView: SignUpContract.View) : Si
         updatedUser.name = name
         updatedUser.email = email
         updatedUser.id = user?.uid
+        updatedUser.score = 0
 
         myRef.child("users").child(user?.uid).setValue(updatedUser)
     }

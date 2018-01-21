@@ -6,14 +6,21 @@ import com.google.firebase.database.*
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
 import com.google.firebase.database.DataSnapshot
 import com.zachkirlew.applications.waxwanderer.data.model.User
+import com.zachkirlew.applications.waxwanderer.util.InternetConnectionUtil
+import durdinapps.rxfirebase2.RxFirebaseDatabase
+import io.reactivex.BackpressureStrategy
+import io.reactivex.Flowable
+import io.reactivex.Observer
+import io.reactivex.disposables.Disposable
+import java.lang.Exception
 
-class FavouritePresenter(private @NonNull var favouriteView: FavouriteContract.View) : FavouriteContract.Presenter  {
+class FavouritePresenter(private @NonNull var favouriteView: FavouriteContract.View) : FavouriteContract.Presenter {
 
 
     private val mFirebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private val database = FirebaseDatabase.getInstance()
 
-    init{
+    init {
         favouriteView.setPresenter(this)
     }
 
@@ -27,31 +34,36 @@ class FavouritePresenter(private @NonNull var favouriteView: FavouriteContract.V
         getVinyls(userId)
     }
 
-    private fun getVinyls(uid : String?){
+    private fun getVinyls(uid: String?) {
 
         val myRef = database.reference
 
         val ref = myRef.child("favourites").child(uid)
 
-        ref.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
+        InternetConnectionUtil.isInternetOn()
+                .toFlowable(BackpressureStrategy.BUFFER)
+                .flatMap { isInternetOn -> if (isInternetOn) RxFirebaseDatabase.observeValueEvent(ref) else Flowable.error(Exception("No internet connection")) }
+                .toObservable()
+                .subscribe(object : Observer<DataSnapshot> {
+                    override fun onSubscribe(d: Disposable) {
+                    }
 
-                val vinyls = ArrayList<VinylRelease>()
+                    override fun onNext(dataSnapshot: DataSnapshot) {
+                        if (dataSnapshot.exists()) {
+                            val vinyls = dataSnapshot.children.map { it.getValue<VinylRelease>(VinylRelease::class.java)!! }
+                            favouriteView.showFavouriteVinyls(vinyls)
+                        } else {
+                            favouriteView.showMessageView("No favourites to show")
+                        }
+                    }
 
-                for (child in dataSnapshot.children) {
-                    child.getValue<VinylRelease>(VinylRelease::class.java)?.let { vinyls.add(it) }
-                }
+                    override fun onError(e: Throwable) {
+                        favouriteView.showMessageView(e.message!!)
+                    }
 
-                if(vinyls.isEmpty())
-                    favouriteView.showNoVinylsView()
-                else
-                    favouriteView.showFavouriteVinyls(vinyls)
-            }
+                    override fun onComplete() {
+                    }
 
-            override fun onCancelled(databaseError: DatabaseError) {
-            }
-        })
-
+                })
     }
-
 }

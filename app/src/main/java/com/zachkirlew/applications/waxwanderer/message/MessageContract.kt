@@ -17,8 +17,9 @@ interface MessageContract {
 
         fun loadMatch(matchedUserId : String?)
 
-        fun loadMessages(chatId : String)
-        fun sendMessage(message: Message)
+
+        fun loadMessages()
+        fun sendMessage(messageText : String, authorId : String,attachedRelease : VinylRelease?)
 
         fun loadFavourites()
 

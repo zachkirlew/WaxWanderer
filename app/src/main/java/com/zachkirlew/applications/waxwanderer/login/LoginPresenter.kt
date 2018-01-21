@@ -158,6 +158,7 @@ class LoginPresenter(private @NonNull val loginView: LoginContract.View) : Login
         updatedUser.name = name
         updatedUser.email = email
         updatedUser.id = user?.uid
+        updatedUser.score = 0
 
         myRef.child("users").child(user?.uid).setValue(updatedUser)
     }

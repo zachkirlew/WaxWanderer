@@ -133,6 +133,10 @@ class SimilarUsersFragment : Fragment(), SimilarUsersContract.View {
 
     }
 
+    override fun showVinylPreference(commaSeparatedStyles: String, viewPosition: Int) {
+        userCards[viewPosition].showStylesText(commaSeparatedStyles)
+    }
+
     override fun showNoUserFavourites() {
 
     }
@@ -157,21 +161,26 @@ class SimilarUsersFragment : Fragment(), SimilarUsersContract.View {
         @com.mindorks.placeholderview.annotations.View(R.id.list_user_favourites)
         private val recyclerView: RecyclerView? = null
 
+        @com.mindorks.placeholderview.annotations.View(R.id.text_styles)
+        private val stylesText: TextView? = null
+
         fun showVinyls(favouriteVinyls :List<VinylRelease>){
 
             val tenFavourites = favouriteVinyls.take(10)
 
-            val mLayoutManager = LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL, false);
+            val mLayoutManager = LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL, false)
 
             val favouriteAdapter = FavouriteAdapter(listOf<VinylRelease>())
 
             recyclerView?.layoutManager = mLayoutManager
             recyclerView?.adapter = favouriteAdapter
 
-
-
             favouriteAdapter.addVinyls(tenFavourites)
             favouriteAdapter.notifyDataSetChanged()
+        }
+
+        fun showStylesText(commaSeparatedStyles : String){
+            stylesText?.text = commaSeparatedStyles
         }
 
         @Resolve
@@ -197,7 +206,7 @@ class SimilarUsersFragment : Fragment(), SimilarUsersContract.View {
                 intent.putExtra("selected user", user)
                 context.startActivity(intent)
             }
-
+            similarUsersPresenter.loadVinylPreference(user.id,viewPosition)
             similarUsersPresenter.loadUserFavourites(user.id,viewPosition)
         }
 
@@ -213,7 +222,6 @@ class SimilarUsersFragment : Fragment(), SimilarUsersContract.View {
         @SwipeOut
         private fun onSwipedOut() {
             Log.d("EVENT", "onSwipedOut")
-            showMessage("Skipped")
             mSwipeView.addView(this)
         }
 
@@ -225,9 +233,6 @@ class SimilarUsersFragment : Fragment(), SimilarUsersContract.View {
         @SwipeIn
         private fun onSwipeIn() {
             Log.d("EVENT", "onSwipedIn")
-
-            showMessage("Liked")
-
             similarUsersPresenter.handleLike(user)
         }
 

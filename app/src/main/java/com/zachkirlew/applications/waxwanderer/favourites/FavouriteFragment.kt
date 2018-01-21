@@ -35,7 +35,6 @@ class FavouriteFragment: Fragment(), FavouriteContract.View {
         user = activity.intent.getSerializableExtra("selected user") as User?
     }
 
-
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
 
@@ -79,28 +78,11 @@ class FavouriteFragment: Fragment(), FavouriteContract.View {
     override fun showFavouriteVinyls(vinyls: List<VinylRelease>) {
         favouriteAdapter.addVinyls(vinyls)
     }
-    override fun showVinylReleaseDetailsUI() {
 
-    }
-
-    override fun showNoVinylsView() {
+    override fun showMessageView(message : String) {
+        noFavouritesText?.text = message
         noFavouritesText?.visibility = View.VISIBLE
     }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        //inflater.inflate(R.menu.tasks_fragment_menu, menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-//            R.id.menu_clear -> mPresenter.clearCompletedTasks()
-//            R.id.menu_filter -> showFilteringPopUpMenu()
-//            R.id.menu_refresh -> mPresenter.loadTasks(true)
-        }
-        return true
-    }
-
-    //Explore adapter
 
     class FavouriteAdapter(private var vinyls: List<VinylRelease>) : RecyclerView.Adapter<FavouriteAdapter.ViewHolder>() {
 

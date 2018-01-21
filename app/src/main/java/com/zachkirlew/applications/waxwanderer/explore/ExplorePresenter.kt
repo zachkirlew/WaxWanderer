@@ -15,6 +15,7 @@ import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import java.lang.Exception
 
 class ExplorePresenter(private @NonNull var vinylRepository: VinylRepository, private @NonNull var exploreView: ExploreContract.View) : ExploreContract.Presenter {
 
@@ -31,32 +32,29 @@ class ExplorePresenter(private @NonNull var vinylRepository: VinylRepository, pr
 
     override fun loadVinylReleases(styles: List<String>) {
 
-
-        Observable.fromIterable(styles).flatMap { style -> vinylRepository.getVinyls(style) }
+        InternetConnectionUtil.isInternetOn()
+                .flatMap { isInternetOn -> if (isInternetOn) Observable.fromIterable(styles) else Observable.error(Exception("No internet connection")) }
+                .flatMap { style -> vinylRepository.getVinyls(style) }
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(object : Observer<DiscogsResponse> {
                     override fun onNext(response: DiscogsResponse) {
-
-                        println(response.results?.size)
 
                         val results = response.results
                         results?.let { exploreView.showVinylReleases(results) }
                     }
 
                     override fun onError(e: Throwable) {
-
+                        Log.e("Explore presenter",e.message)
+                        exploreView.showNoInternetMessage()
                     }
 
                     override fun onComplete() {
                         Log.v("Explore Presenter","Loading of vinyls complete")
-
                     }
 
                     override fun onSubscribe(d: Disposable) {
-
                     }
-
                 })
     }
 

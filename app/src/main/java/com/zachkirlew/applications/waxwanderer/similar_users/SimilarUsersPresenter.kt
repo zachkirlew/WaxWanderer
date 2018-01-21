@@ -11,7 +11,11 @@ import com.zachkirlew.applications.waxwanderer.data.local.UserPreferences
 import com.zachkirlew.applications.waxwanderer.data.model.User
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
 import com.zachkirlew.applications.waxwanderer.data.recommendation.RecommenderImp
+import com.zachkirlew.applications.waxwanderer.util.InternetConnectionUtil
 import durdinapps.rxfirebase2.RxFirebaseDatabase
+import io.reactivex.BackpressureStrategy
+import io.reactivex.Flowable
+import io.reactivex.Observable
 import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -19,6 +23,7 @@ import io.reactivex.schedulers.Schedulers
 import org.joda.time.LocalDate
 import org.joda.time.Period
 import org.joda.time.PeriodType
+import java.lang.Exception
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -47,7 +52,9 @@ class SimilarUsersPresenter(private @NonNull var similarUsersView: SimilarUsersC
         val matchesRef = myRef.child("matches").child(user.uid)
         val usersRef = myRef.child("users")
 
-        RxFirebaseDatabase.observeValueEvent(matchesRef, {dataSnapshot -> matchedUserIds = dataSnapshot.children.map{it.key}})
+        InternetConnectionUtil.isInternetOn()
+                .toFlowable(BackpressureStrategy.BUFFER)
+                .flatMap { isInternetOn -> if (isInternetOn) RxFirebaseDatabase.observeValueEvent(matchesRef, {dataSnapshot -> matchedUserIds = dataSnapshot.children.map{it.key}}) else Flowable.error(Exception("No internet connection")) }
                 .flatMap { RxFirebaseDatabase.observeValueEvent(usersRef,{dataSnapshot -> dataSnapshot.children.map { it.getValue<User>(User::class.java)!!}}) }
                 .map { userList -> filterGenders(userList) } // remove users according to current users match gender prefs
                 .map { list -> list.filter {user.uid != it.id} } //remove current user from list
@@ -61,7 +68,7 @@ class SimilarUsersPresenter(private @NonNull var similarUsersView: SimilarUsersC
                     override fun onSubscribe(d: Disposable) {
                     }
                     override fun onError(e: Throwable) {
-                        similarUsersView.showMessage("Could not load users")
+                        similarUsersView.showMessage(e.message!!)
                     }
                     override fun onComplete() {
                     }
@@ -69,71 +76,6 @@ class SimilarUsersPresenter(private @NonNull var similarUsersView: SimilarUsersC
     }
 
 
-
-//    override fun getFavouriteCount(userId: String) {
-//        val myRef = database.reference
-//        val userRef = myRef.child("favourites").child(user.uid)
-//
-//        userRef.addValueEventListener(object : ValueEventListener {
-//            override fun onDataChange(dataSnapshot: DataSnapshot) {
-//                if(dataSnapshot.exists()){
-//                    val favouriteCount = dataSnapshot.children.count()
-//
-//                    loadUsers()
-//
-//                    //use recombee
-//                    if(favouriteCount > 10)
-//                        loadSimilarUsers()
-//                    else
-//                        loadUsers()
-//                }
-//                else
-//                    loadUsers()
-//            }
-//            override fun onCancelled(databaseError: DatabaseError) {
-//            }
-//        })
-//    }
-
-//    override fun loadSimilarUsers() {
-//        recommender.recommendUserToUser(user.uid,5)
-//                .subscribeOn(Schedulers.newThread())
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribe(object : Observer<List<String>>{
-//                    override fun onNext(ids: List<String>) {
-//                        ids.forEach {println(it)}
-//                    }
-//                    override fun onComplete() {
-//                    }
-//                    override fun onSubscribe(d: Disposable) {
-//                    }
-//                    override fun onError(e: Throwable) {
-//                    }
-//                })
-//    }
-
-
-
-//    private fun loadVinylPreferences(userId : String){
-//
-//        val usersRef = FirebaseDatabase.getInstance().reference.child("vinylPreference").child(userId)
-//
-//        usersRef.addValueEventListener(object : ValueEventListener {
-//            override fun onDataChange(dataSnapshot: DataSnapshot) {
-//
-//                val stylesList = dataSnapshot.children.map { it.value }
-//
-//                val fallbackRecommender = FallbackRecommender()
-//
-//                users.sortedWith(compareBy { fallbackRecommender.calculateJaccardSimilarity(it.) })
-//
-//                filterSimilarUsers(users)
-//            }
-//
-//            override fun onCancelled(databaseError: DatabaseError) {
-//            }
-//        })
-//    }
 
     override fun filterGenders(similarUserList: List<User>) : List<User> {
         val filterGender = preferences.matchGender
@@ -198,16 +140,12 @@ class SimilarUsersPresenter(private @NonNull var similarUsersView: SimilarUsersC
         ref.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
 
-                val vinyls = ArrayList<VinylRelease>()
-
-                for (child in dataSnapshot.children) {
-                    child.getValue<VinylRelease>(VinylRelease::class.java)?.let { vinyls.add(it) }
-                }
-
-                if(vinyls.isEmpty())
-                    similarUsersView.showNoUserFavourites()
-                else
+                if(dataSnapshot.exists()){
+                    val vinyls = dataSnapshot.children.map { it.getValue<VinylRelease>(VinylRelease::class.java)!! }
                     similarUsersView.showUserFavourites(vinyls,viewPosition)
+                }
+                else
+                    similarUsersView.showNoUserFavourites()
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
@@ -215,6 +153,24 @@ class SimilarUsersPresenter(private @NonNull var similarUsersView: SimilarUsersC
         })
     }
 
+    override fun loadVinylPreference(userId: String?, viewPosition: Int) {
+        val myRef = database.reference
+
+        val ref = myRef.child("vinylPreferences").child(userId)
+
+        ref.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+
+                val preferredStyles = dataSnapshot.children.map { it.value as String }
+                val commaSeparatedStyles = android.text.TextUtils.join(", ", preferredStyles)
+
+                similarUsersView.showVinylPreference(commaSeparatedStyles,viewPosition)
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+            }
+        })
+    }
 
     private fun dobToAge(date: Date?): Int {
 

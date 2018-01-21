@@ -86,7 +86,10 @@ class ExploreFragment: Fragment(), ExploreContract.View, OnSearchSubmitted{
         exploreAdapter.addVinyls(vinyls)
     }
 
-    override fun showVinylReleaseDetailsUI() {
+    override fun showNoInternetMessage() {
+        progressBar.visibility = View.GONE
+        noFavouritesText?.text = "No internet connection"
+        noFavouritesText?.visibility = View.VISIBLE
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

@@ -15,8 +15,6 @@ import com.lucasurbas.listitemview.ListItemView
 import com.squareup.picasso.Picasso
 import com.zachkirlew.applications.waxwanderer.R
 import com.zachkirlew.applications.waxwanderer.data.model.User
-import com.zachkirlew.applications.waxwanderer.matches.LeaderBoardPresenter
-import com.zachkirlew.applications.waxwanderer.message.MessageActivity
 import com.zachkirlew.applications.waxwanderer.user_detail.UserDetailActivity
 import com.zachkirlew.applications.waxwanderer.util.CircleTransform
 import com.zachkirlew.applications.waxwanderer.util.EqualSpaceItemDecoration

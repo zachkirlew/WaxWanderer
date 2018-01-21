@@ -1,4 +1,4 @@
-package com.zachkirlew.applications.waxwanderer.matches
+package com.zachkirlew.applications.waxwanderer.leaderboard
 
 import android.support.annotation.NonNull
 import com.google.firebase.auth.FirebaseAuth
@@ -25,7 +25,7 @@ class LeaderBoardPresenter(private @NonNull var leaderboardView: LeaderBoardCont
 
         val user = mFirebaseAuth.currentUser
 
-        val ref = myRef.child("users").orderByChild("score")
+        val ref = myRef.child("users").orderByChild("score").limitToLast(10)
 
         ref.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
@@ -35,6 +35,7 @@ class LeaderBoardPresenter(private @NonNull var leaderboardView: LeaderBoardCont
                     leaderboardView.showUsers(usersSortedByScore)
 
                     usersSortedByScore.forEach { println(it.score) }
+
                 }
             }
             override fun onCancelled(databaseError: DatabaseError) {

@@ -9,13 +9,15 @@ interface FavouriteContract {
     interface View: BaseView<Presenter> {
 
         fun showFavouriteVinyls(vinyls: List<VinylRelease>)
-        fun showVinylReleaseDetailsUI()
 
-        fun showNoVinylsView()
+        fun showMessageView(message : String)
+
     }
 
     interface Presenter {
+
         fun loadFavouriteVinyls()
+
         fun loadFavouriteVinyls(userId : String)
     }
 }

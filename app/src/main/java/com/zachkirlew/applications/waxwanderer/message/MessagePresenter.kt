@@ -15,6 +15,11 @@ class MessagePresenter(private @NonNull var messageView: MessageContract.View) :
 
     private lateinit var chatId : String
 
+    private val mTotalItemCount = 0
+    private val mLastVisibleItemPosition: Int = 0
+    private val mIsLoading = false
+    private val mPostsPerPage = 20
+
     override fun loadMatch(matchedUserId: String?) {
 
         val myRef = database.reference
@@ -28,7 +33,7 @@ class MessagePresenter(private @NonNull var messageView: MessageContract.View) :
                 if(dataSnapshot.exists()) {
                     chatId = dataSnapshot.value as String
 
-                    loadMessages(chatId)
+                    loadMessages()
                 }
             }
 
@@ -37,14 +42,19 @@ class MessagePresenter(private @NonNull var messageView: MessageContract.View) :
         })
     }
 
-    override fun loadMessages(chatId : String ) {
+    override fun loadMessages() {
 
-        database.reference.child("chat").child(chatId).addChildEventListener(object : ChildEventListener {
+        val messageRef = database.reference.child("chat").child(chatId)
+
+        val messageQuery = messageRef.limitToLast(10)
+
+        messageQuery.addChildEventListener(object : ChildEventListener {
             override fun onChildAdded(dataSnapshot: DataSnapshot, s: String?) {
 
                 val message = dataSnapshot.getValue<Message>(Message::class.java)
-
                 message?.let { messageView.showMessage(it) }
+
+//                currentPage++
             }
 
             override fun onChildChanged(dataSnapshot: DataSnapshot, s: String?) {
@@ -69,8 +79,12 @@ class MessagePresenter(private @NonNull var messageView: MessageContract.View) :
 
     }
 
-    override fun sendMessage(message: Message) {
+    override fun sendMessage(messageText: String, authorId: String,attachedRelease : VinylRelease?) {
+
         val key = database.reference.child("chat").child(chatId).push().key
+
+        val message = Message(key, messageText, authorId, attachedRelease, System.currentTimeMillis().toString(),false,null)
+
         database.reference.child("chat").child(chatId).child(key).setValue(message)
     }
 
@@ -91,12 +105,7 @@ class MessagePresenter(private @NonNull var messageView: MessageContract.View) :
             override fun onCancelled(databaseError: DatabaseError) {
             }
         })
-
     }
 
-
-
     override fun start() {}
-
-
 }

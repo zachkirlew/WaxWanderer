@@ -21,5 +21,6 @@ interface MatchesContract {
         fun loadMatches()
 
         fun deleteMatch(matchId : String)
+
     }
 }

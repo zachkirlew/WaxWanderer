@@ -11,10 +11,9 @@ interface ExploreContract {
 
         fun showVinylReleases(vinyls: List<VinylRelease>)
 
-        fun showVinylReleaseDetailsUI()
-
         fun showNoVinylsView()
 
+        fun showNoInternetMessage()
     }
 
     interface Presenter : BasePresenter {

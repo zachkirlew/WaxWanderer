@@ -18,15 +18,15 @@ interface SimilarUsersContract {
         fun showUserFavourites(vinyls : List<VinylRelease>, viewPosition: Int)
 
         fun showNoUserFavourites()
+
+        fun showVinylPreference(commaSeparatedStyles : String, viewPosition: Int)
     }
 
     interface Presenter : BasePresenter {
 
-//        fun loadSimilarUsers()
         fun filterGenders(similarUserList : List<User>) : List<User>
         fun handleLike(likedUser : User)
-//        fun getFavouriteCount(userId : String)
-
         fun loadUserFavourites(userId : String?, viewPosition : Int)
+        fun loadVinylPreference(userId: String?,viewPosition: Int)
     }
 }
