@@ -36,8 +36,6 @@ class ShareVinylDialogFragment() : DialogFragment() {
 
         val list = arguments.getSerializable("favouriteList") as List<VinylRelease>
 
-        list.forEach { println(it.title) }
-
         val  rootView = activity.layoutInflater.inflate(R.layout.fragment_favourites, null)
 
         mRecyclerView = rootView?.findViewById<RecyclerView>(R.id.explore_list) as RecyclerView

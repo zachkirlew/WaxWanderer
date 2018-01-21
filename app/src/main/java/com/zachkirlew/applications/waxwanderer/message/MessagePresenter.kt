@@ -58,7 +58,8 @@ class MessagePresenter(private @NonNull var messageView: MessageContract.View) :
             }
 
             override fun onChildChanged(dataSnapshot: DataSnapshot, s: String?) {
-
+                val message = dataSnapshot.getValue<Message>(Message::class.java)!!
+                messageView.updateMessage(message)
             }
 
             override fun onChildRemoved(dataSnapshot: DataSnapshot) {
@@ -105,6 +106,13 @@ class MessagePresenter(private @NonNull var messageView: MessageContract.View) :
             override fun onCancelled(databaseError: DatabaseError) {
             }
         })
+    }
+
+    override fun addRating(vinylId: Int, rating: Double, messageId: String) {
+        val myRef = database.reference.child("chat").child(chatId).child(messageId)
+
+        myRef.child("rating").setValue(rating)
+        myRef.child("rated").setValue(true)
     }
 
     override fun start() {}

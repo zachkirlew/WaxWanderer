@@ -75,8 +75,6 @@ class SimilarUsersPresenter(private @NonNull var similarUsersView: SimilarUsersC
                 })
     }
 
-
-
     override fun filterGenders(similarUserList: List<User>) : List<User> {
         val filterGender = preferences.matchGender
 

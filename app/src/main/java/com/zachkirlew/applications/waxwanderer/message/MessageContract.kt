@@ -11,6 +11,8 @@ interface MessageContract {
         fun showMessage(message : Message)
         fun showChooseRecordDialog(favourites :List<VinylRelease>)
 
+        fun updateMessage(message : Message)
+
     }
 
     interface Presenter : BasePresenter {
@@ -22,6 +24,8 @@ interface MessageContract {
         fun sendMessage(messageText : String, authorId : String,attachedRelease : VinylRelease?)
 
         fun loadFavourites()
+
+        fun addRating(vinylId : Int,rating : Double,messageId : String)
 
     }
 }
