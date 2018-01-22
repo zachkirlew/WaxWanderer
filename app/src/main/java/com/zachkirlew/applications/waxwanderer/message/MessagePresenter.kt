@@ -58,6 +58,7 @@ class MessagePresenter(private @NonNull var messageView: MessageContract.View) :
             }
 
             override fun onChildChanged(dataSnapshot: DataSnapshot, s: String?) {
+                println(dataSnapshot.key)
                 val message = dataSnapshot.getValue<Message>(Message::class.java)!!
                 messageView.updateMessage(message)
             }

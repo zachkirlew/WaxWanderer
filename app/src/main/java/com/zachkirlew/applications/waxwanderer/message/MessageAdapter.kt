@@ -75,6 +75,8 @@ class MessageAdapter(private val messageList: ArrayList<Message>, private val mI
                     holder.ratedText.text = "You rated:"
                 }
                 else{
+                    holder.ratedText.text = "Review this suggestion..."
+                    holder.ratingBar.rating = 0f
                     holder.ratedText.setOnClickListener{messageFragment.showRatingDialog(message.id,attachedVinyl!!.id,position)}
                 }
             }
@@ -82,6 +84,10 @@ class MessageAdapter(private val messageList: ArrayList<Message>, private val mI
                 if(message.isRated){
                     holder.ratingBar.rating = message.rating?.toFloat()!!
                     holder.ratedText.text = "They rated:"
+                }
+                else{
+                    holder.ratedText.text = "Not rated yet:"
+                    holder.ratingBar.rating = 0f
                 }
             }
         }
@@ -96,7 +102,11 @@ class MessageAdapter(private val messageList: ArrayList<Message>, private val mI
 
     override fun getItemViewType(position: Int): Int {
         return if (messageList[position].author == mId) MESSAGE_SENT else MESSAGE_RECEIVED
+    }
 
+    fun getItemPosition(key : String) : Int {
+        val message = messageList.filter { key == it.id }[0]
+        return messageList.indexOf(message)
     }
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {

@@ -37,7 +37,6 @@ class MessageFragment : Fragment(), MessageContract.View, ShareVinylDialogFragme
 
     private var shareVinylDialogFragment : ShareVinylDialogFragment? = null
 
-    private var ratedMessagePosition : Int? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -89,8 +88,6 @@ class MessageFragment : Fragment(), MessageContract.View, ShareVinylDialogFragme
 
     fun showRatingDialog(chatId: String, vinylId: Int?, position: Int) {
 
-        ratedMessagePosition = position
-
         val ratingBarFragment = RatingBarFragment()
 
         val bundle = Bundle()
@@ -135,7 +132,8 @@ class MessageFragment : Fragment(), MessageContract.View, ShareVinylDialogFragme
     }
 
     override fun updateMessage(message: Message) {
-        ratedMessagePosition?.let { adapter.updateMessage(message, ratedMessagePosition!!) }
+        val itemPosition = adapter.getItemPosition(message.id)
+        adapter.updateMessage(message, itemPosition)
     }
 
     private fun sendMessage() {
@@ -145,6 +143,4 @@ class MessageFragment : Fragment(), MessageContract.View, ShareVinylDialogFragme
 
         messageInput.setText("")
     }
-
-
 }
