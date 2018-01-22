@@ -24,7 +24,6 @@ interface SimilarUsersContract {
 
     interface Presenter : BasePresenter {
 
-        fun filterGenders(similarUserList : List<User>) : List<User>
         fun handleLike(likedUser : User)
         fun loadUserFavourites(userId : String?, viewPosition : Int)
         fun loadVinylPreference(userId: String?,viewPosition: Int)

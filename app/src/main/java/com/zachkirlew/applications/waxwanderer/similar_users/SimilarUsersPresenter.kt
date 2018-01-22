@@ -3,10 +3,7 @@ package com.zachkirlew.applications.waxwanderer.similar_users
 import android.support.annotation.NonNull
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.*
 import com.zachkirlew.applications.waxwanderer.data.local.UserPreferences
 import com.zachkirlew.applications.waxwanderer.data.model.User
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
@@ -15,17 +12,13 @@ import com.zachkirlew.applications.waxwanderer.util.InternetConnectionUtil
 import durdinapps.rxfirebase2.RxFirebaseDatabase
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
-import io.reactivex.Observable
 import io.reactivex.Observer
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
 import org.joda.time.LocalDate
 import org.joda.time.Period
 import org.joda.time.PeriodType
 import java.lang.Exception
 import java.util.*
-import kotlin.collections.ArrayList
 
 
 class SimilarUsersPresenter(private @NonNull var similarUsersView: SimilarUsersContract.View,
@@ -52,11 +45,12 @@ class SimilarUsersPresenter(private @NonNull var similarUsersView: SimilarUsersC
         val matchesRef = myRef.child("matches").child(user.uid)
         val usersRef = myRef.child("users")
 
+        val query = getQuery(usersRef)
+
         InternetConnectionUtil.isInternetOn()
                 .toFlowable(BackpressureStrategy.BUFFER)
                 .flatMap { isInternetOn -> if (isInternetOn) RxFirebaseDatabase.observeValueEvent(matchesRef, {dataSnapshot -> matchedUserIds = dataSnapshot.children.map{it.key}}) else Flowable.error(Exception("No internet connection")) }
-                .flatMap { RxFirebaseDatabase.observeValueEvent(usersRef,{dataSnapshot -> dataSnapshot.children.map { it.getValue<User>(User::class.java)!!}}) }
-                .map { userList -> filterGenders(userList) } // remove users according to current users match gender prefs
+                .flatMap { RxFirebaseDatabase.observeValueEvent(query,{dataSnapshot -> dataSnapshot.children.map { it.getValue<User>(User::class.java)!!}}) }
                 .map { list -> list.filter {user.uid != it.id} } //remove current user from list
                 .map { list -> list.filter{dobToAge(it.dob) in lowerAgeLimit..upperAgeLimit} } //remove anyone not in user match age range
                 .map {list -> list.filter{!matchedUserIds!!.contains(it.id)}} // filter any already matched users
@@ -75,18 +69,18 @@ class SimilarUsersPresenter(private @NonNull var similarUsersView: SimilarUsersC
                 })
     }
 
-    override fun filterGenders(similarUserList: List<User>) : List<User> {
+    private fun getQuery(myRef: DatabaseReference): Query {
         val filterGender = preferences.matchGender
 
         return when (filterGender) {
             "Males" -> {
-                similarUserList.filter { it.gender == "Male" }
+                myRef.orderByChild("gender").startAt("Male").endAt("Male")
             }
             "Females" -> {
-                similarUserList.filter { it.gender == "Female" }
+                myRef.orderByChild("gender").startAt("Female").endAt("Female")
             }
             else -> {
-                similarUserList
+                myRef
             }
         }
     }
