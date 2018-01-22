@@ -6,9 +6,13 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.zachkirlew.applications.waxwanderer.data.model.Message
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
+import com.zachkirlew.applications.waxwanderer.data.recommendation.RecommenderImp
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 
 
-class MessagePresenter(private @NonNull var messageView: MessageContract.View) : MessageContract.Presenter {
+class MessagePresenter(private @NonNull var messageView: MessageContract.View,
+                       private @NonNull val recommender: RecommenderImp) : MessageContract.Presenter {
 
     private val database : FirebaseDatabase = FirebaseDatabase.getInstance()
     private val mFirebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
@@ -110,10 +114,25 @@ class MessagePresenter(private @NonNull var messageView: MessageContract.View) :
     }
 
     override fun addRating(vinylId: Int, rating: Double, messageId: String) {
+        val user = mFirebaseAuth.currentUser
         val myRef = database.reference.child("chat").child(chatId).child(messageId)
 
         myRef.child("rating").setValue(rating)
         myRef.child("rated").setValue(true)
+
+        addRatingToRecommender(user?.uid!!,vinylId,rating)
+    }
+
+    private fun addRatingToRecommender(uid: String, vinylId: Int, rating: Double) {
+
+        //Rating rescaled to interval [-1.0,1.0], where -1.0 means the worst rating possible,
+        // 0.0 means neutral, and 1.0 means absolutely positive rating.
+
+        val scaledRating = (rating - 3) / 2
+        recommender.addRating(uid, vinylId.toString(),scaledRating)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe{it ->Log.i("MessagePresenter",it)}
     }
 
     override fun start() {}

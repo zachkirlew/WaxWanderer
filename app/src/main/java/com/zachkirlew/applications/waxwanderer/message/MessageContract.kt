@@ -19,13 +19,11 @@ interface MessageContract {
 
         fun loadMatch(matchedUserId : String?)
 
-
         fun loadMessages()
         fun sendMessage(messageText : String, authorId : String,attachedRelease : VinylRelease?)
 
         fun loadFavourites()
 
         fun addRating(vinylId : Int,rating : Double,messageId : String)
-
     }
 }

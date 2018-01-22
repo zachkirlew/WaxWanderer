@@ -16,6 +16,7 @@ import com.zachkirlew.applications.waxwanderer.R
 import com.zachkirlew.applications.waxwanderer.data.model.Message
 import com.zachkirlew.applications.waxwanderer.data.model.User
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
+import com.zachkirlew.applications.waxwanderer.data.recommendation.RecommenderImp
 import java.io.Serializable
 import java.util.*
 
@@ -55,7 +56,6 @@ class MessageFragment : Fragment(), MessageContract.View, ShareVinylDialogFragme
 
         val sendFab = view.findViewById<ImageButton>(R.id.button_sent)
 
-
         sendFab.setOnClickListener {
             sendMessage() }
 
@@ -74,7 +74,6 @@ class MessageFragment : Fragment(), MessageContract.View, ShareVinylDialogFragme
 
         return view
     }
-
 
     private fun setupAdapter() {
         messages = ArrayList<Message>()
@@ -107,7 +106,7 @@ class MessageFragment : Fragment(), MessageContract.View, ShareVinylDialogFragme
 
     private fun initializePresenter() {
         if (presenter == null)
-            presenter = MessagePresenter(this)
+            presenter = MessagePresenter(this, RecommenderImp(activity))
     }
 
     override fun showMessage(message: Message) {

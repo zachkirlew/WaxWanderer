@@ -2,6 +2,7 @@ package com.zachkirlew.applications.waxwanderer.data.recommendation
 
 import android.content.Context
 import com.recombee.api_client.api_requests.AddPurchase
+import com.recombee.api_client.api_requests.AddRating
 import com.recombee.api_client.api_requests.DeletePurchase
 import com.recombee.api_client.api_requests.RecommendUsersToUser
 import com.zachkirlew.applications.waxwanderer.util.ConfigHelper
@@ -30,7 +31,7 @@ class RecommenderImp (context: Context) : Recommender{
                     .setCascadeCreate(true))
 
 
-            e.onSuccess("Added")
+            e.onSuccess("Added favourite")
         })
     }
 
@@ -39,7 +40,15 @@ class RecommenderImp (context: Context) : Recommender{
 
             recombeeClient.send(DeletePurchase(userId, itemId))
 
-            e.onSuccess("Delete")
+            e.onSuccess("Deleted favourite")
+        })
+    }
+
+    override fun addRating(userId: String, itemId: String, rating: Double): Single<String> {
+        return Single.create({ e ->
+            recombeeClient.send(AddRating(userId, itemId,rating))
+
+            e.onSuccess("Added rating")
         })
     }
 
