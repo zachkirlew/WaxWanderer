@@ -90,7 +90,7 @@ class SimilarUsersFragment : Fragment(), SimilarUsersContract.View {
         super.onCreateOptionsMenu(menu, inflater)
     }
 
-    override fun showMessage(message: String) {
+    override fun showMessage(message: String?) {
         Toast.makeText(activity, message,
                 Toast.LENGTH_SHORT).show()
     }

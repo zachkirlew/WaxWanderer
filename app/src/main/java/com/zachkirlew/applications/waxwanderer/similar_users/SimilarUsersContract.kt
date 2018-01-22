@@ -13,7 +13,7 @@ interface SimilarUsersContract {
         fun showSimilarUsers(users: List<User>)
         fun showMatchDialog(likedUserName : String)
 
-        fun showMessage(message : String)
+        fun showMessage(message : String?)
 
         fun showUserFavourites(vinyls : List<VinylRelease>, viewPosition: Int)
 

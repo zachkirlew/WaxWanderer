@@ -70,7 +70,7 @@ class MessageFragment : Fragment(), MessageContract.View, ShareVinylDialogFragme
         shareVinylButton = view.findViewById<ImageView>(R.id.shareVinylButton)
         shareVinylButton.setOnClickListener { presenter?.loadFavourites() }
 
-        presenter?.loadMatch(matchedUser.id)
+        presenter?.loadMatch(matchedUser.id!!)
 
         return view
     }

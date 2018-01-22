@@ -5,6 +5,7 @@ import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.zachkirlew.applications.waxwanderer.data.model.Message
+import com.zachkirlew.applications.waxwanderer.data.model.User
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
 import com.zachkirlew.applications.waxwanderer.data.recommendation.RecommenderImp
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -19,12 +20,11 @@ class MessagePresenter(private @NonNull var messageView: MessageContract.View,
 
     private lateinit var chatId : String
 
-    private val mTotalItemCount = 0
-    private val mLastVisibleItemPosition: Int = 0
-    private val mIsLoading = false
-    private val mPostsPerPage = 20
+    private lateinit var recipientUid : String
 
-    override fun loadMatch(matchedUserId: String?) {
+    override fun loadMatch(matchedUserId: String) {
+
+        recipientUid = matchedUserId
 
         val myRef = database.reference
         val user = mFirebaseAuth.currentUser
@@ -36,7 +36,6 @@ class MessagePresenter(private @NonNull var messageView: MessageContract.View,
 
                 if(dataSnapshot.exists()) {
                     chatId = dataSnapshot.value as String
-
                     loadMessages()
                 }
             }
@@ -121,6 +120,10 @@ class MessagePresenter(private @NonNull var messageView: MessageContract.View,
         myRef.child("rated").setValue(true)
 
         addRatingToRecommender(user?.uid!!,vinylId,rating)
+
+        if(rating > 3){
+            awardPointsToUser()
+        }
     }
 
     private fun addRatingToRecommender(uid: String, vinylId: Int, rating: Double) {
@@ -134,6 +137,23 @@ class MessagePresenter(private @NonNull var messageView: MessageContract.View,
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe{it ->Log.i("MessagePresenter",it)}
     }
+
+    private fun awardPointsToUser() {
+        val userRef = database.reference.child("users").child(recipientUid)
+
+        userRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onCancelled(p0: DatabaseError?) {
+            }
+
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val recipient = dataSnapshot.getValue<User>(User::class.java)!!
+                val newScore = recipient.score + 10
+
+                userRef.child("score").setValue(newScore)
+            }
+        })
+    }
+
 
     override fun start() {}
 }

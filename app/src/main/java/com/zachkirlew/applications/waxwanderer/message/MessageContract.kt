@@ -17,7 +17,7 @@ interface MessageContract {
 
     interface Presenter : BasePresenter {
 
-        fun loadMatch(matchedUserId : String?)
+        fun loadMatch(matchedUserId : String)
 
         fun loadMessages()
         fun sendMessage(messageText : String, authorId : String,attachedRelease : VinylRelease?)

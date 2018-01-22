@@ -62,7 +62,7 @@ class SimilarUsersPresenter(private @NonNull var similarUsersView: SimilarUsersC
                     override fun onSubscribe(d: Disposable) {
                     }
                     override fun onError(e: Throwable) {
-                        similarUsersView.showMessage(e.message!!)
+                        similarUsersView.showMessage(e.message)
                     }
                     override fun onComplete() {
                     }
