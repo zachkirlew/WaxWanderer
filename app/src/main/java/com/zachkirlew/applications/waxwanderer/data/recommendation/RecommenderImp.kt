@@ -52,16 +52,16 @@ class RecommenderImp (context: Context) : Recommender{
         })
     }
 
-//    override fun recommendUserToUser(userId: String, count: Long) : Observable<List<String>> {
-//        return Observable.create ({e->
-//
-//            val response = recombeeClient.send(RecommendUsersToUser(userId, count))
-//            val idList = response.ids.toList()
-//
-//            e.onNext(idList)
-//            e.onComplete()
-//        })
-//    }
+    override fun recommendUserToUser(userId: String, count: Long) : Observable<List<String>> {
+        return Observable.create ({e->
+
+            val response = recombeeClient.send(RecommendUsersToUser(userId, count))
+            val idList = response.ids.toList()
+
+            e.onNext(idList)
+            e.onComplete()
+        })
+    }
 
 
 }

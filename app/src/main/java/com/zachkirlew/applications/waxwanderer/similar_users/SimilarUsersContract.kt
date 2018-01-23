@@ -10,6 +10,8 @@ interface SimilarUsersContract {
 
     interface View: BaseView<Presenter> {
 
+        fun startRecommendationsActivity()
+
         fun showSimilarUsers(users: List<User>)
         fun showMatchDialog(likedUserName : String)
 

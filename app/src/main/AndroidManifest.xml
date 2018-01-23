@@ -54,6 +54,8 @@
 
         <activity android:name=".favourites.FavouriteActivity"></activity>
 
+        <activity android:name=".recommendations.RecommendationsActivity"></activity>
+
     </application>
 
 </manifest>

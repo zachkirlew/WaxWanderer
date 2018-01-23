@@ -22,8 +22,7 @@ import java.util.*
 
 
 class SimilarUsersPresenter(private @NonNull var similarUsersView: SimilarUsersContract.View,
-                            private @NonNull val preferences: UserPreferences,
-                            private @NonNull val recommender: RecommenderImp) : SimilarUsersContract.Presenter {
+                            private @NonNull val preferences: UserPreferences) : SimilarUsersContract.Presenter {
 
     private val database = FirebaseDatabase.getInstance()
 

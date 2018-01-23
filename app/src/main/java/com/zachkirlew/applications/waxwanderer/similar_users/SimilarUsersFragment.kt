@@ -27,6 +27,7 @@ import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
 import com.zachkirlew.applications.waxwanderer.data.recommendation.RecommenderImp
 import com.zachkirlew.applications.waxwanderer.detail_vinyl.VinylDetailActivity
 import com.zachkirlew.applications.waxwanderer.favourites.FavouriteActivity
+import com.zachkirlew.applications.waxwanderer.recommendations.RecommendationsActivity
 import com.zachkirlew.applications.waxwanderer.util.StringUtils
 import kotlinx.android.synthetic.main.top_ten_vinyl_item.view.*
 import org.joda.time.LocalDate
@@ -69,7 +70,7 @@ class SimilarUsersFragment : Fragment(), SimilarUsersContract.View {
         setHasOptionsMenu(true)
 
 
-        similarUsersPresenter = SimilarUsersPresenter(this, UserPreferences(), RecommenderImp(activity))
+        similarUsersPresenter = SimilarUsersPresenter(this, UserPreferences())
 
         likeButton = root.findViewById<ImageButton>(R.id.acceptBtn) as ImageButton
         dislikeButton = root.findViewById<ImageButton>(R.id.rejectBtn) as ImageButton
@@ -87,6 +88,7 @@ class SimilarUsersFragment : Fragment(), SimilarUsersContract.View {
 
     @Override
     override fun onCreateOptionsMenu( menu : Menu,  inflater : MenuInflater) {
+        inflater.inflate(R.menu.menu_match_fragment, menu);
         super.onCreateOptionsMenu(menu, inflater)
     }
 
@@ -118,10 +120,15 @@ class SimilarUsersFragment : Fragment(), SimilarUsersContract.View {
         userCards.forEach{ mSwipeView.addView(it)}
     }
 
+    override fun startRecommendationsActivity() {
+        val intent = Intent(activity, RecommendationsActivity::class.java)
+        startActivity(intent)
+    }
+
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-//            R.id.menu_clear -> mPresenter.clearCompletedTasks()
+            R.id.action_show_recommendations -> startRecommendationsActivity()
 //            R.id.menu_filter -> showFilteringPopUpMenu()
 //            R.id.menu_refresh -> mPresenter.loadTasks(true)
         }

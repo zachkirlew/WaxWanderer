@@ -73,5 +73,7 @@
     <string name="explore_no_vinyls_text">No vinyl releases to display</string>
     <string name="type_your_message">Type your message...</string>
     <string name="leaderboard_title">Leaderboard</string>
+    <string name="action_show_recommendations">Recommendations</string>
+    <string name="recommendations_no_recommendations_text">No recommendations to display. You may need to favourite/rate more vinyls!</string>
 
 </resources>
