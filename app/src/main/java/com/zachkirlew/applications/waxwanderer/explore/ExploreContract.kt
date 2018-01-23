@@ -23,6 +23,5 @@ interface ExploreContract {
         fun openTaskDetails()
 
         fun searchVinylReleases(searchText : String?)
-
     }
 }

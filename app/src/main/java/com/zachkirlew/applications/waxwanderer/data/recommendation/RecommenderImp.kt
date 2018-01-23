@@ -26,29 +26,29 @@ class RecommenderImp (context: Context) : Recommender{
             val jodaDate = DateTime()
             val date = jodaDate.toDate()
 
-            recombeeClient.send(AddPurchase(userId, itemId)
+            val responseString = recombeeClient.send(AddPurchase(userId, itemId)
                     .setTimestamp(date)
                     .setCascadeCreate(true))
 
 
-            e.onSuccess("Added favourite")
+            e.onSuccess(responseString)
         })
     }
 
     override fun removeFavourite(userId: String, itemId: String): Single<String> {
         return Single.create({ e ->
 
-            recombeeClient.send(DeletePurchase(userId, itemId))
+            val responseString = recombeeClient.send(DeletePurchase(userId, itemId))
 
-            e.onSuccess("Deleted favourite")
+            e.onSuccess(responseString)
         })
     }
 
     override fun addRating(userId: String, itemId: String, rating: Double): Single<String> {
         return Single.create({ e ->
-            recombeeClient.send(AddRating(userId, itemId,rating))
+            val responseString = recombeeClient.send(AddRating(userId, itemId, rating))
 
-            e.onSuccess("Added rating")
+            e.onSuccess(responseString)
         })
     }
 

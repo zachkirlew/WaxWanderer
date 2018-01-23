@@ -18,7 +18,6 @@ import io.reactivex.schedulers.Schedulers
 import java.lang.Exception
 
 class ExplorePresenter(private @NonNull var vinylRepository: VinylRepository, private @NonNull var exploreView: ExploreContract.View) : ExploreContract.Presenter {
-
     private val mFirebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private val database = FirebaseDatabase.getInstance()
 
@@ -29,6 +28,8 @@ class ExplorePresenter(private @NonNull var vinylRepository: VinylRepository, pr
     override fun start() {
         getUserVinylPreference()
     }
+
+
 
     override fun loadVinylReleases(styles: List<String>) {
 

@@ -14,11 +14,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".login.LoginActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
 
         <meta-data
@@ -44,7 +39,13 @@
         <activity android:name=".sign_up.SignUpActivity" />
         <activity android:name=".match_details.MatchDetailsActivity" />
         <activity android:name=".styles.StylesActivity"></activity>
-        <activity android:name=".explore.ExploreActivity"></activity>
+        <activity android:name=".main.MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity android:name=".detail_vinyl.VinylDetailActivity"></activity>
 
         <activity android:name=".user_detail.UserDetailActivity"></activity>

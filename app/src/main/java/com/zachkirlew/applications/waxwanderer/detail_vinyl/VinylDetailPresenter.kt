@@ -12,6 +12,7 @@ import com.zachkirlew.applications.waxwanderer.data.VinylRepository
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.detail.DetailVinylRelease
 import com.zachkirlew.applications.waxwanderer.data.recommendation.RecommenderImp
+import io.reactivex.Observer
 import io.reactivex.SingleObserver
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -109,7 +110,7 @@ class VinylDetailPresenter(private @NonNull var vinylRepository: VinylRepository
         recommender.addFavourite(userId,itemId)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe{it ->Log.i(TAG,it)}
+                .subscribe(recommenderObserver)
 
     }
 
@@ -117,11 +118,18 @@ class VinylDetailPresenter(private @NonNull var vinylRepository: VinylRepository
         recommender.removeFavourite(userId,itemId)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe{it ->Log.i(TAG,it)}
+                .subscribe(recommenderObserver)
     }
 
+    object recommenderObserver : SingleObserver<String>{
+        override fun onSuccess(responseString: String) {
+            Log.i("VinylDetailPres",responseString)
+        }
+        override fun onError(e: Throwable) {
+            Log.e("VinylDetailPres",e.message)
+        }
 
-
-
-
+        override fun onSubscribe(d: Disposable) {
+        }
+    }
 }

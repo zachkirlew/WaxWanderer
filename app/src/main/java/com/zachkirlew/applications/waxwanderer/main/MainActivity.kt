@@ -1,4 +1,4 @@
-package com.zachkirlew.applications.waxwanderer.explore
+package com.zachkirlew.applications.waxwanderer.main
 
 import android.content.Intent
 import android.os.Bundle
@@ -23,6 +23,8 @@ import com.google.firebase.database.ValueEventListener
 import com.squareup.picasso.Picasso
 import com.zachkirlew.applications.waxwanderer.R
 import com.zachkirlew.applications.waxwanderer.data.model.User
+import com.zachkirlew.applications.waxwanderer.explore.ExploreFragment
+import com.zachkirlew.applications.waxwanderer.explore.OnSearchSubmitted
 import com.zachkirlew.applications.waxwanderer.favourites.FavouriteFragment
 import com.zachkirlew.applications.waxwanderer.leaderboard.LeaderBoardFragment
 import com.zachkirlew.applications.waxwanderer.login.LoginActivity
@@ -33,16 +35,21 @@ import com.zachkirlew.applications.waxwanderer.util.ActivityUtils
 import com.zachkirlew.applications.waxwanderer.util.BorderedCircleTransform
 import kotlinx.android.synthetic.main.activity_main.*
 
-
-class ExploreActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), MainContract.View {
 
     private val mDrawerLayout: DrawerLayout by lazy { findViewById<DrawerLayout>(R.id.drawer_layout) }
 
     private var showSearchIcon = true
 
+    private lateinit var presenter: MainPresenter
+
+    private lateinit var navigationView: NavigationView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        presenter = MainPresenter(this)
 
         val toolbar = findViewById<Toolbar>(R.id.toolbar) as Toolbar
         setSupportActionBar(toolbar)
@@ -60,20 +67,36 @@ class ExploreActivity : AppCompatActivity() {
         mDrawerLayout.addDrawerListener(mDrawerToggle);
         mDrawerToggle.syncState()
 
-        val navigationView = findViewById<NavigationView>(R.id.nav_view) as NavigationView
+        navigationView = findViewById<NavigationView>(R.id.nav_view) as NavigationView
 
-        setupDrawerContent(navigationView)
+        setupDrawerContent()
 
+        navigationView.menu.getItem(0).isChecked = true
+    }
+
+    override fun startExploreFragment() {
         var exploreFrag: Fragment? = supportFragmentManager.findFragmentById(R.id.content)
 
         if (exploreFrag == null) {
-
             exploreFrag = ExploreFragment()
             ActivityUtils.addFragmentToActivity(
                     supportFragmentManager, exploreFrag, R.id.content)
         }
+    }
 
-        navigationView.menu.getItem(0).isChecked = true
+    override fun startLoginActivity() {
+        val intent = Intent(this, LoginActivity::class.java)
+        startActivity(intent)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        presenter.setAuthListener()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        presenter.removeAuthListener()
     }
 
     public override fun onSaveInstanceState(bundle: Bundle?) {
@@ -117,15 +140,7 @@ class ExploreActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    private fun setupDrawerContent(navigationView: NavigationView) {
-
-        getDisplayPicture()
-
-        val header = navigationView.getHeaderView(0)
-
-        val nameText = header?.findViewById<TextView>(R.id.name) as TextView
-
-        nameText.text = FirebaseAuth.getInstance().currentUser?.displayName
+    private fun setupDrawerContent() {
 
         navigationView.setNavigationItemSelectedListener { menuItem ->
 
@@ -186,42 +201,25 @@ class ExploreActivity : AppCompatActivity() {
         }
     }
 
-    private fun getDisplayPicture(){
+    override fun showDisplayName(displayName: String) {
+        val header = navigationView.getHeaderView(0)
 
-        val mFirebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
-        val database = FirebaseDatabase.getInstance()
+        val nameText = header?.findViewById<TextView>(R.id.name) as TextView
 
-        val myRef = database.reference
+        nameText.text = displayName
+    }
 
-        val user = mFirebaseAuth.currentUser
+    override fun showProfilePicture(imageUrl: String) {
+        val header = nav_view.getHeaderView(0)
 
-        val ref = myRef.child("users").child(user?.uid)
+        val profileImage = header?.findViewById<ImageView>(R.id.profile_image) as ImageView
 
-        ref.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-
-                val currentUser = dataSnapshot.getValue(User::class.java)
-
-                if(!currentUser?.imageurl.isNullOrEmpty()) {
-
-                    val header = nav_view.getHeaderView(0)
-
-                    val profileImage = header?.findViewById<ImageView>(R.id.profile_image) as ImageView
-
-                    Picasso.with(this@ExploreActivity)
-                            .load(currentUser?.imageurl)
-                            .resize(160, 160)
-                            .centerCrop()
-                            .transform(BorderedCircleTransform())
-                            .into(profileImage)
-                }
-
-            }
-
-            override fun onCancelled(databaseError: DatabaseError) {
-            }
-        })
-
+        Picasso.with(this@MainActivity)
+                .load(imageUrl)
+                .resize(160, 160)
+                .centerCrop()
+                .transform(BorderedCircleTransform())
+                .into(profileImage)
     }
 
     private fun uncheckAllMenuItems(navigationView: NavigationView) {

@@ -9,10 +9,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.zachkirlew.applications.waxwanderer.R
-import com.zachkirlew.applications.waxwanderer.explore.ExploreActivity
 import android.support.v7.widget.DefaultItemAnimator
 import android.widget.*
 import com.zachkirlew.applications.waxwanderer.data.model.Style
+import com.zachkirlew.applications.waxwanderer.main.MainActivity
 
 
 class StylesActivity : AppCompatActivity(), StylesContract.View, AdapterView.OnItemSelectedListener {
@@ -93,7 +93,7 @@ class StylesActivity : AppCompatActivity(), StylesContract.View, AdapterView.OnI
         if(hasComeFromSettings)
             onBackPressed()
         else{
-            val intent = Intent(this, ExploreActivity::class.java)
+            val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
         }
     }
