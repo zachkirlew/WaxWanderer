@@ -29,5 +29,7 @@ interface SimilarUsersContract {
         fun handleLike(likedUser : User)
         fun loadUserFavourites(userId : String?, viewPosition : Int)
         fun loadVinylPreference(userId: String?,viewPosition: Int)
+
+        fun dispose()
     }
 }

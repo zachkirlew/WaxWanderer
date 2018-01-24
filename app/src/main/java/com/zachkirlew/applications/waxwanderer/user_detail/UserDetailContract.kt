@@ -9,6 +9,8 @@ interface UserDetailContract {
 
     interface View {
 
+        fun showUserStyles(stylesText : String)
+
         fun showMessage(message : String)
         fun showUserFavourites(favourites : List<VinylRelease>)
 
@@ -17,6 +19,8 @@ interface UserDetailContract {
 
     interface Presenter : BasePresenter {
 
-        fun loadUserFavourites(user : User)
+        fun loadUserFavourites(userId : String)
+
+        fun loadUserStyles(userId : String)
     }
 }

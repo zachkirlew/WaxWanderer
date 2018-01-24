@@ -24,6 +24,8 @@ import java.util.*
 class SimilarUsersPresenter(private @NonNull var similarUsersView: SimilarUsersContract.View,
                             private @NonNull val preferences: UserPreferences) : SimilarUsersContract.Presenter {
 
+    private var disposable : Disposable? = null
+
     private val database = FirebaseDatabase.getInstance()
 
     private val user: FirebaseUser = FirebaseAuth.getInstance().currentUser!!
@@ -59,6 +61,7 @@ class SimilarUsersPresenter(private @NonNull var similarUsersView: SimilarUsersC
                         similarUsersView.showSimilarUsers(similarUserList)
                     }
                     override fun onSubscribe(d: Disposable) {
+                        disposable = d
                     }
                     override fun onError(e: Throwable) {
                         similarUsersView.showMessage(e.message)
@@ -161,6 +164,10 @@ class SimilarUsersPresenter(private @NonNull var similarUsersView: SimilarUsersC
             override fun onCancelled(databaseError: DatabaseError) {
             }
         })
+    }
+
+    override fun dispose() {
+        disposable?.dispose()
     }
 
     private fun dobToAge(date: Date?): Int {

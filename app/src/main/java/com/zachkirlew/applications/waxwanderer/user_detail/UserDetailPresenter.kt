@@ -6,7 +6,6 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import com.zachkirlew.applications.waxwanderer.data.model.User
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
 
 
@@ -17,24 +16,40 @@ class UserDetailPresenter(private @NonNull var userDetailView: UserDetailContrac
     private val database = FirebaseDatabase.getInstance()
 
 
-    override fun loadUserFavourites(user: User) {
+    override fun loadUserFavourites(userId: String) {
 
         val myRef = database.reference
 
-        val ref = myRef.child("favourites").child(user.id)
+        val ref = myRef.child("favourites").child(userId).limitToLast(5)
         ref.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
 
-                val vinyls = ArrayList<VinylRelease>()
-
-                for (child in dataSnapshot.children) {
-                    child.getValue<VinylRelease>(VinylRelease::class.java)?.let { vinyls.add(it) }
-                }
-
-                if(vinyls.isEmpty())
-                    userDetailView.showNoFavouritesView()
-                else
+                if(dataSnapshot.exists()){
+                    val vinyls = dataSnapshot.children.map { it.getValue<VinylRelease>(VinylRelease::class.java)!! }
                     userDetailView.showUserFavourites(vinyls)
+                }
+                else{
+                    userDetailView.showNoFavouritesView()
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+            }
+        })
+    }
+
+    override fun loadUserStyles(userId: String) {
+        val myRef = database.reference
+
+        val ref = myRef.child("vinylPreferences").child(userId)
+
+        ref.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+
+                val preferredStyles = dataSnapshot.children.map { it.value as String }
+                val commaSeparatedStyles = android.text.TextUtils.join(", ", preferredStyles)
+
+                userDetailView.showUserStyles(commaSeparatedStyles)
             }
 
             override fun onCancelled(databaseError: DatabaseError) {

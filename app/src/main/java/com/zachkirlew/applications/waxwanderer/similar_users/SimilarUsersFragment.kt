@@ -135,6 +135,11 @@ class SimilarUsersFragment : Fragment(), SimilarUsersContract.View {
         return true
     }
 
+    override fun onStop() {
+        super.onStop()
+        similarUsersPresenter.dispose()
+    }
+
     override fun showUserFavourites(vinyls: List<VinylRelease>, viewPosition: Int) {
         userCards[viewPosition].showVinyls(vinyls)
 

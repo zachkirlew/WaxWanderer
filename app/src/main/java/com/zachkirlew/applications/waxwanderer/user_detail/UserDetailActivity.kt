@@ -21,11 +21,13 @@ import com.zachkirlew.applications.waxwanderer.R
 import com.zachkirlew.applications.waxwanderer.data.model.User
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
 import com.zachkirlew.applications.waxwanderer.detail_vinyl.VinylDetailActivity
+import com.zachkirlew.applications.waxwanderer.favourites.FavouriteActivity
 import com.zachkirlew.applications.waxwanderer.util.CircleTransform
 import kotlinx.android.synthetic.main.vinyl_favourite_item.view.*
 import org.joda.time.LocalDate
 import org.joda.time.Period
 import org.joda.time.PeriodType
+import org.w3c.dom.Text
 import java.util.*
 
 
@@ -42,6 +44,10 @@ class UserDetailActivity : AppCompatActivity(), UserDetailContract.View  {
 
     private val noFavouritesText by lazy {findViewById<TextView>(R.id.text_no_user_favourites) }
 
+    private val preferredStylesText by lazy {findViewById<TextView>(R.id.text_styles) }
+
+    private val viewTopTracksText by lazy {findViewById<TextView>(R.id.text_top_tracks_view)}
+
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_user_detail)
@@ -53,9 +59,7 @@ class UserDetailActivity : AppCompatActivity(), UserDetailContract.View  {
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
 
-
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-
 
         val customTitle = findViewById<TextView>(R.id.text_title)
         val customSubtitle = findViewById<TextView>(R.id.text_subtitle)
@@ -83,7 +87,10 @@ class UserDetailActivity : AppCompatActivity(), UserDetailContract.View  {
 
         user.imageurl?.let { showImageBackDrop(user.imageurl!!) }
 
-        presenter.loadUserFavourites(user)
+        viewTopTracksText.setOnClickListener(onViewTracksClickListener)
+
+        presenter.loadUserStyles(user.id!!)
+        presenter.loadUserFavourites(user.id!!)
     }
 
     private fun showImageBackDrop(imageUrl: String) {
@@ -93,8 +100,18 @@ class UserDetailActivity : AppCompatActivity(), UserDetailContract.View  {
         Picasso.with(this).load(imageUrl).into(imageView)
     }
 
+    private val onViewTracksClickListener = View.OnClickListener {
+        val intent = Intent(this, FavouriteActivity::class.java)
+        intent.putExtra("selected user", user)
+        startActivity(intent)
+    }
+
     override fun showNoFavouritesView() {
         noFavouritesText.visibility = View.VISIBLE
+    }
+
+    override fun showUserStyles(stylesText: String) {
+        preferredStylesText.text = stylesText
     }
 
     override fun showUserFavourites(favourites: List<VinylRelease>) {

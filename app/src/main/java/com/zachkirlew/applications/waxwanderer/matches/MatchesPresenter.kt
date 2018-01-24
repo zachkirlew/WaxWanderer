@@ -27,11 +27,10 @@ class MatchesPresenter(private @NonNull var matchesView: MatchesContract.View) :
 
         val ref = myRef.child("matches").child(user?.uid)
 
-        ref.addListenerForSingleValueEvent(object : ValueEventListener {
+        ref.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
 
                 if(dataSnapshot.exists()){
-
                     dataSnapshot.children.forEach { getMatchInfo(Match(it.key,it.value as String)) }
                 }
                 else{

@@ -13,7 +13,8 @@ import com.zachkirlew.applications.waxwanderer.data.model.User
 import com.zachkirlew.applications.waxwanderer.data.recommendation.RecommenderImp
 
 
-class RecommendationsFragment: Fragment(), RecommendationsContract.View {
+class RecommendationsFragment: Fragment(), RecommendationsContract.View, RecommendationsAdapter.ViewHolder.UserLikeListener {
+
 
     private lateinit var presenter: RecommendationsContract.Presenter
 
@@ -55,6 +56,14 @@ class RecommendationsFragment: Fragment(), RecommendationsContract.View {
 
     override fun showMessage(message: String?) {
 
+    }
+
+    override fun onUserLike(userId: String, position: Int) {
+        presenter.likeUser(userId,position)
+    }
+
+    override fun removeUser(position: Int) {
+        adapter.removeUser(position)
     }
 
     override fun showNoRecommendationsView() {

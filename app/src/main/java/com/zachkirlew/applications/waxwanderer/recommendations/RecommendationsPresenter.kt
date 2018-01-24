@@ -1,7 +1,10 @@
 package com.zachkirlew.applications.waxwanderer.recommendations
 
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.zachkirlew.applications.waxwanderer.data.model.User
 import com.zachkirlew.applications.waxwanderer.data.recommendation.RecommenderImp
 import durdinapps.rxfirebase2.RxFirebaseDatabase
@@ -21,25 +24,82 @@ class RecommendationsPresenter(private @NonNull var recommendationsView: Recomme
     private val database : FirebaseDatabase = FirebaseDatabase.getInstance()
     private val mFirebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
 
+    private lateinit var likes : List<String>
+
     override fun start() {
-        loadRecommendedUsers()
+        loadLikes()
+    }
+
+    override fun loadLikes() {
+        val currentUserId = mFirebaseAuth.currentUser?.uid
+        val likesRef = database.reference.child("likes").child(currentUserId)
+
+        likesRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+
+                if(dataSnapshot.exists()){
+                    likes = dataSnapshot.children.map { it.key }
+                    loadRecommendedUsers()
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+            }
+        })
     }
 
     override fun loadRecommendedUsers() {
         val currentUserId = mFirebaseAuth.currentUser?.uid
 
-        recommender.recommendUserToUser(currentUserId!!,10)
+        recommender.recommendUserToUser(currentUserId!!,1)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe{userIds ->
 
-                    if(userIds.isNotEmpty()){
-                        loadUsersDetails(userIds)
+                    val userIdsFiltered = removeLikedUsers(userIds)
+
+                    if(userIdsFiltered.isNotEmpty()){
+                        loadUsersDetails(userIdsFiltered)
                     }
                     else{
                         recommendationsView.showNoRecommendationsView()
                     }
                 }
+    }
+
+    override fun likeUser(userId: String, position: Int) {
+        val myRef = database.reference
+        val currentUserId = mFirebaseAuth.currentUser?.uid
+
+        myRef.child("likes").child(userId).child(currentUserId).addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                //liked user has current user in likes
+                if(dataSnapshot.exists()){
+
+                    val chatKey = myRef.child("chat").push().key
+
+                    //add to both accounts and set chat id
+                    myRef.child("matches").child(currentUserId)
+                            .child(userId).setValue(chatKey)
+
+                    myRef.child("matches").child(userId)
+                            .child(currentUserId).setValue(chatKey)
+
+                    //remove old like from liked user's account
+                    myRef.child("likes").child(userId)
+                            .child(currentUserId).setValue(null)
+                }
+                //user doesn't have current user in their likes
+                else{
+                    myRef.child("likes").child(currentUserId)
+                            .child(userId).setValue(true)
+                }
+                recommendationsView.removeUser(position)
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+            }
+        })
     }
 
     private fun loadUsersDetails(userIds: List<String>) {
@@ -61,5 +121,9 @@ class RecommendationsPresenter(private @NonNull var recommendationsView: Recomme
                     override fun onComplete() {
                     }
                 })
+    }
+
+    private fun removeLikedUsers(userIds : List<String>): List<String> {
+        return userIds.filter { !likes.contains(it) }
     }
 }

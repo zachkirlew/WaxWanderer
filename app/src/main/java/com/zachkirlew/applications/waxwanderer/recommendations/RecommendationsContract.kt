@@ -14,10 +14,16 @@ interface RecommendationsContract {
 
         fun showRecommendedUser(user : User)
 
+        fun removeUser(position : Int)
+
     }
 
     interface Presenter : BasePresenter {
 
+        fun loadLikes()
+
         fun loadRecommendedUsers()
+
+        fun likeUser(userId : String,position : Int)
     }
 }
