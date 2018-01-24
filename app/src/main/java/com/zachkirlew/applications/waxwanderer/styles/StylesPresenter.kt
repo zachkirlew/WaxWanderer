@@ -16,17 +16,6 @@ class StylesPresenter(private @NonNull var stylesView: StylesContract.View) : St
 
     private val TAG = StylesActivity::class.java.simpleName
 
-    private val mAuthListener = FirebaseAuth.AuthStateListener { firebaseAuth ->
-        // Check if user is signed in (non-null) and update UI accordingly.
-        val user = firebaseAuth.currentUser
-
-//        if (user != null) {
-//            Log.d(TAG, "User is Signed In")
-//            signUpView.startExploreActivity()
-//        } else {
-//            Log.d(TAG, "User is Signed Out")
-//        }
-    }
 
     override fun loadGenres() {
         val database = database.reference
@@ -67,7 +56,7 @@ class StylesPresenter(private @NonNull var stylesView: StylesContract.View) : St
         })
     }
 
-    override fun savePreferences(selectedGenre: String, selectedStyles: List<String>) {
+    override fun savePreferences(selectedStyles: List<String>) {
 
         val myRef = database.reference
         val user = mFirebaseAuth.currentUser
@@ -77,4 +66,25 @@ class StylesPresenter(private @NonNull var stylesView: StylesContract.View) : St
 
         stylesView.startNextActivity()
     }
+
+    override fun loadVinylPrefs() {
+        val myRef = database.reference
+
+        val user = mFirebaseAuth.currentUser
+
+        val ref = myRef.child("vinylPreferences").child(user?.uid)
+
+        ref.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    val styles = dataSnapshot.children.map { it.value as String}
+                    stylesView.showUsersPreferredStyles(styles)
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+            }
+        })
+    }
+
 }

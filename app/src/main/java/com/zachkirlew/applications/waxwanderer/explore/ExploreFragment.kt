@@ -45,9 +45,7 @@ class ExploreFragment: Fragment(), ExploreContract.View, OnSearchSubmitted{
 
         val exploreList = root?.findViewById<RecyclerView>(R.id.explore_list) as RecyclerView
 
-        val mLayoutManager = LinearLayoutManager(activity)
-
-        exploreList.layoutManager = mLayoutManager
+        exploreList.layoutManager = LinearLayoutManager(activity)
         exploreList.adapter = exploreAdapter
 
         val spacingInPixels = resources.getDimensionPixelSize(R.dimen.list_item_padding)

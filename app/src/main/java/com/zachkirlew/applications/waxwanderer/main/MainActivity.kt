@@ -31,6 +31,7 @@ import com.zachkirlew.applications.waxwanderer.login.LoginActivity
 import com.zachkirlew.applications.waxwanderer.matches.MatchesFragment
 import com.zachkirlew.applications.waxwanderer.settings.SettingsFragment
 import com.zachkirlew.applications.waxwanderer.similar_users.SimilarUsersFragment
+import com.zachkirlew.applications.waxwanderer.styles.StylesActivity
 import com.zachkirlew.applications.waxwanderer.util.ActivityUtils
 import com.zachkirlew.applications.waxwanderer.util.BorderedCircleTransform
 import kotlinx.android.synthetic.main.activity_main.*
@@ -99,6 +100,12 @@ class MainActivity : AppCompatActivity(), MainContract.View {
         presenter.removeAuthListener()
     }
 
+    override fun startStylesActivity() {
+        val intent = Intent(this, StylesActivity::class.java)
+        intent.putExtra("fromMain",true)
+        startActivity(intent)
+    }
+
     public override fun onSaveInstanceState(bundle: Bundle?) {
         super.onSaveInstanceState(bundle)
     }
@@ -134,6 +141,11 @@ class MainActivity : AppCompatActivity(), MainContract.View {
             android.R.id.home -> {
                 // Open the navigation drawer when the home icon is selected from the toolbar.
                 mDrawerLayout.openDrawer(GravityCompat.START)
+                return true
+            }
+            R.id.action_vinyl_settings -> {
+                // Open the navigation drawer when the home icon is selected from the toolbar.
+                startStylesActivity()
                 return true
             }
         }

@@ -11,15 +11,19 @@ interface StylesContract {
 
         fun showStyles(styles : List<Style>)
 
+        fun showUsersPreferredStyles(styles : List<String>)
+
     }
 
     interface Presenter {
 
-        fun savePreferences(selectedGenre : String, selectedStyles : List<String>)
+        fun savePreferences(selectedStyles : List<String>)
 
         fun loadGenres()
 
         fun loadStyles(genre : String)
+
+        fun loadVinylPrefs()
 
     }
 }

@@ -75,5 +75,6 @@
     <string name="leaderboard_title">Leaderboard</string>
     <string name="action_show_recommendations">Recommendations</string>
     <string name="recommendations_no_recommendations_text">No recommendations to display. You may need to favourite/rate more vinyls!</string>
+    <string name="vinyl_settings_title">Vinyl preferences</string>
 
 </resources>

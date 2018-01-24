@@ -29,7 +29,7 @@ class StylesActivity : AppCompatActivity(), StylesContract.View, AdapterView.OnI
 
     private lateinit var stylesAdapter: StylesAdapter
 
-    private var hasComeFromSettings : Boolean = false
+    private var hasComeFromMain: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,7 +37,7 @@ class StylesActivity : AppCompatActivity(), StylesContract.View, AdapterView.OnI
 
         presenter = StylesPresenter(this)
 
-        hasComeFromSettings = intent.getBooleanExtra("fromSettings",false)
+        hasComeFromMain = intent.getBooleanExtra("fromMain",false)
 
         val linearLayoutManager = LinearLayoutManager(this)
         recyclerView.layoutManager = linearLayoutManager
@@ -47,19 +47,20 @@ class StylesActivity : AppCompatActivity(), StylesContract.View, AdapterView.OnI
         stylesAdapter = StylesAdapter(emptyList())
         recyclerView.adapter = stylesAdapter
 
-        submitButton.setOnClickListener{
+        submitButton.setOnClickListener(submitListener)
+    }
 
-            val selectedGenre = spinner.selectedItem.toString()
+    var submitListener = View.OnClickListener {
 
-            val selectedStyles = stylesAdapter.getAllSelectedStyles()
-
-            presenter.savePreferences(selectedGenre,selectedStyles)
-        }
+        presenter.savePreferences(selectedStyles)
     }
 
     public override fun onStart() {
         super.onStart()
         presenter.loadGenres()
+
+        if(hasComeFromMain)
+            presenter.loadVinylPrefs()
     }
 
     override fun showGenres(genres : List<String>) {
@@ -90,7 +91,7 @@ class StylesActivity : AppCompatActivity(), StylesContract.View, AdapterView.OnI
     }
 
     override fun startNextActivity() {
-        if(hasComeFromSettings)
+        if(hasComeFromMain)
             onBackPressed()
         else{
             val intent = Intent(this, MainActivity::class.java)
@@ -98,19 +99,27 @@ class StylesActivity : AppCompatActivity(), StylesContract.View, AdapterView.OnI
         }
     }
 
+    override fun showUsersPreferredStyles(styles: List<String>) {
+        selectedStyles.addAll(styles)
+        updateSelectedText()
+        checkStylesList()
+    }
+
     fun addStyleToSelectedList(style : String){
         selectedStyles.add(style)
-
-        val commaSeparatedStyles = android.text.TextUtils.join(", ", selectedStyles)
-        selectedStylesText.text = commaSeparatedStyles
+        updateSelectedText()
         checkStylesList()
     }
 
     fun removeStyleFromSelectedList(style : String){
         selectedStyles.remove(style)
+        updateSelectedText()
+        checkStylesList()
+    }
+
+    private fun updateSelectedText(){
         val commaSeparatedStyles = android.text.TextUtils.join(", ", selectedStyles)
         selectedStylesText.text = commaSeparatedStyles
-        checkStylesList()
     }
 
     private fun checkStylesList(){

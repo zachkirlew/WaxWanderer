@@ -9,6 +9,8 @@ interface MainContract {
         fun startLoginActivity()
 
         fun startExploreFragment()
+
+        fun startStylesActivity()
     }
 
     interface Presenter {
