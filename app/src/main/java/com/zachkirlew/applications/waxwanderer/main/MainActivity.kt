@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.NavigationView
 import android.support.v4.app.Fragment
+import android.support.v4.content.ContextCompat
 import android.support.v4.view.GravityCompat
 import android.support.v4.view.MenuItemCompat
 import android.support.v4.widget.DrawerLayout
@@ -162,10 +163,7 @@ class MainActivity : AppCompatActivity(), MainContract.View {
 
                 R.id.log_out_navigation_menu_item ->{
 
-                    FirebaseAuth.getInstance().signOut()
-
-                    val intent = Intent(this, LoginActivity::class.java)
-                    startActivity(intent)
+                    presenter.signOut()
                 }
 
                 R.id.explore_navigation_menu_item ->{

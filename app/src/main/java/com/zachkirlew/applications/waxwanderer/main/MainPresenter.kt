@@ -1,12 +1,17 @@
 package com.zachkirlew.applications.waxwanderer.main
 
+import android.content.Intent
 import android.support.annotation.NonNull
+import android.support.v4.content.ContextCompat.startActivity
 import android.util.Log
+import com.facebook.login.LoginManager
+import com.google.android.gms.auth.api.Auth
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.zachkirlew.applications.waxwanderer.login.LoginActivity
 
 
 class MainPresenter(private @NonNull val mainView: MainContract.View): MainContract.Presenter {
@@ -33,6 +38,15 @@ class MainPresenter(private @NonNull val mainView: MainContract.View): MainContr
 
         mainView.showDisplayName(displayName!!)
         loadUserProfilePic()
+    }
+
+    override fun signOut() {
+
+        LoginManager.getInstance().logOut()
+        FirebaseAuth.getInstance().signOut()
+
+
+        mainView.startLoginActivity()
     }
 
     private fun loadUserProfilePic() {

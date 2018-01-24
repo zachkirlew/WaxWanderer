@@ -5,28 +5,6 @@
 
     <string name="explore_title">Explore</string>
 
-    <string name="add_task">New TO-DO</string>
-    <string name="edit_task">Edit TO-DO</string>
-    <string name="task_marked_complete">Task marked complete</string>
-    <string name="task_marked_active">Task marked active</string>
-    <string name="loading_tasks_error">Error while loading tasks</string>
-    <string name="completed_tasks_cleared">Completed tasks cleared</string>
-    <string name="menu_filter">Filter</string>
-    <string name="menu_clear">Clear completed</string>
-    <string name="menu_delete_task">Delete task</string>
-    <string name="navigation_view_header_title">TO-DOs</string>
-    <string name="title_hint">Title</string>
-    <string name="description_hint">Enter your TO-DO here.</string>
-    <string name="empty_task_message">TO DOs cannot be empty</string>
-    <string name="successfully_saved_task_message">TO-DO saved</string>
-
-
-    <string name="statistics_no_tasks">You have no tasks.</string>
-    <string name="statistics_active_tasks">Active tasks:</string>
-    <string name="statistics_completed_tasks">Completed tasks:</string>
-    <string name="statistics_error">Error loading statistics.</string>
-    <string name="no_data">No data</string>
-    <string name="loading">LOADING</string>
     <string name="navigation_drawer_open">Opened</string>
     <string name="navigation_drawer_close">Closed</string>
     <string name="login_email_password_hint">Password</string>
@@ -47,7 +25,7 @@
     <string name="settings_title">Settings</string>
     <string name="title_activity_settings">Settings</string>
     <string name="matches_title">Matches</string>
-    <string name="search_title">Search...</string>
+    <string name="search_title">Search…</string>
     <string name="matches_no_matches_text">No matches yet! Go out there and get some!</string>
     <string name="action_settings">Messages</string>
     <string name="matches_action_message">Message</string>
@@ -66,16 +44,14 @@
 
     <string name="hint_mail">Mail</string>
     <string name="hint_password">Password</string>
-    <string name="login_progress_dialog">One moment please…</string>
-    <string name="welcome">Bienvenido! </string>
-    <string name="hello">Hola</string>
     <string name="sent_message">write a message!</string>
     <string name="explore_no_vinyls_text">No vinyl releases to display</string>
-    <string name="type_your_message">Type your message...</string>
+    <string name="type_your_message">Type your message…</string>
     <string name="leaderboard_title">Leaderboard</string>
     <string name="action_show_recommendations">Recommendations</string>
     <string name="recommendations_no_recommendations_text">No recommendations to display. You may need to favourite/rate more vinyls!</string>
     <string name="vinyl_settings_title">Vinyl preferences</string>
     <string name="recommendations_action_like">Like</string>
+    <string name="sign_up_already_a_member">Already a member? <b>Login</b></string>
 
 </resources>

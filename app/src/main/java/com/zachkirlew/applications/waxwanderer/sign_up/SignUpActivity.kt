@@ -5,10 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.TextInputLayout
 import android.support.v7.app.AppCompatActivity
-import android.widget.Button
-import android.widget.DatePicker
-import android.widget.EditText
-import android.widget.Toast
+import android.widget.*
 import com.zachkirlew.applications.waxwanderer.R
 import com.zachkirlew.applications.waxwanderer.match_details.MatchDetailsActivity
 import com.zachkirlew.applications.waxwanderer.styles.StylesActivity
@@ -20,6 +17,8 @@ class SignUpActivity : AppCompatActivity(), SignUpContract.View {
     private lateinit var presenter: SignUpPresenter
 
     private val buttonSignUp by lazy {findViewById<Button>(R.id.btn_sign_up)}
+
+    private val textLogInView by lazy {findViewById<TextView>(R.id.text_login_view)}
 
     private val editTextName by lazy {findViewById<EditText>(R.id.input_name)}
     private val editTextEmail by lazy {findViewById<EditText>(R.id.input_email)}
@@ -36,6 +35,8 @@ class SignUpActivity : AppCompatActivity(), SignUpContract.View {
         presenter = SignUpPresenter(this)
 
         buttonSignUp.setOnClickListener {getSignUpCreds()}
+
+        textLogInView.setOnClickListener{onBackPressed()}
 
     }
 

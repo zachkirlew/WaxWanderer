@@ -20,5 +20,7 @@ interface MainContract {
         fun removeAuthListener()
 
         fun loadUserDetails()
+
+        fun signOut()
     }
 }

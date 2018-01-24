@@ -81,13 +81,14 @@
             android:padding="12dp"
             android:text="@string/button_text_create_account" />
 
-        <TextView android:id="@+id/link_login"
+        <TextView
+            android:id="@+id/text_login_view"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dp"
-            android:text="Already a member? Login"
             android:gravity="center"
-            android:textSize="16sp"/>
+            android:text="@string/sign_up_already_a_member"
+            android:textSize="16sp" />
 
     </LinearLayout>
 </ScrollView>
