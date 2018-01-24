@@ -62,6 +62,4 @@ class RecommenderImp (context: Context) : Recommender{
             e.onComplete()
         })
     }
-
-
 }

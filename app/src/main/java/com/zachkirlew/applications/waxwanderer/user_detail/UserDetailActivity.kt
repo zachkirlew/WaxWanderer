@@ -20,14 +20,12 @@ import com.squareup.picasso.Picasso
 import com.zachkirlew.applications.waxwanderer.R
 import com.zachkirlew.applications.waxwanderer.data.model.User
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
-import com.zachkirlew.applications.waxwanderer.detail_vinyl.VinylDetailActivity
+import com.zachkirlew.applications.waxwanderer.vinyl_detail.VinylDetailActivity
 import com.zachkirlew.applications.waxwanderer.favourites.FavouriteActivity
-import com.zachkirlew.applications.waxwanderer.util.CircleTransform
 import kotlinx.android.synthetic.main.vinyl_favourite_item.view.*
 import org.joda.time.LocalDate
 import org.joda.time.Period
 import org.joda.time.PeriodType
-import org.w3c.dom.Text
 import java.util.*
 
 

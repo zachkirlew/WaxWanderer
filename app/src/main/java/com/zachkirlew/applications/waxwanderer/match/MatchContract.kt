@@ -1,4 +1,4 @@
-package com.zachkirlew.applications.waxwanderer.similar_users
+package com.zachkirlew.applications.waxwanderer.match
 
 import com.zachkirlew.applications.waxwanderer.base.BasePresenter
 import com.zachkirlew.applications.waxwanderer.base.BaseView
@@ -6,7 +6,7 @@ import com.zachkirlew.applications.waxwanderer.data.model.User
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
 
 
-interface SimilarUsersContract {
+interface MatchContract {
 
     interface View: BaseView<Presenter> {
 

@@ -82,6 +82,4 @@ class RecommendationsFragment: Fragment(), RecommendationsContract.View, Recomme
         recommendationsList.layoutManager = LinearLayoutManager(recommendationsList.context)
         recommendationsList.adapter = adapter
     }
-
-
 }

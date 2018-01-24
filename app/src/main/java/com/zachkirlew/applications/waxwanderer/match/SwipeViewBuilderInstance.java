@@ -1,4 +1,4 @@
-package com.zachkirlew.applications.waxwanderer.similar_users;
+package com.zachkirlew.applications.waxwanderer.match;
 
 import com.mindorks.placeholderview.SwipeDecor;
 import com.mindorks.placeholderview.SwipePlaceHolderView;

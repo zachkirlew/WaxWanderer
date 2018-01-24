@@ -1,4 +1,4 @@
-package com.zachkirlew.applications.waxwanderer.detail_vinyl
+package com.zachkirlew.applications.waxwanderer.vinyl_detail
 
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.detail.DetailVinylRelease

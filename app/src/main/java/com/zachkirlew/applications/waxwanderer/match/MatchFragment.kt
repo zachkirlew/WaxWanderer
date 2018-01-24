@@ -1,4 +1,4 @@
-package com.zachkirlew.applications.waxwanderer.similar_users
+package com.zachkirlew.applications.waxwanderer.match
 
 import android.content.Context
 import android.content.Intent
@@ -24,8 +24,7 @@ import com.zachkirlew.applications.waxwanderer.R
 import com.zachkirlew.applications.waxwanderer.data.local.UserPreferences
 import com.zachkirlew.applications.waxwanderer.data.model.User
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
-import com.zachkirlew.applications.waxwanderer.data.recommendation.RecommenderImp
-import com.zachkirlew.applications.waxwanderer.detail_vinyl.VinylDetailActivity
+import com.zachkirlew.applications.waxwanderer.vinyl_detail.VinylDetailActivity
 import com.zachkirlew.applications.waxwanderer.favourites.FavouriteActivity
 import com.zachkirlew.applications.waxwanderer.recommendations.RecommendationsActivity
 import com.zachkirlew.applications.waxwanderer.util.StringUtils
@@ -36,9 +35,9 @@ import org.joda.time.PeriodType
 import java.util.*
 
 
-class SimilarUsersFragment : Fragment(), SimilarUsersContract.View {
+class MatchFragment : Fragment(), MatchContract.View {
 
-    private lateinit var similarUsersPresenter : SimilarUsersContract.Presenter
+    private lateinit var matchPresenter: MatchContract.Presenter
 
     private lateinit var mSwipeView: SwipePlaceHolderView
 
@@ -47,11 +46,11 @@ class SimilarUsersFragment : Fragment(), SimilarUsersContract.View {
 
     private lateinit var mContext: Context
 
-    private lateinit var userCards : List<SimilarUsersFragment.UserCard>
+    private lateinit var userCards : List<MatchFragment.UserCard>
 
     override fun onResume() {
         super.onResume()
-        similarUsersPresenter.start()
+        matchPresenter.start()
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
@@ -59,7 +58,7 @@ class SimilarUsersFragment : Fragment(), SimilarUsersContract.View {
 
         activity.title = "Match"
 
-        val root = inflater?.inflate(R.layout.fragment_similar_users, container, false)
+        val root = inflater?.inflate(R.layout.fragment_match, container, false)
 
         mSwipeView = root?.findViewById<SwipePlaceHolderView>(R.id.swipeView) as SwipePlaceHolderView
 
@@ -70,7 +69,7 @@ class SimilarUsersFragment : Fragment(), SimilarUsersContract.View {
         setHasOptionsMenu(true)
 
 
-        similarUsersPresenter = SimilarUsersPresenter(this, UserPreferences())
+        matchPresenter = MatchPresenter(this, UserPreferences())
 
         likeButton = root.findViewById<ImageButton>(R.id.acceptBtn) as ImageButton
         dislikeButton = root.findViewById<ImageButton>(R.id.rejectBtn) as ImageButton
@@ -106,8 +105,8 @@ class SimilarUsersFragment : Fragment(), SimilarUsersContract.View {
         builder.create().show()
     }
 
-    override fun setPresenter(presenter: SimilarUsersContract.Presenter) {
-        similarUsersPresenter = presenter
+    override fun setPresenter(presenter: MatchContract.Presenter) {
+        matchPresenter = presenter
     }
 
 
@@ -129,15 +128,13 @@ class SimilarUsersFragment : Fragment(), SimilarUsersContract.View {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.action_show_recommendations -> startRecommendationsActivity()
-//            R.id.menu_filter -> showFilteringPopUpMenu()
-//            R.id.menu_refresh -> mPresenter.loadTasks(true)
         }
         return true
     }
 
     override fun onStop() {
         super.onStop()
-        similarUsersPresenter.dispose()
+        matchPresenter.dispose()
     }
 
     override fun showUserFavourites(vinyls: List<VinylRelease>, viewPosition: Int) {
@@ -218,8 +215,8 @@ class SimilarUsersFragment : Fragment(), SimilarUsersContract.View {
                 intent.putExtra("selected user", user)
                 context.startActivity(intent)
             }
-            similarUsersPresenter.loadVinylPreference(user.id,viewPosition)
-            similarUsersPresenter.loadUserFavourites(user.id,viewPosition)
+            matchPresenter.loadVinylPreference(user.id,viewPosition)
+            matchPresenter.loadUserFavourites(user.id,viewPosition)
         }
 
         private fun dobToAge(date : Date?) : String{
@@ -245,7 +242,7 @@ class SimilarUsersFragment : Fragment(), SimilarUsersContract.View {
         @SwipeIn
         private fun onSwipeIn() {
             Log.d("EVENT", "onSwipedIn")
-            similarUsersPresenter.handleLike(user)
+            matchPresenter.handleLike(user)
         }
 
         @SwipeInState

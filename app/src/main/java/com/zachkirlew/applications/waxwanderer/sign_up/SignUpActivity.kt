@@ -1,15 +1,12 @@
 package com.zachkirlew.applications.waxwanderer.sign_up
 
-import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.TextInputLayout
 import android.support.v7.app.AppCompatActivity
 import android.widget.*
 import com.zachkirlew.applications.waxwanderer.R
-import com.zachkirlew.applications.waxwanderer.match_details.MatchDetailsActivity
-import com.zachkirlew.applications.waxwanderer.styles.StylesActivity
-import java.util.*
+import com.zachkirlew.applications.waxwanderer.match_preferences.MatchPreferencesActivity
 
 
 class SignUpActivity : AppCompatActivity(), SignUpContract.View {
@@ -41,7 +38,7 @@ class SignUpActivity : AppCompatActivity(), SignUpContract.View {
     }
 
     override fun startMatchDetailsActivity() {
-        val intent = Intent(this, MatchDetailsActivity::class.java)
+        val intent = Intent(this, MatchPreferencesActivity::class.java)
         startActivity(intent)
     }
 

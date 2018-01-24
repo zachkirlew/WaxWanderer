@@ -1,4 +1,4 @@
-package com.zachkirlew.applications.waxwanderer.match_details
+package com.zachkirlew.applications.waxwanderer.match_preferences
 
 import android.app.DatePickerDialog
 import android.content.Intent
@@ -11,9 +11,9 @@ import com.zachkirlew.applications.waxwanderer.data.local.UserPreferences
 import com.zachkirlew.applications.waxwanderer.styles.StylesActivity
 import java.util.*
 
-class MatchDetailsActivity : AppCompatActivity(), MatchDetailsContract.View,DatePickerDialog.OnDateSetListener {
+class MatchPreferencesActivity : AppCompatActivity(), MatchPreferencesContract.View,DatePickerDialog.OnDateSetListener {
 
-    private lateinit var presenter: MatchDetailsPresenter
+    private lateinit var presenter: MatchPreferencesPresenter
 
     private val editTextDOB by lazy{findViewById<EditText>(R.id.input_dob)}
     private val inputLayoutDOB by lazy { findViewById<TextInputLayout>(R.id.text_input_layout_dob) }
@@ -33,9 +33,9 @@ class MatchDetailsActivity : AppCompatActivity(), MatchDetailsContract.View,Date
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_match_details)
+        setContentView(R.layout.activity_match_preferences)
 
-        presenter = MatchDetailsPresenter(this, UserPreferences())
+        presenter = MatchPreferencesPresenter(this, UserPreferences())
 
         val userGendersAdapter = ArrayAdapter<String>(this,
                 android.R.layout.simple_spinner_item, resources.getStringArray(R.array.spinner_user_genders))
@@ -136,7 +136,7 @@ class MatchDetailsActivity : AppCompatActivity(), MatchDetailsContract.View,Date
 
 
     override fun  showCreateUserFailedMessage(message: String){
-        Toast.makeText(this@MatchDetailsActivity, message,
+        Toast.makeText(this@MatchPreferencesActivity, message,
                 Toast.LENGTH_SHORT).show()
     }
 
@@ -148,6 +148,6 @@ class MatchDetailsActivity : AppCompatActivity(), MatchDetailsContract.View,Date
 
     companion object {
 
-        private val TAG = MatchDetailsActivity::class.java.simpleName
+        private val TAG = MatchPreferencesActivity::class.java.simpleName
     }
 }

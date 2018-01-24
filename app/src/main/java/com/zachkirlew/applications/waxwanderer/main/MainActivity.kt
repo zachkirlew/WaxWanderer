@@ -4,7 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.NavigationView
 import android.support.v4.app.Fragment
-import android.support.v4.content.ContextCompat
 import android.support.v4.view.GravityCompat
 import android.support.v4.view.MenuItemCompat
 import android.support.v4.widget.DrawerLayout
@@ -16,14 +15,8 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.ImageView
 import android.widget.TextView
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
 import com.squareup.picasso.Picasso
 import com.zachkirlew.applications.waxwanderer.R
-import com.zachkirlew.applications.waxwanderer.data.model.User
 import com.zachkirlew.applications.waxwanderer.explore.ExploreFragment
 import com.zachkirlew.applications.waxwanderer.explore.OnSearchSubmitted
 import com.zachkirlew.applications.waxwanderer.favourites.FavouriteFragment
@@ -31,7 +24,7 @@ import com.zachkirlew.applications.waxwanderer.leaderboard.LeaderBoardFragment
 import com.zachkirlew.applications.waxwanderer.login.LoginActivity
 import com.zachkirlew.applications.waxwanderer.matches.MatchesFragment
 import com.zachkirlew.applications.waxwanderer.settings.SettingsFragment
-import com.zachkirlew.applications.waxwanderer.similar_users.SimilarUsersFragment
+import com.zachkirlew.applications.waxwanderer.match.MatchFragment
 import com.zachkirlew.applications.waxwanderer.styles.StylesActivity
 import com.zachkirlew.applications.waxwanderer.util.ActivityUtils
 import com.zachkirlew.applications.waxwanderer.util.BorderedCircleTransform
@@ -181,7 +174,7 @@ class MainActivity : AppCompatActivity(), MainContract.View {
                 R.id.match_navigation_menu_item ->{
                     showSearchIcon = false
                     ActivityUtils.changeFragment(
-                            supportFragmentManager, SimilarUsersFragment(), R.id.content)
+                            supportFragmentManager, MatchFragment(), R.id.content)
                 }
 
                 R.id.matches_navigation_menu_item ->{

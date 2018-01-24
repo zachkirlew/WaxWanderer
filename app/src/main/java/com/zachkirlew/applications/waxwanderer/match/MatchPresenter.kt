@@ -1,4 +1,4 @@
-package com.zachkirlew.applications.waxwanderer.similar_users
+package com.zachkirlew.applications.waxwanderer.match
 
 import android.support.annotation.NonNull
 import com.google.firebase.auth.FirebaseAuth
@@ -7,7 +7,6 @@ import com.google.firebase.database.*
 import com.zachkirlew.applications.waxwanderer.data.local.UserPreferences
 import com.zachkirlew.applications.waxwanderer.data.model.User
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
-import com.zachkirlew.applications.waxwanderer.data.recommendation.RecommenderImp
 import com.zachkirlew.applications.waxwanderer.util.InternetConnectionUtil
 import durdinapps.rxfirebase2.RxFirebaseDatabase
 import io.reactivex.BackpressureStrategy
@@ -21,8 +20,8 @@ import java.lang.Exception
 import java.util.*
 
 
-class SimilarUsersPresenter(private @NonNull var similarUsersView: SimilarUsersContract.View,
-                            private @NonNull val preferences: UserPreferences) : SimilarUsersContract.Presenter {
+class MatchPresenter(private @NonNull var matchView: MatchContract.View,
+                     private @NonNull val preferences: UserPreferences) : MatchContract.Presenter {
 
     private var disposable : Disposable? = null
 
@@ -33,7 +32,7 @@ class SimilarUsersPresenter(private @NonNull var similarUsersView: SimilarUsersC
     private var matchedUserIds : List<String>? = null
 
     init {
-        similarUsersView.setPresenter(this)
+        matchView.setPresenter(this)
     }
 
     override fun start() {
@@ -57,14 +56,14 @@ class SimilarUsersPresenter(private @NonNull var similarUsersView: SimilarUsersC
                 .map {list -> list.filter{!matchedUserIds!!.contains(it.id)}} // filter any already matched users
                 .toObservable()
                 .subscribe(object : Observer<List<User>>{
-                    override fun onNext(similarUserList: List<User>) {
-                        similarUsersView.showSimilarUsers(similarUserList)
+                    override fun onNext(userList: List<User>) {
+                        matchView.showSimilarUsers(userList)
                     }
                     override fun onSubscribe(d: Disposable) {
                         disposable = d
                     }
                     override fun onError(e: Throwable) {
-                        similarUsersView.showMessage(e.message)
+                        matchView.showMessage(e.message)
                     }
                     override fun onComplete() {
                     }
@@ -98,7 +97,7 @@ class SimilarUsersPresenter(private @NonNull var similarUsersView: SimilarUsersC
                 //liked user has current user in likes
                 if(dataSnapshot.exists()){
                     //It's a match!
-                    likedUser.name?.let { similarUsersView.showMatchDialog(it) }
+                    likedUser.name?.let { matchView.showMatchDialog(it) }
 
                     val chatKey = myRef.child("chat").push().key
 
@@ -136,10 +135,10 @@ class SimilarUsersPresenter(private @NonNull var similarUsersView: SimilarUsersC
 
                 if(dataSnapshot.exists()){
                     val vinyls = dataSnapshot.children.map { it.getValue<VinylRelease>(VinylRelease::class.java)!! }
-                    similarUsersView.showUserFavourites(vinyls,viewPosition)
+                    matchView.showUserFavourites(vinyls,viewPosition)
                 }
                 else
-                    similarUsersView.showNoUserFavourites()
+                    matchView.showNoUserFavourites()
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
@@ -158,7 +157,7 @@ class SimilarUsersPresenter(private @NonNull var similarUsersView: SimilarUsersC
                 val preferredStyles = dataSnapshot.children.map { it.value as String }
                 val commaSeparatedStyles = android.text.TextUtils.join(", ", preferredStyles)
 
-                similarUsersView.showVinylPreference(commaSeparatedStyles,viewPosition)
+                matchView.showVinylPreference(commaSeparatedStyles,viewPosition)
             }
 
             override fun onCancelled(databaseError: DatabaseError) {

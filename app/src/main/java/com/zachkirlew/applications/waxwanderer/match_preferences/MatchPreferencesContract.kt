@@ -1,6 +1,6 @@
-package com.zachkirlew.applications.waxwanderer.match_details
+package com.zachkirlew.applications.waxwanderer.match_preferences
 
-interface MatchDetailsContract {
+interface MatchPreferencesContract {
     interface View {
 
         fun startStylesActivity()

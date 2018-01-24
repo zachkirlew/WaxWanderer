@@ -20,7 +20,7 @@ import com.google.android.gms.common.SignInButton
 import com.google.android.gms.common.api.GoogleApiClient
 import com.zachkirlew.applications.waxwanderer.R
 import com.zachkirlew.applications.waxwanderer.main.MainActivity
-import com.zachkirlew.applications.waxwanderer.match_details.MatchDetailsActivity
+import com.zachkirlew.applications.waxwanderer.match_preferences.MatchPreferencesActivity
 import com.zachkirlew.applications.waxwanderer.sign_up.SignUpActivity
 import com.zachkirlew.applications.waxwanderer.styles.StylesActivity
 
@@ -141,7 +141,7 @@ class LoginActivity : AppCompatActivity(), LoginContract.View, GoogleApiClient.O
     }
 
     override fun startMatchDetailsActivity() {
-        val intent = Intent(this, MatchDetailsActivity::class.java)
+        val intent = Intent(this, MatchPreferencesActivity::class.java)
         startActivity(intent)
 
         showProgressBar(false)

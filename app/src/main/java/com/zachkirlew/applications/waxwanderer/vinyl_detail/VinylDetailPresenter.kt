@@ -1,4 +1,4 @@
-package com.zachkirlew.applications.waxwanderer.detail_vinyl
+package com.zachkirlew.applications.waxwanderer.vinyl_detail
 
 
 import android.support.annotation.NonNull
@@ -12,7 +12,6 @@ import com.zachkirlew.applications.waxwanderer.data.VinylRepository
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.detail.DetailVinylRelease
 import com.zachkirlew.applications.waxwanderer.data.recommendation.RecommenderImp
-import io.reactivex.Observer
 import io.reactivex.SingleObserver
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable

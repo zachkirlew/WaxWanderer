@@ -12,7 +12,7 @@ import android.widget.TextView
 import com.squareup.picasso.Picasso
 import com.zachkirlew.applications.waxwanderer.R
 import com.zachkirlew.applications.waxwanderer.data.model.Message
-import com.zachkirlew.applications.waxwanderer.detail_vinyl.VinylDetailActivity
+import com.zachkirlew.applications.waxwanderer.vinyl_detail.VinylDetailActivity
 import java.util.*
 
 class MessageAdapter(private val messageList: ArrayList<Message>, private val mId: String, val messageFragment: MessageFragment) : RecyclerView.Adapter<MessageAdapter.ViewHolder>() {

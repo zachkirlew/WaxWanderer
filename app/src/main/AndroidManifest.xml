@@ -44,7 +44,7 @@
             android:screenOrientation="portrait">
         </activity>
 
-        <activity android:name=".match_details.MatchDetailsActivity"
+        <activity android:name=".match_preferences.MatchPreferencesActivity"
             android:screenOrientation="portrait">
         </activity>
 
@@ -61,7 +61,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".detail_vinyl.VinylDetailActivity"
+        <activity android:name=".vinyl_detail.VinylDetailActivity"
             android:screenOrientation="portrait">
         </activity>
 

@@ -12,7 +12,7 @@ import com.squareup.picasso.Picasso
 import com.zachkirlew.applications.waxwanderer.R
 import com.zachkirlew.applications.waxwanderer.data.model.User
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
-import com.zachkirlew.applications.waxwanderer.detail_vinyl.VinylDetailActivity
+import com.zachkirlew.applications.waxwanderer.vinyl_detail.VinylDetailActivity
 import com.zachkirlew.applications.waxwanderer.util.EqualSpaceItemDecoration
 import kotlinx.android.synthetic.main.explore_item.view.*
 
