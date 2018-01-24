@@ -51,7 +51,7 @@ class RecommendationsPresenter(private @NonNull var recommendationsView: Recomme
     override fun loadRecommendedUsers() {
         val currentUserId = mFirebaseAuth.currentUser?.uid
 
-        recommender.recommendUserToUser(currentUserId!!,1)
+        recommender.recommendUserToUser(currentUserId!!,5)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe{userIds ->
