@@ -76,15 +76,14 @@ class ExplorePresenter(private @NonNull var vinylRepository: VinylRepository, pr
                         }
 
                         override fun onError(e: Throwable) {
-
+                            Log.e("Explore presenter",e.message)
+                            exploreView.showMessage(e.message)
                         }
 
                         override fun onComplete() {
-
                         }
 
                         override fun onSubscribe(d: Disposable) {
-
                         }
                     })
         }
@@ -104,7 +103,6 @@ class ExplorePresenter(private @NonNull var vinylRepository: VinylRepository, pr
                     loadVinylReleases(styles)
                 }
             }
-
             override fun onCancelled(databaseError: DatabaseError) {
             }
         })

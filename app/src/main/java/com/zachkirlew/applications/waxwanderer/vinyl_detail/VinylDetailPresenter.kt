@@ -47,6 +47,7 @@ class VinylDetailPresenter(private @NonNull var vinylRepository: VinylRepository
                     }
 
                     override fun onError(e: Throwable) {
+                        vinylDetailView.showMessage(e.message)
 
                     }
 

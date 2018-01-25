@@ -57,7 +57,6 @@ class MessagePresenter(private @NonNull var messageView: MessageContract.View,
                 val message = dataSnapshot.getValue<Message>(Message::class.java)
                 message?.let { messageView.showMessage(it) }
 
-//                currentPage++
             }
 
             override fun onChildChanged(dataSnapshot: DataSnapshot, s: String?) {
@@ -67,18 +66,12 @@ class MessagePresenter(private @NonNull var messageView: MessageContract.View,
             }
 
             override fun onChildRemoved(dataSnapshot: DataSnapshot) {
-
-//                Log.d("REMOVED", dataSnapshot.getValue<Message>(Message::class.java)!!.toString())
-//
-//                messageView.removeMessage(dataSnapshot.getValue<Message>(Message::class.java)!!)
             }
 
             override fun onChildMoved(dataSnapshot: DataSnapshot, s: String?) {
-
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
-
             }
         })
 

@@ -8,6 +8,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.*
 import android.widget.TextView
+import android.widget.Toast
 import com.squareup.picasso.Picasso
 import com.zachkirlew.applications.waxwanderer.R
 import com.zachkirlew.applications.waxwanderer.data.model.User
@@ -18,6 +19,7 @@ import kotlinx.android.synthetic.main.explore_item.view.*
 
 
 class FavouriteFragment: Fragment(), FavouriteContract.View {
+
 
     private lateinit var favouritePresenter : FavouriteContract.Presenter
 
@@ -73,6 +75,11 @@ class FavouriteFragment: Fragment(), FavouriteContract.View {
 
     override fun setPresenter(presenter: FavouriteContract.Presenter) {
         favouritePresenter = presenter
+    }
+
+    override fun showMessage(message: String?) {
+        Toast.makeText(activity, message,
+                Toast.LENGTH_SHORT).show()
     }
 
     override fun showFavouriteVinyls(vinyls: List<VinylRelease>) {

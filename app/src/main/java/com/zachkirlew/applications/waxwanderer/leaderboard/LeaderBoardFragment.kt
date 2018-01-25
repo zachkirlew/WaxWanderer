@@ -23,6 +23,7 @@ import kotlinx.android.synthetic.main.match_item.view.*
 
 class LeaderBoardFragment : Fragment(), LeaderBoardContract.View{
 
+
     private lateinit var leaderboardPresenter : LeaderBoardContract.Presenter
 
     private lateinit var leaderboardAdapter: LeaderBoardFragment.LeaderBoardAdapter
@@ -60,6 +61,10 @@ class LeaderBoardFragment : Fragment(), LeaderBoardContract.View{
         leaderboardPresenter.loadUsers()
 
         return root
+    }
+
+    override fun showMessage(message: String?) {
+
     }
 
     override fun setPresenter(presenter: LeaderBoardContract.Presenter) {

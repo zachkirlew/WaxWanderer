@@ -42,7 +42,6 @@ class SettingsFragment : Fragment(), SettingsContract.View, DatePickerDialog.OnD
     lateinit var fromAgePicker : NumberPicker
     lateinit var toAgePicker : NumberPicker
 
-    lateinit var chooseStylesLayout : LinearLayout
 
     override fun onResume() {
         super.onResume()
@@ -143,11 +142,10 @@ class SettingsFragment : Fragment(), SettingsContract.View, DatePickerDialog.OnD
         return root
     }
 
-    override fun showMessage(message: String) {
+    override fun showMessage(message: String?) {
         Toast.makeText(activity, message,
                 Toast.LENGTH_LONG).show()
     }
-
     private fun profilePicSelection() {
 
         //DISPLAY DIALOG TO CHOOSE CAMERA OR GALLERY

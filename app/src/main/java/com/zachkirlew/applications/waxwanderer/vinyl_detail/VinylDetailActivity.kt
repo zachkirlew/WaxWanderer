@@ -23,9 +23,8 @@ import com.zachkirlew.applications.waxwanderer.login.LoginActivity
 
 class VinylDetailActivity : AppCompatActivity(), VinylDetailContract.View, View.OnClickListener {
 
-
     private val vinyl by lazy { intent.getSerializableExtra("selected vinyl") as VinylRelease }
-    private lateinit var presenter: VinylDetailPresenter
+    private lateinit var presenter: VinylDetailContract.Presenter
 
     private val favouriteButton by lazy { findViewById<FloatingActionButton>(R.id.fab_favourite) }
 
@@ -43,8 +42,8 @@ class VinylDetailActivity : AppCompatActivity(), VinylDetailContract.View, View.
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_vinyl_detail)
 
-        presenter = VinylDetailPresenter(VinylRepository.getInstance(VinylsRemoteSource.instance),
-                this, RecommenderImp(this))
+        setPresenter(VinylDetailPresenter(VinylRepository.getInstance(VinylsRemoteSource.instance),
+                this, RecommenderImp(this)))
 
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
@@ -91,6 +90,10 @@ class VinylDetailActivity : AppCompatActivity(), VinylDetailContract.View, View.
                 .forEach { listView.addView(it) }
     }
 
+    override fun setPresenter(presenter: VinylDetailContract.Presenter) {
+        this.presenter = presenter
+    }
+
     override fun showVideos(videos: List<Video>?) {
         val listView = findViewById<LinearLayout>(R.id.list_youtube_videos) as LinearLayout
 
@@ -106,8 +109,8 @@ class VinylDetailActivity : AppCompatActivity(), VinylDetailContract.View, View.
         Picasso.with(this).load(imageUrl).into(imageView)
     }
 
-    override fun showMessage(message: String) {
-        Snackbar.make(coordinatorLayout, message, Snackbar.LENGTH_LONG).show()
+    override fun showMessage(message: String?) {
+        message?.let { Snackbar.make(coordinatorLayout, it, Snackbar.LENGTH_LONG).show() }
     }
 
     override fun editButtonColor(vinylIsInFavourites: Boolean) {

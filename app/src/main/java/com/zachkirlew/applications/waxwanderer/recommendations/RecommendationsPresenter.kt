@@ -52,18 +52,18 @@ class RecommendationsPresenter(private @NonNull var recommendationsView: Recomme
         val currentUserId = mFirebaseAuth.currentUser?.uid
 
         recommender.recommendUserToUser(currentUserId!!,5)
+                .doOnError { error -> recommendationsView.showMessage(error.message)}
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe{userIds ->
 
-                    val userIdsFiltered = removeLikedUsers(userIds)
+                        val userIdsFiltered = removeLikedUsers(userIds)
 
-                    if(userIdsFiltered.isNotEmpty()){
-                        loadUsersDetails(userIdsFiltered)
-                    }
-                    else{
-                        recommendationsView.showNoRecommendationsView()
-                    }
+                        if (userIdsFiltered.isNotEmpty()) {
+                            loadUsersDetails(userIdsFiltered)
+                        } else {
+                            recommendationsView.showNoRecommendationsView()
+                        }
                 }
     }
 

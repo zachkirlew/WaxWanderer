@@ -47,7 +47,6 @@ class FavouritePresenter(private @NonNull var favouriteView: FavouriteContract.V
                 .subscribe(object : Observer<DataSnapshot> {
                     override fun onSubscribe(d: Disposable) {
                     }
-
                     override fun onNext(dataSnapshot: DataSnapshot) {
                         if (dataSnapshot.exists()) {
                             val vinyls = dataSnapshot.children.map { it.getValue<VinylRelease>(VinylRelease::class.java)!! }

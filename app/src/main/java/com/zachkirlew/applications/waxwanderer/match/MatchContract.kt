@@ -15,7 +15,7 @@ interface MatchContract {
         fun showSimilarUsers(users: List<User>)
         fun showMatchDialog(likedUserName : String)
 
-        fun showMessage(message : String?)
+        override fun showMessage(message : String?)
 
         fun showUserFavourites(vinyls : List<VinylRelease>, viewPosition: Int)
 

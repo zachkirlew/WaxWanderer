@@ -1,12 +1,13 @@
 package com.zachkirlew.applications.waxwanderer.vinyl_detail
 
+import com.zachkirlew.applications.waxwanderer.base.BaseView
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.detail.DetailVinylRelease
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.detail.Tracklist
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.detail.Video
 
 interface VinylDetailContract {
-    interface View {
+    interface View : BaseView<Presenter> {
 
         fun showImageBackDrop(imageUrl: String)
         fun showDetailVinylInfo(detailVinylRelease : DetailVinylRelease)
@@ -16,7 +17,6 @@ interface VinylDetailContract {
 
         fun showRating(starRating: Double)
 
-        fun showMessage(message : String)
 
         fun editButtonColor(vinylIsInFavourites : Boolean)
     }

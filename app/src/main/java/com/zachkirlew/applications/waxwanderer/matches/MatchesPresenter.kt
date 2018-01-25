@@ -37,7 +37,6 @@ class MatchesPresenter(private @NonNull var matchesView: MatchesContract.View) :
                     matchesView.showNoMatchesView()
                 }
             }
-
             override fun onCancelled(databaseError: DatabaseError) {
             }
         })
@@ -51,7 +50,6 @@ class MatchesPresenter(private @NonNull var matchesView: MatchesContract.View) :
 
         ref.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onCancelled(p0: DatabaseError?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
             }
 
             override fun onDataChange(dataSnapshot: DataSnapshot) {
@@ -60,7 +58,6 @@ class MatchesPresenter(private @NonNull var matchesView: MatchesContract.View) :
                     val matchedUser = dataSnapshot.getValue(User::class.java)
 
                     if (matchedUser != null) {
-
                         matchesView.addMatch(matchedUser)
                     }
                 }
@@ -81,8 +78,6 @@ class MatchesPresenter(private @NonNull var matchesView: MatchesContract.View) :
         //then remove from connections account
         myRef.child("matches").child(matchId)
                 .child(userUid).setValue(null)
-
-
     }
 
 

@@ -45,7 +45,6 @@ class MainPresenter(private @NonNull val mainView: MainContract.View): MainContr
         LoginManager.getInstance().logOut()
         FirebaseAuth.getInstance().signOut()
 
-
         mainView.startLoginActivity()
     }
 

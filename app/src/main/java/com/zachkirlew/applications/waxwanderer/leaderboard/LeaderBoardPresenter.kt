@@ -11,7 +11,6 @@ import com.zachkirlew.applications.waxwanderer.leaderboard.LeaderBoardContract
 
 class LeaderBoardPresenter(private @NonNull var leaderboardView: LeaderBoardContract.View) : LeaderBoardContract.Presenter  {
 
-    private val mFirebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private val database = FirebaseDatabase.getInstance()
 
     init{
@@ -23,8 +22,6 @@ class LeaderBoardPresenter(private @NonNull var leaderboardView: LeaderBoardCont
 
         val myRef = database.reference
 
-        val user = mFirebaseAuth.currentUser
-
         val ref = myRef.child("users").orderByChild("score").limitToLast(10)
 
         ref.addListenerForSingleValueEvent(object : ValueEventListener {
@@ -35,7 +32,6 @@ class LeaderBoardPresenter(private @NonNull var leaderboardView: LeaderBoardCont
                     leaderboardView.showUsers(usersSortedByScore)
 
                     usersSortedByScore.forEach { println(it.score) }
-
                 }
             }
             override fun onCancelled(databaseError: DatabaseError) {

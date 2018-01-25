@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.*
 import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Toast
 import com.squareup.picasso.Picasso
 import com.zachkirlew.applications.waxwanderer.R
 import com.zachkirlew.applications.waxwanderer.data.VinylRepository
@@ -64,6 +65,11 @@ class ExploreFragment: Fragment(), ExploreContract.View, OnSearchSubmitted{
     override fun searchSubmitted(searchText: String?) {
         exploreAdapter.removeVinyls()
         explorePresenter.searchVinylReleases(searchText)
+    }
+
+    override fun showMessage(message: String?) {
+        Toast.makeText(activity, message,
+                Toast.LENGTH_SHORT).show()
     }
 
     override fun setPresenter(presenter: ExploreContract.Presenter) {
