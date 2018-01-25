@@ -21,6 +21,10 @@ class ExplorePresenter(private @NonNull var vinylRepository: VinylRepository, pr
     private val mFirebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private val database = FirebaseDatabase.getInstance()
 
+    private val TAG = ExplorePresenter::class.java.simpleName
+
+    private var disposable : Disposable? = null
+
     init {
         exploreView.setPresenter(this)
     }
@@ -29,8 +33,6 @@ class ExplorePresenter(private @NonNull var vinylRepository: VinylRepository, pr
         getUserVinylPreference()
     }
 
-
-
     override fun loadVinylReleases(styles: List<String>) {
 
         InternetConnectionUtil.isInternetOn()
@@ -38,25 +40,7 @@ class ExplorePresenter(private @NonNull var vinylRepository: VinylRepository, pr
                 .flatMap { style -> vinylRepository.getVinyls(style) }
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(object : Observer<DiscogsResponse> {
-                    override fun onNext(response: DiscogsResponse) {
-
-                        val results = response.results
-                        results?.let { exploreView.showVinylReleases(results) }
-                    }
-
-                    override fun onError(e: Throwable) {
-                        Log.e("Explore presenter",e.message)
-                        exploreView.showNoInternetMessage()
-                    }
-
-                    override fun onComplete() {
-                        Log.v("Explore Presenter","Loading of vinyls complete")
-                    }
-
-                    override fun onSubscribe(d: Disposable) {
-                    }
-                })
+                .subscribe(observer)
     }
 
     override fun searchVinylReleases(searchText: String?) {
@@ -65,28 +49,35 @@ class ExplorePresenter(private @NonNull var vinylRepository: VinylRepository, pr
             vinylRepository.searchVinyl(searchText!!)
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(object : Observer<DiscogsResponse> {
-                        override fun onNext(response: DiscogsResponse) {
-
-                            if (response.results?.isEmpty()!!)
-                                exploreView.showNoVinylsView()
-                            else
-                                exploreView.showVinylReleases(response.results!!)
-
-                        }
-
-                        override fun onError(e: Throwable) {
-                            Log.e("Explore presenter",e.message)
-                            exploreView.showMessage(e.message)
-                        }
-
-                        override fun onComplete() {
-                        }
-
-                        override fun onSubscribe(d: Disposable) {
-                        }
-                    })
+                    .subscribe(observer)
         }
+    }
+
+    private val observer = object : Observer<DiscogsResponse>{
+        override fun onSubscribe(d: Disposable) {
+            disposable = d
+        }
+
+        override fun onNext(response: DiscogsResponse) {
+            if (response.results?.isEmpty()!!)
+                exploreView.showNoVinylsView()
+            else
+                exploreView.showVinylReleases(response.results!!)
+        }
+
+        override fun onComplete() {
+            Log.i(TAG,"Loading of vinyls complete")
+        }
+
+        override fun onError(e: Throwable) {
+            Log.e("Explore presenter",e.message)
+            exploreView.showMessage(e.message)
+        }
+
+    }
+
+    override fun dispose() {
+        disposable?.dispose()
     }
 
     private fun getUserVinylPreference() {
@@ -106,9 +97,5 @@ class ExplorePresenter(private @NonNull var vinylRepository: VinylRepository, pr
             override fun onCancelled(databaseError: DatabaseError) {
             }
         })
-    }
-
-    override fun openTaskDetails() {
-
     }
 }

@@ -20,8 +20,8 @@ interface ExploreContract {
 
         fun loadVinylReleases(styles : List<String>)
 
-        fun openTaskDetails()
-
         fun searchVinylReleases(searchText : String?)
+
+        fun dispose()
     }
 }

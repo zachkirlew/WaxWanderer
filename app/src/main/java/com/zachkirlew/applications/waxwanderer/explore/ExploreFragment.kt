@@ -79,7 +79,7 @@ class ExploreFragment: Fragment(), ExploreContract.View, OnSearchSubmitted{
     override fun showNoVinylsView() {
         progressBar.visibility = View.GONE
         exploreAdapter.removeVinyls()
-        noFavouritesText?.text = "No vinyls to display. Please search again or change your vinyl preferences"
+        noFavouritesText?.text = getString(R.string.text_no_vinyls)
         noFavouritesText?.visibility = View.VISIBLE
     }
 
@@ -92,17 +92,13 @@ class ExploreFragment: Fragment(), ExploreContract.View, OnSearchSubmitted{
 
     override fun showNoInternetMessage() {
         progressBar.visibility = View.GONE
-        noFavouritesText?.text = "No internet connection"
+        noFavouritesText?.text = getString(R.string.text_no_internet)
         noFavouritesText?.visibility = View.VISIBLE
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-//            R.id.menu_clear -> mPresenter.clearCompletedTasks()
-//            R.id.menu_filter -> showFilteringPopUpMenu()
-//            R.id.menu_refresh -> mPresenter.loadTasks(true)
-        }
-        return true
+    override fun onStop() {
+        super.onStop()
+        explorePresenter.dispose()
     }
 
     //Explore adapter

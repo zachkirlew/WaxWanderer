@@ -53,5 +53,7 @@
     <string name="vinyl_settings_title">Vinyl preferences</string>
     <string name="recommendations_action_like">Like</string>
     <string name="sign_up_already_a_member">Already a member? <b>Login</b></string>
+    <string name="text_no_internet">No internet connection</string>
+    <string name="text_no_vinyls">No vinyls to display. Please search again or change your vinyl preferences</string>
 
 </resources>

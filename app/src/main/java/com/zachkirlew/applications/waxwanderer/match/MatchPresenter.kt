@@ -1,6 +1,7 @@
 package com.zachkirlew.applications.waxwanderer.match
 
 import android.support.annotation.NonNull
+import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
@@ -22,6 +23,9 @@ import java.util.*
 
 class MatchPresenter(private @NonNull var matchView: MatchContract.View,
                      private @NonNull val preferences: UserPreferences) : MatchContract.Presenter {
+
+
+    private val TAG = MatchPresenter::class.java.simpleName
 
     private var disposable : Disposable? = null
 
@@ -55,19 +59,25 @@ class MatchPresenter(private @NonNull var matchView: MatchContract.View,
                 .map { list -> list.filter{dobToAge(it.dob) in lowerAgeLimit..upperAgeLimit} } //remove anyone not in user match age range
                 .map {list -> list.filter{!matchedUserIds!!.contains(it.id)}} // filter any already matched users
                 .toObservable()
-                .subscribe(object : Observer<List<User>>{
-                    override fun onNext(userList: List<User>) {
-                        matchView.showSimilarUsers(userList)
-                    }
-                    override fun onSubscribe(d: Disposable) {
-                        disposable = d
-                    }
-                    override fun onError(e: Throwable) {
-                        matchView.showMessage(e.message)
-                    }
-                    override fun onComplete() {
-                    }
-                })
+                .subscribe(observer)
+    }
+
+    private val observer  = object : Observer<List<User>>{
+        override fun onSubscribe(d: Disposable) {
+            disposable = d
+        }
+
+        override fun onError(e: Throwable) {
+            matchView.showMessage(e.message)
+        }
+
+        override fun onComplete() {
+            Log.i(TAG,"Potential matches retrieved")
+        }
+
+        override fun onNext(userList: List<User>) {
+            matchView.showSimilarUsers(userList)
+        }
     }
 
     private fun getQuery(myRef: DatabaseReference): Query {
