@@ -17,7 +17,6 @@ class LeaderBoardPresenter(private @NonNull var leaderboardView: LeaderBoardCont
         leaderboardView.setPresenter(this)
     }
 
-
     override fun loadUsers() {
 
         val myRef = database.reference
