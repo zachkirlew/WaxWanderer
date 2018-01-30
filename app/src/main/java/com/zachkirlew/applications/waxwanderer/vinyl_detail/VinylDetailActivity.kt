@@ -1,5 +1,6 @@
 package com.zachkirlew.applications.waxwanderer.vinyl_detail
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -35,6 +36,8 @@ class VinylDetailActivity : AppCompatActivity(), VinylDetailContract.View, View.
     private val releaseDateText by lazy { findViewById<TextView>(R.id.text_release_date) }
     private val genreText by lazy { findViewById<TextView>(R.id.text_genre) }
     private val stylesText by lazy { findViewById<TextView>(R.id.text_styles) }
+
+    private var isRemovedFromFavourites : Boolean = false
 
     private val coordinatorLayout by lazy{findViewById<CoordinatorLayout>(R.id.main_content)}
 
@@ -94,6 +97,23 @@ class VinylDetailActivity : AppCompatActivity(), VinylDetailContract.View, View.
         this.presenter = presenter
     }
 
+    override fun onBackPressed() {
+        println(isRemovedFromFavourites)
+        if(isRemovedFromFavourites){
+            val data = Intent()
+            data.putExtra("deletedVinyl",vinyl)
+            setResult(Activity.RESULT_OK,data)
+            finish()
+        }
+        else{
+            super.onBackPressed()
+        }
+    }
+
+    override fun addRemovedResult(isRemoved: Boolean) {
+        this.isRemovedFromFavourites = isRemoved
+    }
+
     override fun showVideos(videos: List<Video>?) {
         val listView = findViewById<LinearLayout>(R.id.list_youtube_videos) as LinearLayout
 
@@ -136,8 +156,6 @@ class VinylDetailActivity : AppCompatActivity(), VinylDetailContract.View, View.
     }
 
     override fun showRating(starRating: Double) {
-
-        println(starRating)
         val ratingBar = findViewById<RatingBar>(R.id.rating_bar)
         ratingBar.rating = starRating.toFloat()
     }

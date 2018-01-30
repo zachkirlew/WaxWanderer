@@ -17,8 +17,9 @@ interface VinylDetailContract {
 
         fun showRating(starRating: Double)
 
-
         fun editButtonColor(vinylIsInFavourites : Boolean)
+
+        fun addRemovedResult(isRemoved : Boolean)
     }
 
     interface Presenter {

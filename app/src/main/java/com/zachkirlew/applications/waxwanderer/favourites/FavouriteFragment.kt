@@ -16,6 +16,8 @@ import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
 import com.zachkirlew.applications.waxwanderer.vinyl_detail.VinylDetailActivity
 import com.zachkirlew.applications.waxwanderer.util.EqualSpaceItemDecoration
 import kotlinx.android.synthetic.main.explore_item.view.*
+import android.app.Activity
+import android.support.v4.app.ActivityCompat.startActivityForResult
 
 
 class FavouriteFragment: Fragment(), FavouriteContract.View {
@@ -32,7 +34,7 @@ class FavouriteFragment: Fragment(), FavouriteContract.View {
 
     override fun onCreate(@Nullable savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        favouriteAdapter = FavouriteAdapter(listOf<VinylRelease>())
+        favouriteAdapter = FavouriteAdapter(ArrayList<VinylRelease>(),this)
 
         user = activity.intent.getSerializableExtra("selected user") as User?
     }
@@ -73,6 +75,11 @@ class FavouriteFragment: Fragment(), FavouriteContract.View {
     }
 
 
+    override fun onResume() {
+        super.onResume()
+        if (favouriteAdapter.itemCount > 0) noFavouritesText?.visibility = View.GONE
+    }
+
     override fun setPresenter(presenter: FavouriteContract.Presenter) {
         favouritePresenter = presenter
     }
@@ -91,13 +98,26 @@ class FavouriteFragment: Fragment(), FavouriteContract.View {
         noFavouritesText?.visibility = View.VISIBLE
     }
 
-    class FavouriteAdapter(private var vinyls: List<VinylRelease>) : RecyclerView.Adapter<FavouriteAdapter.ViewHolder>() {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        println("got here mate and requestCode= $requestCode and result is $resultCode")
+        if (requestCode == 1 && resultCode == Activity.RESULT_OK) {
+            val vinylRelease = data?.getSerializableExtra("deletedVinyl") as VinylRelease
+            favouriteAdapter.removeVinyl(vinylRelease)
+        }
+    }
 
+    class FavouriteAdapter(private var vinyls: ArrayList<VinylRelease>,private val fragment : FavouriteFragment) : RecyclerView.Adapter<FavouriteAdapter.ViewHolder>() {
 
         fun addVinyls(vinyls : List<VinylRelease>){
-            this.vinyls = vinyls
+            this.vinyls.addAll(vinyls)
             notifyDataSetChanged()
+        }
 
+        fun removeVinyl(removedRelease : VinylRelease){
+            val position = vinyls.indexOfFirst { removedRelease.id == it.id}
+            this.vinyls.removeAt(position)
+            notifyItemChanged(position)
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FavouriteAdapter.ViewHolder {
@@ -114,7 +134,7 @@ class FavouriteFragment: Fragment(), FavouriteContract.View {
 
                 val intent = Intent(context, VinylDetailActivity::class.java)
                 intent.putExtra("selected vinyl", vinyls[position])
-                context.startActivity(intent)
+                fragment.startActivityForResult(intent,1)
             }
         }
 

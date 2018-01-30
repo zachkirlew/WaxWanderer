@@ -212,6 +212,10 @@ class MainActivity : AppCompatActivity(), MainContract.View {
         nameText.text = displayName
     }
 
+    public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+    }
+
     override fun showProfilePicture(imageUrl: String) {
         val header = nav_view.getHeaderView(0)
 

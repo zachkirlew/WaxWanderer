@@ -141,7 +141,6 @@ class UserDetailActivity : AppCompatActivity(), UserDetailContract.View  {
 
     class FavouriteAdapter(private var vinyls: List<VinylRelease>) : RecyclerView.Adapter<FavouriteAdapter.ViewHolder>() {
 
-
         fun addVinyls(vinyls : List<VinylRelease>){
             this.vinyls = vinyls
             notifyDataSetChanged()

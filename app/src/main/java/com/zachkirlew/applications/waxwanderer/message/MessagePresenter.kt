@@ -114,8 +114,12 @@ class MessagePresenter(private @NonNull var messageView: MessageContract.View,
 
         addRatingToRecommender(user?.uid!!,vinylId,rating)
 
-        if(rating > 3){
-            awardPointsToUser()
+        println("rating is $rating")
+
+        when(rating){
+            3.00 -> awardPointsToUser(5)
+            4.00 -> awardPointsToUser(7)
+            5.00 -> awardPointsToUser(10)
         }
     }
 
@@ -131,7 +135,7 @@ class MessagePresenter(private @NonNull var messageView: MessageContract.View,
                 .subscribe{it ->Log.i("MessagePresenter",it)}
     }
 
-    private fun awardPointsToUser() {
+    private fun awardPointsToUser(points : Int) {
         val userRef = database.reference.child("users").child(recipientUid)
 
         userRef.addListenerForSingleValueEvent(object : ValueEventListener {
@@ -140,7 +144,7 @@ class MessagePresenter(private @NonNull var messageView: MessageContract.View,
 
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val recipient = dataSnapshot.getValue<User>(User::class.java)!!
-                val newScore = recipient.score + 10
+                val newScore = recipient.score + points
 
                 userRef.child("score").setValue(newScore)
             }

@@ -71,11 +71,13 @@ class VinylDetailPresenter(private @NonNull var vinylRepository: VinylRepository
                     vinylDetailView.showMessage("Removed from favourites")
                     vinylDetailView.editButtonColor(false)
                     removeFavouriteFromRecommender(user?.uid!!,vinylRelease.id.toString())
+                    vinylDetailView.addRemovedResult(true)
                 } else {
                     myRef.setValue(vinylRelease)
                     vinylDetailView.showMessage("Successfully added to favourites")
                     vinylDetailView.editButtonColor(true)
                     addFavouriteToRecommender(user?.uid!!,vinylRelease.id.toString())
+                    vinylDetailView.addRemovedResult(false)
                 }
             }
 
