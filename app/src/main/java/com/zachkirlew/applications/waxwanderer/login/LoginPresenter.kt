@@ -57,7 +57,7 @@ class LoginPresenter(private @NonNull val loginView: LoginContract.View) : Login
                     } else {
                         // If sign in fails, display a message to the user.
                         Log.w(TAG, "signInWithEmail:failure", task.exception)
-                        loginView.showMessage("Email authentication failed.")
+                        loginView.showMessage("Email authentication failed: ${task.exception?.message}")
                     }
                 }
     }
