@@ -21,8 +21,14 @@ class MatchesAdapter(private var matches: ArrayList<User>, val matchesFragment: 
         notifyDataSetChanged()
     }
 
-    fun remove(position: Int) {
+    fun remove(userId: String?) {
+        val position = matches.indexOfFirst { userId == it.id}
         this.matches.removeAt(position)
+        notifyItemChanged(position)
+    }
+
+    fun clear(){
+        this.matches.clear()
         notifyDataSetChanged()
     }
 
@@ -72,7 +78,7 @@ class MatchesAdapter(private var matches: ArrayList<User>, val matchesFragment: 
                     }
 
                     R.id.action_remove -> {
-                        matchesFragment.onMatchDeleted(adapterPosition, match.id)
+                        matchesFragment.onMatchDeleted(match.id)
                     }
                 }
             }

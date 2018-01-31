@@ -14,6 +14,8 @@ interface MatchesContract {
 
         fun startMessagesActivity()
 
+        fun clearMatches()
+
     }
 
     interface Presenter{

@@ -79,12 +79,16 @@ class MatchesFragment: Fragment(), MatchesContract.View{
         startActivity(intent)
     }
 
+    override fun clearMatches() {
+        matchesAdapter.clear()
+    }
+
     override fun showNoMatchesView() {
         noMatchesText?.visibility = View.VISIBLE
     }
 
-    fun onMatchDeleted(position: Int, matchId: String?) {
-        matchesAdapter.remove(position)
+    fun onMatchDeleted(matchId: String?) {
+        matchesAdapter.remove(matchId)
         matchId?.let { matchesPresenter.deleteMatch(it) }
     }
 }
