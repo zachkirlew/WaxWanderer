@@ -74,7 +74,6 @@ class FavouriteFragment: Fragment(), FavouriteContract.View {
         return root
     }
 
-
     override fun onResume() {
         super.onResume()
         if (favouriteAdapter.itemCount > 0) noFavouritesText?.visibility = View.GONE
@@ -85,17 +84,12 @@ class FavouriteFragment: Fragment(), FavouriteContract.View {
     }
 
     override fun showMessage(message: String?) {
-        Toast.makeText(activity, message,
-                Toast.LENGTH_SHORT).show()
+        noFavouritesText?.text = message
+        noFavouritesText?.visibility = View.VISIBLE
     }
 
     override fun showFavouriteVinyls(vinyls: List<VinylRelease>) {
         favouriteAdapter.addVinyls(vinyls)
-    }
-
-    override fun showMessageView(message : String) {
-        noFavouritesText?.text = message
-        noFavouritesText?.visibility = View.VISIBLE
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -105,5 +99,10 @@ class FavouriteFragment: Fragment(), FavouriteContract.View {
             val vinylRelease = data?.getSerializableExtra("deletedVinyl") as VinylRelease
             favouriteAdapter.removeVinyl(vinylRelease)
         }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        favouritePresenter.dispose()
     }
 }

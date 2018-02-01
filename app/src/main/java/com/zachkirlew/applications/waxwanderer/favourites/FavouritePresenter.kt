@@ -20,6 +20,8 @@ class FavouritePresenter(private @NonNull var favouriteView: FavouriteContract.V
     private val mFirebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private val database = FirebaseDatabase.getInstance()
 
+    private var disposable : Disposable? = null
+
     init {
         favouriteView.setPresenter(this)
     }
@@ -34,6 +36,10 @@ class FavouritePresenter(private @NonNull var favouriteView: FavouriteContract.V
         getVinyls(userId)
     }
 
+    override fun dispose() {
+        disposable?.dispose()
+    }
+
     private fun getVinyls(uid: String?) {
 
         val myRef = database.reference
@@ -46,18 +52,19 @@ class FavouritePresenter(private @NonNull var favouriteView: FavouriteContract.V
                 .toObservable()
                 .subscribe(object : Observer<DataSnapshot> {
                     override fun onSubscribe(d: Disposable) {
+                        disposable = d
                     }
                     override fun onNext(dataSnapshot: DataSnapshot) {
                         if (dataSnapshot.exists()) {
                             val vinyls = dataSnapshot.children.map { it.getValue<VinylRelease>(VinylRelease::class.java)!! }
                             favouriteView.showFavouriteVinyls(vinyls)
                         } else {
-                            favouriteView.showMessageView("No favourites to show")
+                            favouriteView.showMessage("No favourites to show")
                         }
                     }
 
                     override fun onError(e: Throwable) {
-                        favouriteView.showMessageView(e.message!!)
+                        favouriteView.showMessage(e.message)
                     }
 
                     override fun onComplete() {
