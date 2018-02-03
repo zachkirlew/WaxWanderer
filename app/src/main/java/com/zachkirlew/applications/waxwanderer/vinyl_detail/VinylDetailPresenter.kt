@@ -27,6 +27,27 @@ class VinylDetailPresenter(private @NonNull var vinylRepository: VinylRepository
     private val mFirebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private val database = FirebaseDatabase.getInstance()
 
+    override fun checkInFavourites(releaseId: String) {
+        val user = mFirebaseAuth.currentUser
+
+        val myRef = database.reference.child("favourites").child(user?.uid).child(releaseId)
+
+        myRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                //if user has already favourited track
+                if (dataSnapshot.exists()) {
+                    vinylDetailView.editButtonColor(true)
+                } else {
+                    vinylDetailView.editButtonColor(false)
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                Log.e(TAG, "onCancelled", databaseError.toException())
+            }
+        })
+    }
+
     override fun loadVinylRelease(releaseId: String) {
 
         vinylRepository.getVinyl(releaseId)
@@ -65,17 +86,19 @@ class VinylDetailPresenter(private @NonNull var vinylRepository: VinylRepository
 
         myRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
+
                 //if user has already favourited track then remove
                 if (dataSnapshot.exists()) {
+
                     myRef.setValue(null)
+
                     vinylDetailView.showMessage("Removed from favourites")
-                    vinylDetailView.editButtonColor(false)
                     removeFavouriteFromRecommender(user?.uid!!,vinylRelease.id.toString())
                     vinylDetailView.addRemovedResult(true)
                 } else {
                     myRef.setValue(vinylRelease)
+
                     vinylDetailView.showMessage("Successfully added to favourites")
-                    vinylDetailView.editButtonColor(true)
                     addFavouriteToRecommender(user?.uid!!,vinylRelease.id.toString())
                     vinylDetailView.addRemovedResult(false)
                 }
@@ -87,26 +110,7 @@ class VinylDetailPresenter(private @NonNull var vinylRepository: VinylRepository
         })
     }
 
-    override fun checkInFavourites(releaseId: String) {
-        val user = mFirebaseAuth.currentUser
 
-        val myRef = database.reference.child("favourites").child(user?.uid).child(releaseId)
-
-        myRef.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                //if user has already favourited track
-                if (dataSnapshot.exists()) {
-                    vinylDetailView.editButtonColor(true)
-                } else {
-                    vinylDetailView.editButtonColor(false)
-                }
-            }
-
-            override fun onCancelled(databaseError: DatabaseError) {
-                Log.e(TAG, "onCancelled", databaseError.toException())
-            }
-        })
-    }
 
     override fun addFavouriteToRecommender(userId : String, itemId : String) {
         recommender.addFavourite(userId,itemId)

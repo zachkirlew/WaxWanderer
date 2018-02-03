@@ -183,11 +183,6 @@ class VinylDetailActivity : AppCompatActivity(), VinylDetailContract.View, View.
         }
     }
 
-    companion object {
-
-        private val TAG = LoginActivity::class.java.simpleName
-    }
-
     class TrackListAdapter
     (context: Context, resource: Int, tracklist: List<Tracklist>?) : ArrayAdapter<Tracklist>(context, resource, tracklist) {
 

@@ -1,5 +1,6 @@
 package com.zachkirlew.applications.waxwanderer.vinyl_detail
 
+import com.zachkirlew.applications.waxwanderer.base.BasePresenter
 import com.zachkirlew.applications.waxwanderer.base.BaseView
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.detail.DetailVinylRelease
@@ -22,7 +23,7 @@ interface VinylDetailContract {
         fun addRemovedResult(isRemoved : Boolean)
     }
 
-    interface Presenter {
+    interface Presenter{
 
         fun loadVinylRelease(releaseId : String)
 
