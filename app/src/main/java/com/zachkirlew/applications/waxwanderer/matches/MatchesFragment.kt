@@ -83,12 +83,13 @@ class MatchesFragment: Fragment(), MatchesContract.View{
         matchesAdapter.clear()
     }
 
-    override fun showNoMatchesView() {
-        noMatchesText?.visibility = View.VISIBLE
+    override fun showNoMatchesView(show : Boolean) {
+        if(show) noMatchesText?.visibility = View.VISIBLE else noMatchesText?.visibility = View.GONE
     }
 
     fun onMatchDeleted(matchId: String?) {
-        matchesAdapter.remove(matchId)
+        //remove match from UI
+//        matchesAdapter.remove(matchId)
         matchId?.let { matchesPresenter.deleteMatch(it) }
     }
 }

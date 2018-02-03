@@ -29,14 +29,14 @@ class MatchesPresenter(private @NonNull var matchesView: MatchesContract.View) :
 
         ref.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                println("got parent")
+                matchesView.clearMatches()
 
                 if(dataSnapshot.exists()){
                     dataSnapshot.children.forEach { getMatchInfo(Match(it.key,it.value as String)) }
+                    matchesView.showNoMatchesView(false)
                 }
                 else{
-                    matchesView.clearMatches()
-                    matchesView.showNoMatchesView()
+                    matchesView.showNoMatchesView(true)
                 }
             }
             override fun onCancelled(databaseError: DatabaseError) {
@@ -57,7 +57,6 @@ class MatchesPresenter(private @NonNull var matchesView: MatchesContract.View) :
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 if (dataSnapshot.exists()) {
 
-                    println("updated")
                     val matchedUser = dataSnapshot.getValue(User::class.java)
 
                     if (matchedUser != null) {

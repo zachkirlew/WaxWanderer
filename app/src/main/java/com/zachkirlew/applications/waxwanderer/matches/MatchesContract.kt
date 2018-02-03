@@ -10,7 +10,7 @@ interface MatchesContract {
 
         fun addMatch(match: User)
 
-        fun showNoMatchesView()
+        fun showNoMatchesView(show : Boolean)
 
         fun startMessagesActivity()
 
