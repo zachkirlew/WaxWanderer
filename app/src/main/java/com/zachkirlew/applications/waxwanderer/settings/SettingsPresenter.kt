@@ -2,6 +2,7 @@ package com.zachkirlew.applications.waxwanderer.settings
 
 import android.net.Uri
 import android.support.annotation.NonNull
+import com.google.android.gms.tasks.OnFailureListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -14,14 +15,14 @@ import java.text.DateFormat
 import java.util.*
 
 
-class SettingsPresenter(private @NonNull var settingsView: SettingsContract.View,private @NonNull val preferences: UserPreferences) : SettingsContract.Presenter  {
+class SettingsPresenter(private @NonNull var settingsView: SettingsContract.View, private @NonNull val preferences: UserPreferences) : SettingsContract.Presenter {
 
     private val mFirebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private val database = FirebaseDatabase.getInstance()
 
     private var dob: Date? = null
 
-    init{
+    init {
         settingsView.setPresenter(this)
     }
 
@@ -44,7 +45,7 @@ class SettingsPresenter(private @NonNull var settingsView: SettingsContract.View
 
                 dob = userInfo?.dob
 
-                settingsView.showUserDetails(userInfo!!,preferences.minMatchAge,preferences.maxMatchAge,preferences.matchGender)
+                settingsView.showUserDetails(userInfo!!, preferences.minMatchAge, preferences.maxMatchAge, preferences.matchGender)
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
@@ -52,7 +53,7 @@ class SettingsPresenter(private @NonNull var settingsView: SettingsContract.View
         })
     }
 
-    override fun submitDetails(name : String, userGender : String, matchGender : String,minMatchAge : Int,maxMatchAge : Int) {
+    override fun submitDetails(name: String, userGender: String, matchGender: String, minMatchAge: Int, maxMatchAge: Int) {
 
         val user = mFirebaseAuth.currentUser
         val userRef = database.reference.child("users").child(user?.uid)
@@ -70,7 +71,7 @@ class SettingsPresenter(private @NonNull var settingsView: SettingsContract.View
     }
 
 
-    override fun getFormattedDate(year : Int, month : Int, day : Int){
+    override fun getFormattedDate(year: Int, month: Int, day: Int) {
         val cal = Calendar.getInstance()
         cal.timeInMillis = 0
         cal.set(year, month, day, 0, 0, 0)
@@ -88,20 +89,20 @@ class SettingsPresenter(private @NonNull var settingsView: SettingsContract.View
 
         val storageRef = FirebaseStorage.getInstance().reference
 
-        val userDatabse = FirebaseDatabase.getInstance().reference.child("users").child(mFirebaseAuth.currentUser?.uid)
+        val userRef = FirebaseDatabase.getInstance().reference.child("users").child(mFirebaseAuth.currentUser?.uid)
 
         if (imageHoldUri != null) {
 
             val mChildStorage = storageRef.child("User_Profile").child(imageHoldUri.lastPathSegment)
 
-            mChildStorage.putFile(imageHoldUri).addOnSuccessListener({ taskSnapshot ->
-                val imageUrl = taskSnapshot.downloadUrl
+            mChildStorage.putFile(imageHoldUri)
+                    .addOnSuccessListener({ taskSnapshot ->
+                        val imageUrl = taskSnapshot.downloadUrl
 
-                userDatabse.child("imageurl").setValue(imageUrl?.toString())
+                        userRef.child("imageurl").setValue(imageUrl?.toString())
 
-                settingsView.showMessage("Profile picture changed")
-            })
+                        settingsView.showMessage("Profile picture changed")
+                    }).addOnFailureListener({ exception -> settingsView.showMessage(exception.message)})
         }
     }
-
 }

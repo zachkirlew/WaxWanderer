@@ -149,7 +149,7 @@ class SettingsFragment : Fragment(), SettingsContract.View, DatePickerDialog.OnD
         val builder = AlertDialog.Builder(activity)
         builder.setTitle("Add Photo!")
 
-        builder.setItems(items, DialogInterface.OnClickListener { dialog, item ->
+        builder.setItems(items, { dialog, item ->
 //            if (items[item] == "Take Photo") {
 //                cameraIntent()
 //            }

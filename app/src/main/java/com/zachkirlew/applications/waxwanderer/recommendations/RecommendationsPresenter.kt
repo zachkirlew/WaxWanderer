@@ -21,10 +21,10 @@ import io.reactivex.schedulers.Schedulers
 class RecommendationsPresenter(private @NonNull var recommendationsView: RecommendationsContract.View,
                                private @NonNull val recommender: RecommenderImp) : RecommendationsContract.Presenter {
 
-    private val database : FirebaseDatabase = FirebaseDatabase.getInstance()
+    private val database: FirebaseDatabase = FirebaseDatabase.getInstance()
     private val mFirebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
 
-    private lateinit var likes : List<String>
+    private var likes: List<String> = emptyList()
 
     override fun start() {
         loadLikes()
@@ -37,10 +37,10 @@ class RecommendationsPresenter(private @NonNull var recommendationsView: Recomme
         likesRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
 
-                if(dataSnapshot.exists()){
+                if (dataSnapshot.exists()) {
                     likes = dataSnapshot.children.map { it.key }
-                    loadRecommendedUsers()
                 }
+                loadRecommendedUsers()
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
@@ -51,19 +51,19 @@ class RecommendationsPresenter(private @NonNull var recommendationsView: Recomme
     override fun loadRecommendedUsers() {
         val currentUserId = mFirebaseAuth.currentUser?.uid
 
-        recommender.recommendUserToUser(currentUserId!!,5)
-                .doOnError { error -> recommendationsView.showMessage(error.message)}
+        recommender.recommendUserToUser(currentUserId!!, 5)
+                .doOnError { error -> recommendationsView.showMessage(error.message) }
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe{userIds ->
+                .subscribe { userIds ->
 
-                        val userIdsFiltered = removeLikedUsers(userIds)
+                    val userIdsFiltered = removeLikedUsers(userIds)
 
-                        if (userIdsFiltered.isNotEmpty()) {
-                            loadUsersDetails(userIdsFiltered)
-                        } else {
-                            recommendationsView.showNoRecommendationsView()
-                        }
+                    if (userIdsFiltered.isNotEmpty()) {
+                        loadUsersDetails(userIdsFiltered)
+                    } else {
+                        recommendationsView.showNoRecommendationsView()
+                    }
                 }
     }
 
@@ -74,7 +74,7 @@ class RecommendationsPresenter(private @NonNull var recommendationsView: Recomme
         myRef.child("likes").child(userId).child(currentUserId).addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 //liked user has current user in likes
-                if(dataSnapshot.exists()){
+                if (dataSnapshot.exists()) {
 
                     val chatKey = myRef.child("chat").push().key
 
@@ -90,7 +90,7 @@ class RecommendationsPresenter(private @NonNull var recommendationsView: Recomme
                             .child(currentUserId).setValue(null)
                 }
                 //user doesn't have current user in their likes
-                else{
+                else {
                     myRef.child("likes").child(currentUserId)
                             .child(userId).setValue(true)
                 }
@@ -107,23 +107,26 @@ class RecommendationsPresenter(private @NonNull var recommendationsView: Recomme
         val userRef = database.reference.child("users")
 
         Flowable.fromIterable(userIds)
-                .flatMap { RxFirebaseDatabase.observeValueEvent(userRef.child(it),{ dataSnapshot -> dataSnapshot.getValue<User>(User::class.java)!! })}
+                .flatMap { RxFirebaseDatabase.observeValueEvent(userRef.child(it), { dataSnapshot -> dataSnapshot.getValue<User>(User::class.java)!! }) }
                 .toObservable()
-                .subscribe(object : Observer<User>{
+                .subscribe(object : Observer<User> {
                     override fun onNext(user: User) {
                         recommendationsView.showRecommendedUser(user)
                     }
+
                     override fun onSubscribe(d: Disposable) {
                     }
+
                     override fun onError(e: Throwable) {
                         recommendationsView.showMessage(e.message)
                     }
+
                     override fun onComplete() {
                     }
                 })
     }
 
-    private fun removeLikedUsers(userIds : List<String>): List<String> {
+    private fun removeLikedUsers(userIds: List<String>): List<String> {
         return userIds.filter { !likes.contains(it) }
     }
 }
