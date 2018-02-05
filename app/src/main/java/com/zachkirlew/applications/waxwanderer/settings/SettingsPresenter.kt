@@ -52,19 +52,6 @@ class SettingsPresenter(private @NonNull var settingsView: SettingsContract.View
         })
     }
 
-    override fun getFormattedDate(year : Int, month : Int, day : Int){
-        val cal = Calendar.getInstance()
-        cal.timeInMillis = 0
-        cal.set(year, month, day, 0, 0, 0)
-
-        dob = cal.time
-
-        val dfMediumUK = DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.UK)
-        val dateFormatted = dfMediumUK.format(dob)
-
-        settingsView.showDateFormatted(dateFormatted)
-    }
-
     override fun submitDetails(name : String, userGender : String, matchGender : String,minMatchAge : Int,maxMatchAge : Int) {
 
         val user = mFirebaseAuth.currentUser
@@ -82,6 +69,21 @@ class SettingsPresenter(private @NonNull var settingsView: SettingsContract.View
         settingsView.showMessage("Profile updated")
     }
 
+
+    override fun getFormattedDate(year : Int, month : Int, day : Int){
+        val cal = Calendar.getInstance()
+        cal.timeInMillis = 0
+        cal.set(year, month, day, 0, 0, 0)
+
+        dob = cal.time
+
+        val dfMediumUK = DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.UK)
+        val dateFormatted = dfMediumUK.format(dob)
+
+        settingsView.showDateFormatted(dateFormatted)
+    }
+
+
     override fun saveProfileImage(imageHoldUri: Uri?) {
 
         val storageRef = FirebaseStorage.getInstance().reference
@@ -91,7 +93,6 @@ class SettingsPresenter(private @NonNull var settingsView: SettingsContract.View
         if (imageHoldUri != null) {
 
             val mChildStorage = storageRef.child("User_Profile").child(imageHoldUri.lastPathSegment)
-            val profilePicUrl = imageHoldUri.lastPathSegment
 
             mChildStorage.putFile(imageHoldUri).addOnSuccessListener({ taskSnapshot ->
                 val imageUrl = taskSnapshot.downloadUrl

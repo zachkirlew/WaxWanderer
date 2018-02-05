@@ -28,48 +28,45 @@ class FavouritePresenter(private @NonNull var favouriteView: FavouriteContract.V
 
     override fun loadFavouriteVinyls() {
         val user = mFirebaseAuth.currentUser
-
-        getVinyls(user?.uid)
+        loadFavouriteVinyls(user?.uid!!)
     }
 
     override fun loadFavouriteVinyls(userId: String) {
-        getVinyls(userId)
+
+        val myRef = database.reference
+
+        val ref = myRef.child("favourites").child(userId)
+
+        InternetConnectionUtil.isInternetOn()
+                .toFlowable(BackpressureStrategy.BUFFER)
+                .flatMap { isInternetOn -> if (isInternetOn) RxFirebaseDatabase.observeValueEvent(ref) else Flowable.error(Exception("No internet connection")) }
+                .toObservable()
+                .subscribe(observer)
+    }
+
+    private val observer = object : Observer<DataSnapshot>{
+        override fun onSubscribe(d: Disposable) {
+            disposable = d
+        }
+        override fun onNext(dataSnapshot: DataSnapshot) {
+            if (dataSnapshot.exists()) {
+                val vinyls = dataSnapshot.children.map { it.getValue<VinylRelease>(VinylRelease::class.java)!! }
+                favouriteView.showFavouriteVinyls(vinyls)
+            } else {
+                favouriteView.showMessage("No favourites to show")
+            }
+        }
+
+        override fun onError(e: Throwable) {
+            favouriteView.showMessage(e.message)
+        }
+
+        override fun onComplete() {
+        }
     }
 
     override fun dispose() {
         disposable?.dispose()
     }
 
-    private fun getVinyls(uid: String?) {
-
-        val myRef = database.reference
-
-        val ref = myRef.child("favourites").child(uid)
-
-        InternetConnectionUtil.isInternetOn()
-                .toFlowable(BackpressureStrategy.BUFFER)
-                .flatMap { isInternetOn -> if (isInternetOn) RxFirebaseDatabase.observeValueEvent(ref) else Flowable.error(Exception("No internet connection")) }
-                .toObservable()
-                .subscribe(object : Observer<DataSnapshot> {
-                    override fun onSubscribe(d: Disposable) {
-                        disposable = d
-                    }
-                    override fun onNext(dataSnapshot: DataSnapshot) {
-                        if (dataSnapshot.exists()) {
-                            val vinyls = dataSnapshot.children.map { it.getValue<VinylRelease>(VinylRelease::class.java)!! }
-                            favouriteView.showFavouriteVinyls(vinyls)
-                        } else {
-                            favouriteView.showMessage("No favourites to show")
-                        }
-                    }
-
-                    override fun onError(e: Throwable) {
-                        favouriteView.showMessage(e.message)
-                    }
-
-                    override fun onComplete() {
-                    }
-
-                })
-    }
 }

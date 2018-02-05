@@ -49,18 +49,14 @@ class MessagePresenter(private @NonNull var messageView: MessageContract.View,
 
         val messageRef = database.reference.child("chat").child(chatId)
 
-        val messageQuery = messageRef.limitToLast(10)
-
-        messageQuery.addChildEventListener(object : ChildEventListener {
+        messageRef.addChildEventListener(object : ChildEventListener {
             override fun onChildAdded(dataSnapshot: DataSnapshot, s: String?) {
 
                 val message = dataSnapshot.getValue<Message>(Message::class.java)
                 message?.let { messageView.showMessage(it) }
-
             }
 
             override fun onChildChanged(dataSnapshot: DataSnapshot, s: String?) {
-                println(dataSnapshot.key)
                 val message = dataSnapshot.getValue<Message>(Message::class.java)!!
                 messageView.updateMessage(message)
             }

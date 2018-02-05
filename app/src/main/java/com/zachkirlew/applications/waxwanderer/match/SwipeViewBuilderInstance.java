@@ -13,11 +13,9 @@ public class SwipeViewBuilderInstance {
         SwipePlaceHolderView.getBuilder()
                 .setDisplayViewCount(3)
                 .setSwipeDecor(new SwipeDecor()
-                        .setViewHeight(50)
                         .setPaddingTop(-20)
                         .setSwipeInMsgLayoutId(R.layout.swipe_in)
                         .setSwipeOutMsgLayoutId(R.layout.swipe_out));
-
     }
 
 }

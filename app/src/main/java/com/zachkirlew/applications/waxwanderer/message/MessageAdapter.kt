@@ -72,10 +72,10 @@ class MessageAdapter(private val messageList: ArrayList<Message>, private val mI
 
                 if(message.isRated){
                     holder.ratingBar.rating = message.rating?.toFloat()!!
-                    holder.ratedText.text = "You rated:"
+                    holder.ratedText.text = holder.itemView.context.getString(R.string.message_rating_current_user_rated)
                 }
                 else{
-                    holder.ratedText.text = "Review this suggestion..."
+                    holder.ratedText.text = holder.itemView.context.getString(R.string.message_rating_current_user_unrated)
                     holder.ratingBar.rating = 0f
                     holder.ratedText.setOnClickListener{messageFragment.showRatingDialog(message.id,attachedVinyl!!.id,position)}
                 }
@@ -83,10 +83,10 @@ class MessageAdapter(private val messageList: ArrayList<Message>, private val mI
             else{
                 if(message.isRated){
                     holder.ratingBar.rating = message.rating?.toFloat()!!
-                    holder.ratedText.text = "They rated:"
+                    holder.ratedText.text = holder.itemView.context.getString(R.string.message_rating_other_user_rated)
                 }
                 else{
-                    holder.ratedText.text = "Not rated yet:"
+                    holder.ratedText.text = holder.itemView.context.getString(R.string.message_rating_other_user_unrated)
                     holder.ratingBar.rating = 0f
                 }
             }

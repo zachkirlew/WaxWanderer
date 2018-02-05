@@ -7,22 +7,16 @@ import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import com.lucasurbas.listitemview.ListItemView
-import com.squareup.picasso.Picasso
 import com.zachkirlew.applications.waxwanderer.R
 import com.zachkirlew.applications.waxwanderer.data.model.User
 import com.zachkirlew.applications.waxwanderer.message.MessageActivity
-import com.zachkirlew.applications.waxwanderer.user_detail.UserDetailActivity
-import com.zachkirlew.applications.waxwanderer.util.CircleTransform
 import com.zachkirlew.applications.waxwanderer.util.EqualSpaceItemDecoration
-import kotlinx.android.synthetic.main.match_item.view.*
 
 
-class MatchesFragment: Fragment(), MatchesContract.View{
+class MatchesFragment: Fragment(), MatchesContract.View, OnMatchDeletedListener {
 
     private lateinit var matchesPresenter : MatchesContract.Presenter
 
@@ -87,7 +81,7 @@ class MatchesFragment: Fragment(), MatchesContract.View{
         if(show) noMatchesText?.visibility = View.VISIBLE else noMatchesText?.visibility = View.GONE
     }
 
-    fun onMatchDeleted(matchId: String?) {
+    override fun onMatchDeleted(matchId: String?) {
         //remove match from UI
 //        matchesAdapter.remove(matchId)
         matchId?.let { matchesPresenter.deleteMatch(it) }

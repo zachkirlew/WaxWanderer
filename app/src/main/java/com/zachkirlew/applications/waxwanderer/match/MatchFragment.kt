@@ -110,10 +110,9 @@ class MatchFragment : Fragment(), MatchContract.View {
     }
 
 
-    override fun showSimilarUsers(users: List<User>) {
+    override fun showUsers(users: List<User>) {
         userCards = users.mapIndexed { index, user ->
             UserCard(mContext, user, mSwipeView,index)
-
         }
 
         userCards.forEach{ mSwipeView.addView(it)}
@@ -153,8 +152,6 @@ class MatchFragment : Fragment(), MatchContract.View {
     @Layout(R.layout.card_similar_user)
     inner class UserCard(private val mContext: Context, private val user: User, private val mSwipeView: SwipePlaceHolderView,private val viewPosition : Int)
     {
-
-
         @com.mindorks.placeholderview.annotations.View(R.id.profile_image_view)
         private val profileImageView: ImageView? = null
 
@@ -234,15 +231,15 @@ class MatchFragment : Fragment(), MatchContract.View {
             mSwipeView.addView(this)
         }
 
-        @SwipeCancelState
-        private fun onSwipeCancelState() {
-            Log.d("EVENT", "onSwipeCancelState")
-        }
-
         @SwipeIn
         private fun onSwipeIn() {
             Log.d("EVENT", "onSwipedIn")
             matchPresenter.handleLike(user)
+        }
+
+        @SwipeCancelState
+        private fun onSwipeCancelState() {
+            Log.d("EVENT", "onSwipeCancelState")
         }
 
         @SwipeInState

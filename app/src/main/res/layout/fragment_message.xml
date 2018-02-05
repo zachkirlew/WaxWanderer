@@ -43,7 +43,7 @@
         android:background="@drawable/input">
 
         <ImageView
-            android:id="@+id/shareVinylButton"
+            android:id="@+id/button_vinyl_share"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_gravity="bottom"

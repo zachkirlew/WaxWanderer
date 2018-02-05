@@ -73,7 +73,6 @@ class ExplorePresenter(private @NonNull var vinylRepository: VinylRepository, pr
             Log.e("Explore presenter",e.message)
             exploreView.showMessage(e.message)
         }
-
     }
 
     override fun dispose() {

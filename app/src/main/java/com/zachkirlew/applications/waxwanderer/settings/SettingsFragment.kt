@@ -84,12 +84,9 @@ class SettingsFragment : Fragment(), SettingsContract.View, DatePickerDialog.OnD
 
             toAgePicker.minValue = newVal
 
-
             val oldAgeRange = ageRangeText.text.toString()
 
             val split = oldAgeRange.split(" - ")
-
-
 
             if(newVal > Integer.parseInt(split[1])){
                 ageRangeText.text = newVal.toString() + " - " + newVal
@@ -98,8 +95,6 @@ class SettingsFragment : Fragment(), SettingsContract.View, DatePickerDialog.OnD
             else{
                 ageRangeText.text = newVal.toString() + " - " + split[1]
             }
-
-
         }
 
         toAgePicker.setOnValueChangedListener { numberPicker, oldVal, newVal ->
@@ -251,7 +246,6 @@ class SettingsFragment : Fragment(), SettingsContract.View, DatePickerDialog.OnD
     }
 
     private fun setProfileImage(imageurl: String?) {
-
         Picasso.with(activity)
                 .load(imageurl)
                 .resize(160, 160)

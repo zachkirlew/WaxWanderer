@@ -56,5 +56,9 @@
     <string name="text_no_internet">No internet connection</string>
     <string name="text_no_vinyls">No vinyls to display. Please search again or change your vinyl preferences</string>
     <string name="leader_board_help_text">The leader board displays the top ranking vinyl sharers on Wax Wander. Points are earned by receiving 3, 4, or 5 star feedback when sharing vinyl releases with other matched users.</string>
+    <string name="message_rating_current_user_rated">You rated:</string>
+    <string name="message_rating_other_user_rated">They rated:</string>
+    <string name="message_rating_current_user_unrated">Review this suggestion...</string>
+    <string name="message_rating_other_user_unrated">Not rated yet:</string>
 
 </resources>

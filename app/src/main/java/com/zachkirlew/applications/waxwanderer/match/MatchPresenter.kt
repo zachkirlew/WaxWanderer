@@ -40,14 +40,17 @@ class MatchPresenter(private @NonNull var matchView: MatchContract.View,
     }
 
     override fun start() {
+        getUsers()
+    }
 
+    private fun getUsers(){
         val lowerAgeLimit = preferences.minMatchAge
         val upperAgeLimit = preferences.maxMatchAge
 
         val myRef = database.reference
 
-        val matchesRef = myRef.child("matches").child(user.uid)
         val usersRef = myRef.child("users")
+        val matchesRef = myRef.child("matches").child(user.uid)
 
         val query = getQuery(usersRef)
 
@@ -55,9 +58,9 @@ class MatchPresenter(private @NonNull var matchView: MatchContract.View,
                 .toFlowable(BackpressureStrategy.BUFFER)
                 .flatMap { isInternetOn -> if (isInternetOn) RxFirebaseDatabase.observeValueEvent(matchesRef, {dataSnapshot -> matchedUserIds = dataSnapshot.children.map{it.key}}) else Flowable.error(Exception("No internet connection")) }
                 .flatMap { RxFirebaseDatabase.observeValueEvent(query,{dataSnapshot -> dataSnapshot.children.map { it.getValue<User>(User::class.java)!!}}) }
-                .map { list -> list.filter {user.uid != it.id} } //remove current user from list
                 .map { list -> list.filter{dobToAge(it.dob) in lowerAgeLimit..upperAgeLimit} } //remove anyone not in user match age range
                 .map {list -> list.filter{!matchedUserIds!!.contains(it.id)}} // filter any already matched users
+                .map { list -> list.filter {user.uid != it.id} } //remove current user from list
                 .toObservable()
                 .subscribe(observer)
     }
@@ -76,7 +79,7 @@ class MatchPresenter(private @NonNull var matchView: MatchContract.View,
         }
 
         override fun onNext(userList: List<User>) {
-            matchView.showSimilarUsers(userList)
+            matchView.showUsers(userList)
         }
     }
 

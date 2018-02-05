@@ -12,7 +12,7 @@ interface MatchContract {
 
         fun startRecommendationsActivity()
 
-        fun showSimilarUsers(users: List<User>)
+        fun showUsers(users: List<User>)
         fun showMatchDialog(likedUserName : String)
 
         override fun showMessage(message : String?)

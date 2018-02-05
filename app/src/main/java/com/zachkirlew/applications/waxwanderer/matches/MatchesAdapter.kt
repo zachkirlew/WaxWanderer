@@ -2,6 +2,7 @@ package com.zachkirlew.applications.waxwanderer.matches
 
 import android.content.Intent
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.lucasurbas.listitemview.ListItemView
@@ -11,21 +12,25 @@ import com.zachkirlew.applications.waxwanderer.data.model.User
 import com.zachkirlew.applications.waxwanderer.message.MessageActivity
 import com.zachkirlew.applications.waxwanderer.user_detail.UserDetailActivity
 import com.zachkirlew.applications.waxwanderer.util.CircleTransform
+import durdinapps.rxfirebase2.RxFirebaseChildEvent
 import kotlinx.android.synthetic.main.match_item.view.*
 
-class MatchesAdapter(private var matches: ArrayList<User>, val matchesFragment: MatchesFragment) : RecyclerView.Adapter<MatchesAdapter.ViewHolder>() {
-
+class MatchesAdapter(private var matches: ArrayList<User>,val callback : OnMatchDeletedListener) : RecyclerView.Adapter<MatchesAdapter.ViewHolder>() {
 
     fun addMatch(match : User){
         this.matches.add(match)
         notifyDataSetChanged()
     }
 
-    fun remove(userId: String?) {
-        val position = matches.indexOfFirst { userId == it.id}
-        this.matches.removeAt(position)
-        notifyItemChanged(position)
-    }
+
+//
+//    fun remove(userId: String?) {
+//        val position = matches.indexOfFirst { userId == it.id}
+//        this.matches.removeAt(position)
+//        notifyItemChanged(position)
+//    }
+
+
 
     fun clear(){
         this.matches.clear()
@@ -34,7 +39,7 @@ class MatchesAdapter(private var matches: ArrayList<User>, val matchesFragment: 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MatchesAdapter.ViewHolder {
         val v = LayoutInflater.from(parent.context).inflate(R.layout.match_item, parent, false) as ListItemView
-        return ViewHolder(v, matchesFragment)
+        return ViewHolder(v, callback)
     }
 
     override fun onBindViewHolder(holder: MatchesAdapter.ViewHolder, position: Int) {
@@ -54,7 +59,22 @@ class MatchesAdapter(private var matches: ArrayList<User>, val matchesFragment: 
         return matches.size
     }
 
-    class ViewHolder(itemView: ListItemView, var matchesFragment: MatchesFragment) : RecyclerView.ViewHolder(itemView) {
+    private fun itemAdded(user: User, key: String) {
+        Log.d("Matches Adapter", "Added a new item to the adapter.")
+        matches.add(user)
+        notifyItemInserted(matches.size - 1)
+    }
+
+
+    private fun itemRemoved(userId: String?) {
+        Log.d("Matches Adapter", "Removed item from the adapter.")
+        val position = matches.indexOfFirst { userId == it.id}
+        matches.removeAt(position)
+        notifyItemChanged(position)
+    }
+
+
+    class ViewHolder(itemView: ListItemView, val callback : OnMatchDeletedListener) : RecyclerView.ViewHolder(itemView) {
 
         fun bindItems(match: User) {
 
@@ -67,7 +87,6 @@ class MatchesAdapter(private var matches: ArrayList<User>, val matchesFragment: 
                     .transform(CircleTransform())
                     .into(itemView.list_item_view.avatarView)
 
-
             itemView.list_item_view.setOnMenuItemClickListener { item ->
                 when (item.itemId) {
                     R.id.action_message -> {
@@ -78,7 +97,7 @@ class MatchesAdapter(private var matches: ArrayList<User>, val matchesFragment: 
                     }
 
                     R.id.action_remove -> {
-                        matchesFragment.onMatchDeleted(match.id)
+                        callback.onMatchDeleted(match.id)
                     }
                 }
             }
