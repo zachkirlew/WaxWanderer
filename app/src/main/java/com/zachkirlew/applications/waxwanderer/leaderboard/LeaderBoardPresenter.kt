@@ -29,8 +29,6 @@ class LeaderBoardPresenter(private @NonNull var leaderboardView: LeaderBoardCont
                 if(dataSnapshot.exists()){
                     val usersSortedByScore = dataSnapshot.children.map { it.getValue(User::class.java)!! }
                     leaderboardView.showUsers(usersSortedByScore)
-
-                    usersSortedByScore.forEach { println(it.score) }
                 }
             }
             override fun onCancelled(databaseError: DatabaseError) {

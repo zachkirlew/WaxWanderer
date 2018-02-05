@@ -8,17 +8,18 @@ interface MatchesContract {
 
     interface View: BaseView<Presenter> {
 
-        fun addMatch(match: User)
+        fun addMatch(user: User?)
+
+        fun removeMatch(userId : String)
 
         fun showNoMatchesView(show : Boolean)
 
         fun startMessagesActivity()
-
-        fun clearMatches()
-
     }
 
     interface Presenter{
+
+        fun checkMatchCount()
 
         fun loadMatches()
 

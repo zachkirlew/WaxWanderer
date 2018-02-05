@@ -24,6 +24,4 @@ class Message {
         this.isRated = isRated
         this.rating = rating
     }
-
-
 }

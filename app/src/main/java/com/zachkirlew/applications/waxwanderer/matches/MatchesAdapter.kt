@@ -17,24 +17,17 @@ import kotlinx.android.synthetic.main.match_item.view.*
 
 class MatchesAdapter(private var matches: ArrayList<User>,val callback : OnMatchDeletedListener) : RecyclerView.Adapter<MatchesAdapter.ViewHolder>() {
 
-    fun addMatch(match : User){
-        this.matches.add(match)
-        notifyDataSetChanged()
+    fun addMatch(match : User?){
+        if (match != null) {
+            this.matches.add(match)
+        }
+        notifyItemInserted(matches.size-1)
     }
 
-
-//
-//    fun remove(userId: String?) {
-//        val position = matches.indexOfFirst { userId == it.id}
-//        this.matches.removeAt(position)
-//        notifyItemChanged(position)
-//    }
-
-
-
-    fun clear(){
-        this.matches.clear()
-        notifyDataSetChanged()
+    fun removeMatch(userId: String?) {
+        val position = matches.indexOfFirst { userId == it.id}
+        this.matches.removeAt(position)
+        notifyItemRemoved(position)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MatchesAdapter.ViewHolder {
@@ -58,21 +51,6 @@ class MatchesAdapter(private var matches: ArrayList<User>,val callback : OnMatch
     override fun getItemCount(): Int {
         return matches.size
     }
-
-    private fun itemAdded(user: User, key: String) {
-        Log.d("Matches Adapter", "Added a new item to the adapter.")
-        matches.add(user)
-        notifyItemInserted(matches.size - 1)
-    }
-
-
-    private fun itemRemoved(userId: String?) {
-        Log.d("Matches Adapter", "Removed item from the adapter.")
-        val position = matches.indexOfFirst { userId == it.id}
-        matches.removeAt(position)
-        notifyItemChanged(position)
-    }
-
 
     class ViewHolder(itemView: ListItemView, val callback : OnMatchDeletedListener) : RecyclerView.ViewHolder(itemView) {
 

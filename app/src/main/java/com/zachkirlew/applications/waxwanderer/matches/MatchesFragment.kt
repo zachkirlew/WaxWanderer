@@ -51,6 +51,7 @@ class MatchesFragment: Fragment(), MatchesContract.View, OnMatchDeletedListener 
 
         noMatchesText = root.findViewById<TextView>(R.id.text_no_matches) as TextView
 
+        matchesPresenter.checkMatchCount()
         matchesPresenter.loadMatches()
 
         return root
@@ -61,8 +62,12 @@ class MatchesFragment: Fragment(), MatchesContract.View, OnMatchDeletedListener 
         matchesPresenter = presenter
     }
 
-    override fun addMatch(match: User) {
-        matchesAdapter.addMatch(match)
+    override fun addMatch(user: User?) {
+        matchesAdapter.addMatch(user)
+    }
+
+    override fun removeMatch(userId: String) {
+        matchesAdapter.removeMatch(userId)
     }
 
     override fun showMessage(message: String?) {
@@ -73,9 +78,6 @@ class MatchesFragment: Fragment(), MatchesContract.View, OnMatchDeletedListener 
         startActivity(intent)
     }
 
-    override fun clearMatches() {
-        matchesAdapter.clear()
-    }
 
     override fun showNoMatchesView(show : Boolean) {
         if(show) noMatchesText?.visibility = View.VISIBLE else noMatchesText?.visibility = View.GONE

@@ -70,15 +70,7 @@ class ShareVinylDialogFragment() : DialogFragment() {
             holder.bindItems(vinyls[position])
 
             holder.itemView.setOnClickListener {
-
-                val context = holder.itemView.context
-
-
                 mCallback?.ShareClicked(vinyls[position])
-
-//                val intent = Intent(context, VinylDetailActivity::class.java)
-//                intent.putExtra("selected vinyl", vinyls[position])
-//                context.startActivity(intent)
             }
         }
 
