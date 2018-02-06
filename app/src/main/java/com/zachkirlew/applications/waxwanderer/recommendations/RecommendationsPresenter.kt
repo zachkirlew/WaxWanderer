@@ -27,30 +27,26 @@ class RecommendationsPresenter(private @NonNull var recommendationsView: Recomme
 
     private val compositeDisposable = CompositeDisposable()
 
-    private var likes: List<String> = emptyList()
-
     override fun start() {
         loadRecommendedUsers()
     }
 
     override fun loadRecommendedUsers() {
 
-        println("getting recommendations")
-
         val currentUserId = mFirebaseAuth.currentUser?.uid
 
-        val likesRef = database.reference.child("likes").child(currentUserId)
+        val userRef = database.reference.child("users")
 
-        RxFirebaseDatabase.observeSingleValueEvent(likesRef)
-                .doOnSuccess {getLikes(it)}
-                .toObservable()
-                .flatMap { recommender.recommendUserToUser(currentUserId!!, 5) }
+        recommender.recommendUserToUser(currentUserId!!, 5)
+                .flatMap { userIds ->
+                    Observable.fromIterable(userIds).flatMap { RxFirebaseDatabase.observeValueEvent(userRef.child(it),
+                            { dataSnapshot -> dataSnapshot.getValue<User>(User::class.java)!! }).toObservable() } }
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(recommendedObserver)
     }
 
-    private val recommendedObserver = object : Observer<List<String>>{
+    private val recommendedObserver = object : Observer<User>{
         override fun onSubscribe(d: Disposable) {
             compositeDisposable.add(d)
         }
@@ -62,25 +58,14 @@ class RecommendationsPresenter(private @NonNull var recommendationsView: Recomme
         override fun onComplete() {
         }
 
-        override fun onNext(userIds: List<String>) {
-
-            println("on Next")
-
-
-            val userIdsFiltered = removeLikedUsers(userIds)
-
-            if (userIdsFiltered.isNotEmpty()) {
-                loadUsersDetails(userIdsFiltered)
-            } else {
-                recommendationsView.showNoRecommendationsView()
-            }
+        override fun onNext(user: User) {
+            recommendationsView.showRecommendedUser(user)
         }
     }
 
-    private fun getLikes(dataSnapshot: DataSnapshot){
-
-        if (dataSnapshot.exists()) {
-            likes = dataSnapshot.children.map { it.key }
+    private  fun checkIdList(userIds: List<String>){
+        if (userIds.isEmpty()) {
+            recommendationsView.showNoRecommendationsView()
         }
     }
 
@@ -121,32 +106,4 @@ class RecommendationsPresenter(private @NonNull var recommendationsView: Recomme
         compositeDisposable.dispose()
     }
 
-    private fun loadUsersDetails(userIds: List<String>) {
-
-        val userRef = database.reference.child("users")
-
-        Flowable.fromIterable(userIds)
-                .flatMap { RxFirebaseDatabase.observeValueEvent(userRef.child(it), { dataSnapshot -> dataSnapshot.getValue<User>(User::class.java)!! }) }
-                .toObservable()
-                .subscribe(object : Observer<User> {
-                    override fun onNext(user: User) {
-                        recommendationsView.showRecommendedUser(user)
-                    }
-
-                    override fun onSubscribe(d: Disposable) {
-                        compositeDisposable.add(d)
-                    }
-
-                    override fun onError(e: Throwable) {
-                        recommendationsView.showMessage(e.message)
-                    }
-
-                    override fun onComplete() {
-                    }
-                })
-    }
-
-    private fun removeLikedUsers(userIds: List<String>): List<String> {
-        return userIds.filter { !likes.contains(it) }
-    }
 }

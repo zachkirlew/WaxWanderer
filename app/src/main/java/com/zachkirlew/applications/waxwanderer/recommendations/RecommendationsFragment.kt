@@ -51,6 +51,7 @@ class RecommendationsFragment: Fragment(), RecommendationsContract.View, Recomme
     }
 
     override fun showRecommendedUser(user: User) {
+        noRecommendationsText.visibility = View.GONE
         adapter.addUser(user)
     }
 
@@ -64,10 +65,16 @@ class RecommendationsFragment: Fragment(), RecommendationsContract.View, Recomme
 
     override fun removeUser(position: Int) {
         adapter.removeUser(position)
+        checkIfEmpty()
     }
 
     override fun showNoRecommendationsView() {
         noRecommendationsText.visibility = View.VISIBLE
+    }
+
+    private fun checkIfEmpty(){
+        if(adapter.itemCount==0)
+            noRecommendationsText.visibility = View.VISIBLE
     }
 
     private fun initializePresenter() {
