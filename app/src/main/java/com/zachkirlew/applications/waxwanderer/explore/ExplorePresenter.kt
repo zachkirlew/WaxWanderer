@@ -33,11 +33,10 @@ class ExplorePresenter(private @NonNull var vinylRepository: VinylRepository, pr
     }
 
     override fun start() {
-        loadVinylReleases()
+        loadStyles()
     }
 
-    override fun loadVinylReleases() {
-
+    private fun loadStyles(){
 
         val myRef = database.reference
 
@@ -47,7 +46,12 @@ class ExplorePresenter(private @NonNull var vinylRepository: VinylRepository, pr
 
         InternetConnectionUtil.isInternetOn()
                 .flatMap { isInternetOn -> if (isInternetOn) RxFirebaseDatabase.observeValueEvent(vinylRef,{it.children.map { it.value as String }}).toObservable()   else Observable.error(Exception("No internet connection")) }
-                .flatMap {stylesList -> Observable.fromIterable(stylesList) }
+                .subscribe {  loadVinylReleases(it)}
+    }
+
+    override fun loadVinylReleases(styles : List<String>) {
+
+        Observable.fromIterable(styles)
                 .flatMap { style -> vinylRepository.getVinyls(style)}
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
