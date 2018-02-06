@@ -3,11 +3,13 @@ package com.zachkirlew.applications.waxwanderer.match
 import android.support.annotation.NonNull
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.Query
 import com.zachkirlew.applications.waxwanderer.data.local.UserPreferences
 import com.zachkirlew.applications.waxwanderer.data.model.User
+import com.zachkirlew.applications.waxwanderer.data.model.UserCard
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
 import com.zachkirlew.applications.waxwanderer.util.InternetConnectionUtil
 import durdinapps.rxfirebase2.RxFirebaseDatabase
@@ -15,6 +17,7 @@ import io.reactivex.Observable
 import io.reactivex.Observer
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
+import io.reactivex.functions.Function3
 import org.joda.time.LocalDate
 import org.joda.time.Period
 import org.joda.time.PeriodType
@@ -78,7 +81,8 @@ class MatchPresenter(private @NonNull var matchView: MatchContract.View,
         }
 
         override fun onNext(userList: List<User>) {
-            matchView.showUsers(userList)
+            //matchView.showUsers(userList)
+            getUserData(userList)
         }
     }
 
@@ -96,6 +100,32 @@ class MatchPresenter(private @NonNull var matchView: MatchContract.View,
                 myRef
             }
         }
+    }
+
+    private fun getUserData(userList: List<User>){
+
+        val myRef = database.reference
+
+        Observable.fromIterable(userList)
+        .flatMap { it -> Observable.zip(
+                        Observable.just(it),
+                        RxFirebaseDatabase.observeValueEvent(myRef.child("favourites").child(it.id).limitToLast(5)).toObservable(),
+                        RxFirebaseDatabase.observeValueEvent(myRef.child("vinylPreferences").child(it.id)).toObservable(),
+                        zipFunction) }
+                .subscribe{matchView.addUserCard(it)}
+
+    }
+
+    private val zipFunction = Function3<User,DataSnapshot, DataSnapshot, UserCard> { user,favouritesSnapshot, vinylPrefSnapshot ->
+        var vinyls : List<VinylRelease>? = null
+
+        if (favouritesSnapshot.exists()) {
+            vinyls = favouritesSnapshot.children.map { it.getValue<VinylRelease>(VinylRelease::class.java)!! }
+        }
+
+        val styles = vinylPrefSnapshot.children.map { it.value as String }
+
+        UserCard(user,styles,vinyls)
     }
 
     override fun handleLike(likedUser: User) {
@@ -131,40 +161,6 @@ class MatchPresenter(private @NonNull var matchView: MatchContract.View,
                                 .child(likedUser.id).setValue(true)
                     }
                 }
-    }
-
-    override fun loadUserFavourites(userId: String?,viewPosition : Int) {
-
-        val myRef = database.reference
-
-        val ref = myRef.child("favourites").child(userId)
-
-        RxFirebaseDatabase.observeValueEvent(ref)
-                .toObservable()
-                .doOnSubscribe { compositeDisposable.add(it) }
-                .subscribe { dataSnapshot ->
-                    if (dataSnapshot.exists()) {
-                        val vinyls = dataSnapshot.children.map { it.getValue<VinylRelease>(VinylRelease::class.java)!! }
-                        matchView.showUserFavourites(vinyls, viewPosition)
-                    } else
-                        matchView.showNoUserFavourites()
-                }
-    }
-
-    override fun loadVinylPreference(userId: String?, viewPosition: Int) {
-        val myRef = database.reference
-
-        val ref = myRef.child("vinylPreferences").child(userId)
-
-        RxFirebaseDatabase.observeValueEvent(ref, { it.children.map { it.value as String } })
-                .toObservable()
-                .doOnSubscribe { compositeDisposable.add(it) }
-                .subscribe(
-                        { styles ->
-                            val commaSeparatedStyles = android.text.TextUtils.join(", ", styles)
-                            matchView.showVinylPreference(commaSeparatedStyles, viewPosition)
-                        },
-                        { throwable -> matchView.showMessage(throwable.message) })
     }
 
     override fun dispose() {

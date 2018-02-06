@@ -35,6 +35,8 @@ class RecommendationsPresenter(private @NonNull var recommendationsView: Recomme
 
     override fun loadRecommendedUsers() {
 
+        println("getting recommendations")
+
         val currentUserId = mFirebaseAuth.currentUser?.uid
 
         val likesRef = database.reference.child("likes").child(currentUserId)
@@ -62,6 +64,9 @@ class RecommendationsPresenter(private @NonNull var recommendationsView: Recomme
 
         override fun onNext(userIds: List<String>) {
 
+            println("on Next")
+
+
             val userIdsFiltered = removeLikedUsers(userIds)
 
             if (userIdsFiltered.isNotEmpty()) {
@@ -73,6 +78,7 @@ class RecommendationsPresenter(private @NonNull var recommendationsView: Recomme
     }
 
     private fun getLikes(dataSnapshot: DataSnapshot){
+
         if (dataSnapshot.exists()) {
             likes = dataSnapshot.children.map { it.key }
         }
