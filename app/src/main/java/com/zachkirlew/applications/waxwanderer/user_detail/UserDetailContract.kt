@@ -22,5 +22,7 @@ interface UserDetailContract {
         fun loadUserFavourites(userId : String)
 
         fun loadUserStyles(userId : String)
+
+        fun dispose()
     }
 }

@@ -21,6 +21,7 @@ import com.mindorks.placeholderview.annotations.Resolve
 import com.mindorks.placeholderview.annotations.swipe.*
 import com.squareup.picasso.Picasso
 import com.zachkirlew.applications.waxwanderer.R
+import com.zachkirlew.applications.waxwanderer.base.OnSignOutListener
 import com.zachkirlew.applications.waxwanderer.data.local.UserPreferences
 import com.zachkirlew.applications.waxwanderer.data.model.User
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
@@ -35,7 +36,7 @@ import org.joda.time.PeriodType
 import java.util.*
 
 
-class MatchFragment : Fragment(), MatchContract.View {
+class MatchFragment : Fragment(), MatchContract.View,OnSignOutListener {
 
     private lateinit var matchPresenter: MatchContract.Presenter
 
@@ -48,10 +49,6 @@ class MatchFragment : Fragment(), MatchContract.View {
 
     private lateinit var userCards : List<MatchFragment.UserCard>
 
-    override fun onResume() {
-        super.onResume()
-        matchPresenter.start()
-    }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -68,7 +65,6 @@ class MatchFragment : Fragment(), MatchContract.View {
 
         setHasOptionsMenu(true)
 
-
         matchPresenter = MatchPresenter(this, UserPreferences())
 
         likeButton = root.findViewById<ImageButton>(R.id.acceptBtn) as ImageButton
@@ -81,6 +77,8 @@ class MatchFragment : Fragment(), MatchContract.View {
         dislikeButton.setOnClickListener {
             mSwipeView.doSwipe(false)
         }
+
+        matchPresenter.start()
 
         return root
     }
@@ -131,8 +129,8 @@ class MatchFragment : Fragment(), MatchContract.View {
         return true
     }
 
-    override fun onStop() {
-        super.onStop()
+    override fun onPause() {
+        super.onPause()
         matchPresenter.dispose()
     }
 
@@ -147,6 +145,10 @@ class MatchFragment : Fragment(), MatchContract.View {
 
     override fun showNoUserFavourites() {
 
+    }
+
+    override fun onSignOut() {
+        matchPresenter.dispose()
     }
 
     @Layout(R.layout.card_similar_user)

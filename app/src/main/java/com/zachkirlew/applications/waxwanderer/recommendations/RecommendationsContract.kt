@@ -20,10 +20,10 @@ interface RecommendationsContract {
 
     interface Presenter : BasePresenter {
 
-        fun loadLikes()
-
         fun loadRecommendedUsers()
 
         fun likeUser(userId : String,position : Int)
+
+        fun dispose()
     }
 }

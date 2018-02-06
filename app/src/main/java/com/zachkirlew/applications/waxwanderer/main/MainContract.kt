@@ -1,5 +1,7 @@
 package com.zachkirlew.applications.waxwanderer.main
 
+import android.support.v4.app.Fragment
+
 
 interface MainContract {
     interface View {
@@ -22,5 +24,9 @@ interface MainContract {
         fun loadUserDetails()
 
         fun signOut()
+
+        fun removeDisposables(fragment : Fragment?)
+
+        fun dispose()
     }
 }

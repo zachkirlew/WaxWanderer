@@ -19,11 +19,11 @@ interface MatchesContract {
 
     interface Presenter{
 
-        fun checkMatchCount()
-
         fun loadMatches()
 
         fun deleteMatch(matchId : String)
+
+        fun dispose()
 
     }
 }

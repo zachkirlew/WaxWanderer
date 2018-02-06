@@ -94,6 +94,11 @@ class MainActivity : AppCompatActivity(), MainContract.View {
         presenter.removeAuthListener()
     }
 
+    override fun onPause() {
+        super.onPause()
+        presenter.dispose()
+    }
+
     override fun startStylesActivity() {
         val intent = Intent(this, StylesActivity::class.java)
         intent.putExtra("fromMain",true)
@@ -155,7 +160,8 @@ class MainActivity : AppCompatActivity(), MainContract.View {
             when (menuItem.itemId) {
 
                 R.id.log_out_navigation_menu_item ->{
-
+                    val visibleFrag = getVisibleFrag()
+                    presenter.removeDisposables(visibleFrag)
                     presenter.signOut()
                 }
 
@@ -227,6 +233,15 @@ class MainActivity : AppCompatActivity(), MainContract.View {
                 .centerCrop()
                 .transform(BorderedCircleTransform())
                 .into(profileImage)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        presenter.dispose()
+    }
+
+    private fun getVisibleFrag(): Fragment? {
+        return supportFragmentManager.findFragmentById(R.id.content)
     }
 
     private fun uncheckAllMenuItems(navigationView: NavigationView) {

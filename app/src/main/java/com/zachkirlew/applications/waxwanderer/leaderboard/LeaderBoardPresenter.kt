@@ -1,17 +1,17 @@
 package com.zachkirlew.applications.waxwanderer.leaderboard
 
 import android.support.annotation.NonNull
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
 import com.zachkirlew.applications.waxwanderer.data.model.User
-import com.zachkirlew.applications.waxwanderer.leaderboard.LeaderBoardContract
+import durdinapps.rxfirebase2.RxFirebaseDatabase
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 
 class LeaderBoardPresenter(private @NonNull var leaderboardView: LeaderBoardContract.View) : LeaderBoardContract.Presenter  {
 
     private val database = FirebaseDatabase.getInstance()
+    private var disposable : Disposable? = null
 
     init{
         leaderboardView.setPresenter(this)
@@ -23,16 +23,13 @@ class LeaderBoardPresenter(private @NonNull var leaderboardView: LeaderBoardCont
 
         val ref = myRef.child("users").orderByChild("score").limitToLast(10)
 
-        ref.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
+        RxFirebaseDatabase.observeValueEvent(ref,{it.children.map { it.getValue(User::class.java)!! }})
+                .toObservable()
+                .doOnSubscribe {disposable = it}
+                .subscribe{usersSortedByScore->leaderboardView.showUsers(usersSortedByScore)}
+    }
 
-                if(dataSnapshot.exists()){
-                    val usersSortedByScore = dataSnapshot.children.map { it.getValue(User::class.java)!! }
-                    leaderboardView.showUsers(usersSortedByScore)
-                }
-            }
-            override fun onCancelled(databaseError: DatabaseError) {
-            }
-        })
+    override fun dispose() {
+        disposable?.dispose()
     }
 }

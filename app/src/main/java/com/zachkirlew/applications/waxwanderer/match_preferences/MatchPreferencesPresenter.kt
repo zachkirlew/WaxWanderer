@@ -13,8 +13,6 @@ class MatchPreferencesPresenter(private @NonNull var matchPreferencesView: Match
     private val mFirebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private val database = FirebaseDatabase.getInstance()
 
-    private val TAG = MatchPreferencesActivity::class.java.simpleName
-
     private var dob: Date? = null
 
     override fun getFormattedDate(year: Int, month: Int, day: Int) {

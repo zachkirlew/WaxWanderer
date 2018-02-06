@@ -10,6 +10,7 @@ import com.zachkirlew.applications.waxwanderer.util.InternetConnectionUtil
 import durdinapps.rxfirebase2.RxFirebaseDatabase
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
+import io.reactivex.Observable
 import io.reactivex.Observer
 import io.reactivex.disposables.Disposable
 import java.lang.Exception
@@ -38,9 +39,7 @@ class FavouritePresenter(private @NonNull var favouriteView: FavouriteContract.V
         val ref = myRef.child("favourites").child(userId)
 
         InternetConnectionUtil.isInternetOn()
-                .toFlowable(BackpressureStrategy.BUFFER)
-                .flatMap { isInternetOn -> if (isInternetOn) RxFirebaseDatabase.observeValueEvent(ref) else Flowable.error(Exception("No internet connection")) }
-                .toObservable()
+                .flatMap { isInternetOn -> if (isInternetOn) RxFirebaseDatabase.observeValueEvent(ref).toObservable() else Observable.error(Exception("No internet connection")) }
                 .subscribe(observer)
     }
 
@@ -68,5 +67,4 @@ class FavouritePresenter(private @NonNull var favouriteView: FavouriteContract.V
     override fun dispose() {
         disposable?.dispose()
     }
-
 }

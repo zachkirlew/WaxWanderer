@@ -11,12 +11,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.zachkirlew.applications.waxwanderer.R
+import com.zachkirlew.applications.waxwanderer.base.OnSignOutListener
 import com.zachkirlew.applications.waxwanderer.data.model.User
 import com.zachkirlew.applications.waxwanderer.message.MessageActivity
 import com.zachkirlew.applications.waxwanderer.util.EqualSpaceItemDecoration
 
 
-class MatchesFragment: Fragment(), MatchesContract.View, OnMatchDeletedListener {
+class MatchesFragment: Fragment(), MatchesContract.View, OnMatchDeletedListener,OnSignOutListener {
 
     private lateinit var matchesPresenter : MatchesContract.Presenter
 
@@ -51,12 +52,10 @@ class MatchesFragment: Fragment(), MatchesContract.View, OnMatchDeletedListener 
 
         noMatchesText = root.findViewById<TextView>(R.id.text_no_matches) as TextView
 
-        matchesPresenter.checkMatchCount()
         matchesPresenter.loadMatches()
 
         return root
     }
-
 
     override fun setPresenter(presenter: MatchesContract.Presenter) {
         matchesPresenter = presenter
@@ -78,14 +77,20 @@ class MatchesFragment: Fragment(), MatchesContract.View, OnMatchDeletedListener 
         startActivity(intent)
     }
 
-
     override fun showNoMatchesView(show : Boolean) {
         if(show) noMatchesText?.visibility = View.VISIBLE else noMatchesText?.visibility = View.GONE
     }
 
     override fun onMatchDeleted(matchId: String?) {
-        //remove match from UI
-//        matchesAdapter.remove(matchId)
         matchId?.let { matchesPresenter.deleteMatch(it) }
+    }
+
+    override fun onSignOut() {
+        matchesPresenter.dispose()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        matchesPresenter.dispose()
     }
 }

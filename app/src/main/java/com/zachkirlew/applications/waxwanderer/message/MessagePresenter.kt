@@ -5,10 +5,16 @@ import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.zachkirlew.applications.waxwanderer.data.model.Message
+import com.zachkirlew.applications.waxwanderer.data.model.RxChildEvent
 import com.zachkirlew.applications.waxwanderer.data.model.User
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
 import com.zachkirlew.applications.waxwanderer.data.recommendation.RecommenderImp
+import durdinapps.rxfirebase2.RxFirebaseChildEvent
+import durdinapps.rxfirebase2.RxFirebaseDatabase
+import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 
 
@@ -18,60 +24,48 @@ class MessagePresenter(private @NonNull var messageView: MessageContract.View,
     private val database : FirebaseDatabase = FirebaseDatabase.getInstance()
     private val mFirebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
 
+    private val compositeDisposable: CompositeDisposable = CompositeDisposable()
+
     private lateinit var chatId : String
 
     private lateinit var recipientUid : String
 
-    override fun loadMatch(matchedUserId: String) {
+    override fun loadMessages(matchedUserId: String) {
 
         recipientUid = matchedUserId
 
-        val myRef = database.reference
         val user = mFirebaseAuth.currentUser
 
-        val ref = myRef.child("matches").child(user?.uid).child(matchedUserId)
+        val myRef = database.reference
 
-        ref.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
+        val matchesRef = myRef.child("matches").child(user?.uid).child(matchedUserId)
 
-                if(dataSnapshot.exists()) {
-                    chatId = dataSnapshot.value as String
-                    loadMessages()
-                }
-            }
-
-            override fun onCancelled(databaseError: DatabaseError) {
-            }
-        })
+        RxFirebaseDatabase.observeSingleValueEvent(matchesRef,{it.value as String})
+                .doOnSubscribe { compositeDisposable.add(it) }
+                .doOnSuccess { chatId = it }
+                .toFlowable()
+                .flatMap {chatId -> RxFirebaseDatabase.observeChildEvent(myRef.child("chat").child(chatId)) }
+                .toObservable()
+                .subscribe(messageObserver)
     }
 
-    override fun loadMessages() {
+    private val messageObserver = object : Observer<RxFirebaseChildEvent<DataSnapshot>>{
+        override fun onNext(message: RxFirebaseChildEvent<DataSnapshot>) {
+            messageView.addMessage(message)
+        }
 
-        val messageRef = database.reference.child("chat").child(chatId)
+        override fun onSubscribe(d: Disposable) {
+           compositeDisposable.add(d)
+        }
 
-        messageRef.addChildEventListener(object : ChildEventListener {
-            override fun onChildAdded(dataSnapshot: DataSnapshot, s: String?) {
+        override fun onError(e: Throwable) {
+            messageView.showError(e.message)
+        }
 
-                val message = dataSnapshot.getValue<Message>(Message::class.java)
-                message?.let { messageView.showMessage(it) }
-            }
-
-            override fun onChildChanged(dataSnapshot: DataSnapshot, s: String?) {
-                val message = dataSnapshot.getValue<Message>(Message::class.java)!!
-                messageView.updateMessage(message)
-            }
-
-            override fun onChildRemoved(dataSnapshot: DataSnapshot) {
-            }
-
-            override fun onChildMoved(dataSnapshot: DataSnapshot, s: String?) {
-            }
-
-            override fun onCancelled(databaseError: DatabaseError) {
-            }
-        })
-
+        override fun onComplete() {
+        }
     }
+
 
     override fun sendMessage(messageText: String, authorId: String,attachedRelease : VinylRelease?) {
 
@@ -89,16 +83,9 @@ class MessagePresenter(private @NonNull var messageView: MessageContract.View,
 
         val ref = myRef.child("favourites").child(user?.uid)
 
-        ref.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-
-                val userFavourites = dataSnapshot.children.map { it.getValue<VinylRelease>(VinylRelease::class.java)!! }
-                messageView.showChooseRecordDialog(userFavourites)
-            }
-
-            override fun onCancelled(databaseError: DatabaseError) {
-            }
-        })
+        RxFirebaseDatabase.observeSingleValueEvent(ref,{it.children.map { it.getValue<VinylRelease>(VinylRelease::class.java)!! }})
+                .doOnSubscribe { compositeDisposable.add(it)}
+                .subscribe{userFavourites->messageView.showChooseRecordDialog(userFavourites)}
     }
 
     override fun addRating(vinylId: Int, rating: Double, messageId: String) {
@@ -134,19 +121,18 @@ class MessagePresenter(private @NonNull var messageView: MessageContract.View,
     private fun awardPointsToUser(points : Int) {
         val userRef = database.reference.child("users").child(recipientUid)
 
-        userRef.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onCancelled(p0: DatabaseError?) {
-            }
-
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val recipient = dataSnapshot.getValue<User>(User::class.java)!!
-                val newScore = recipient.score + points
-
-                userRef.child("score").setValue(newScore)
-            }
-        })
+        RxFirebaseDatabase.observeSingleValueEvent(userRef, User::class.java)
+                .doOnSubscribe { compositeDisposable.add(it) }
+                .subscribe({ recipient -> val newScore = recipient.score + points
+                                            userRef.child("score").setValue(newScore)
+                            },
+                        { throwable -> messageView.showError(throwable.message) })
     }
 
 
     override fun start() {}
+
+    override fun dispose() {
+        compositeDisposable.clear()
+    }
 }

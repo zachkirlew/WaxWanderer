@@ -14,5 +14,7 @@ interface LeaderBoardContract {
     interface Presenter{
 
         fun loadUsers()
+
+        fun dispose()
     }
 }

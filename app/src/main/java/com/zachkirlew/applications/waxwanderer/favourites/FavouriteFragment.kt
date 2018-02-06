@@ -1,26 +1,24 @@
 package com.zachkirlew.applications.waxwanderer.favourites
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.support.annotation.Nullable
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.TextView
-import android.widget.Toast
-import com.squareup.picasso.Picasso
 import com.zachkirlew.applications.waxwanderer.R
+import com.zachkirlew.applications.waxwanderer.base.OnSignOutListener
 import com.zachkirlew.applications.waxwanderer.data.model.User
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
-import com.zachkirlew.applications.waxwanderer.vinyl_detail.VinylDetailActivity
 import com.zachkirlew.applications.waxwanderer.util.EqualSpaceItemDecoration
-import kotlinx.android.synthetic.main.explore_item.view.*
-import android.app.Activity
-import android.support.v4.app.ActivityCompat.startActivityForResult
 
 
-class FavouriteFragment: Fragment(), FavouriteContract.View {
+class FavouriteFragment: Fragment(), FavouriteContract.View,OnSignOutListener {
 
 
     private lateinit var favouritePresenter : FavouriteContract.Presenter
@@ -103,6 +101,10 @@ class FavouriteFragment: Fragment(), FavouriteContract.View {
 
     override fun onStop() {
         super.onStop()
+        favouritePresenter.dispose()
+    }
+
+    override fun onSignOut() {
         favouritePresenter.dispose()
     }
 }

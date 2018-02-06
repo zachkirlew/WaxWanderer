@@ -34,5 +34,7 @@ interface VinylDetailContract {
         fun addFavouriteToRecommender(userId : String, itemId : String)
 
         fun removeFavouriteFromRecommender(userId : String, itemId : String)
+
+        fun dispose()
     }
 }

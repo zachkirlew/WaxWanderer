@@ -3,6 +3,7 @@ package com.zachkirlew.applications.waxwanderer.util
 import android.app.Application
 import android.content.Context
 import android.net.ConnectivityManager
+import io.reactivex.Flowable
 import io.reactivex.Observable
 
 object InternetConnectionUtil {

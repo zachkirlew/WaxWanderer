@@ -139,6 +139,11 @@ class UserDetailActivity : AppCompatActivity(), UserDetailContract.View  {
         }
     }
 
+    override fun onStop() {
+        super.onStop()
+        presenter.dispose()
+    }
+
     class FavouriteAdapter(private var vinyls: List<VinylRelease>) : RecyclerView.Adapter<FavouriteAdapter.ViewHolder>() {
 
         fun addVinyls(vinyls : List<VinylRelease>){

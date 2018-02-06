@@ -10,11 +10,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.zachkirlew.applications.waxwanderer.R
+import com.zachkirlew.applications.waxwanderer.base.OnSignOutListener
 import com.zachkirlew.applications.waxwanderer.data.model.User
 import com.zachkirlew.applications.waxwanderer.util.EqualSpaceItemDecoration
 
 
-class LeaderBoardFragment : Fragment(), LeaderBoardContract.View{
+class LeaderBoardFragment : Fragment(), LeaderBoardContract.View,OnSignOutListener{
 
     private lateinit var leaderboardPresenter : LeaderBoardContract.Presenter
     private lateinit var leaderboardAdapter: LeaderBoardAdapter
@@ -63,5 +64,14 @@ class LeaderBoardFragment : Fragment(), LeaderBoardContract.View{
 
     override fun showUsers(users: List<User>) {
         leaderboardAdapter.addUsers(users)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        leaderboardPresenter.dispose()
+    }
+
+    override fun onSignOut() {
+        leaderboardPresenter.dispose()
     }
 }

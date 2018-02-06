@@ -1,19 +1,17 @@
 package com.zachkirlew.applications.waxwanderer.user_detail
 
 import android.support.annotation.NonNull
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
+import durdinapps.rxfirebase2.RxFirebaseDatabase
+import io.reactivex.disposables.CompositeDisposable
 
 
 class UserDetailPresenter(private @NonNull var userDetailView: UserDetailContract.View) : UserDetailContract.Presenter  {
 
-
-    private val mFirebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private val database = FirebaseDatabase.getInstance()
+
+    private val compositeDisposable : CompositeDisposable = CompositeDisposable()
 
 
     override fun loadUserFavourites(userId: String) {
@@ -21,21 +19,19 @@ class UserDetailPresenter(private @NonNull var userDetailView: UserDetailContrac
         val myRef = database.reference
 
         val ref = myRef.child("favourites").child(userId).limitToLast(5)
-        ref.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
 
-                if(dataSnapshot.exists()){
-                    val vinyls = dataSnapshot.children.map { it.getValue<VinylRelease>(VinylRelease::class.java)!! }
-                    userDetailView.showUserFavourites(vinyls)
+        RxFirebaseDatabase.observeValueEvent(ref)
+                .toObservable()
+                .doOnSubscribe { compositeDisposable.add(it) }
+                .subscribe{dataSnapshot->
+                    if(dataSnapshot.exists()){
+                        val vinyls = dataSnapshot.children.map { it.getValue<VinylRelease>(VinylRelease::class.java)!! }
+                        userDetailView.showUserFavourites(vinyls)
+                    }
+                    else{
+                        userDetailView.showNoFavouritesView()
+                    }
                 }
-                else{
-                    userDetailView.showNoFavouritesView()
-                }
-            }
-
-            override fun onCancelled(databaseError: DatabaseError) {
-            }
-        })
     }
 
     override fun loadUserStyles(userId: String) {
@@ -43,18 +39,19 @@ class UserDetailPresenter(private @NonNull var userDetailView: UserDetailContrac
 
         val ref = myRef.child("vinylPreferences").child(userId)
 
-        ref.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
+        RxFirebaseDatabase.observeValueEvent(ref)
+                .toObservable()
+                .doOnSubscribe { compositeDisposable.add(it) }
+                .subscribe{dataSnapshot->
+                    val preferredStyles = dataSnapshot.children.map { it.value as String }
+                    val commaSeparatedStyles = android.text.TextUtils.join(", ", preferredStyles)
 
-                val preferredStyles = dataSnapshot.children.map { it.value as String }
-                val commaSeparatedStyles = android.text.TextUtils.join(", ", preferredStyles)
+                    userDetailView.showUserStyles(commaSeparatedStyles)
+                }
+    }
 
-                userDetailView.showUserStyles(commaSeparatedStyles)
-            }
-
-            override fun onCancelled(databaseError: DatabaseError) {
-            }
-        })
+    override fun dispose() {
+        compositeDisposable.dispose()
     }
 
     override fun start() {}

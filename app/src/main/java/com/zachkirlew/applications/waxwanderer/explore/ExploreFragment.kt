@@ -1,6 +1,5 @@
 package com.zachkirlew.applications.waxwanderer.explore
 
-import android.content.Intent
 import android.os.Bundle
 import android.support.annotation.Nullable
 import android.support.v4.app.Fragment
@@ -10,16 +9,14 @@ import android.view.*
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
-import com.squareup.picasso.Picasso
 import com.zachkirlew.applications.waxwanderer.R
+import com.zachkirlew.applications.waxwanderer.base.OnSignOutListener
 import com.zachkirlew.applications.waxwanderer.data.VinylRepository
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
 import com.zachkirlew.applications.waxwanderer.data.remote.VinylsRemoteSource
-import com.zachkirlew.applications.waxwanderer.vinyl_detail.VinylDetailActivity
 import com.zachkirlew.applications.waxwanderer.util.EqualSpaceItemDecoration
-import kotlinx.android.synthetic.main.explore_item.view.*
 
-class ExploreFragment: Fragment(), ExploreContract.View, OnSearchSubmitted{
+class ExploreFragment: Fragment(), ExploreContract.View, OnSearchSubmitted,OnSignOutListener {
 
     private lateinit var explorePresenter : ExploreContract.Presenter
 
@@ -98,6 +95,10 @@ class ExploreFragment: Fragment(), ExploreContract.View, OnSearchSubmitted{
 
     override fun onStop() {
         super.onStop()
+        explorePresenter.dispose()
+    }
+
+    override fun onSignOut() {
         explorePresenter.dispose()
     }
 }

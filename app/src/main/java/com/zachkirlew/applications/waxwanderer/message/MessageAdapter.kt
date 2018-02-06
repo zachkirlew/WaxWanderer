@@ -2,6 +2,7 @@ package com.zachkirlew.applications.waxwanderer.message
 
 import android.content.Intent
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,9 +14,12 @@ import com.squareup.picasso.Picasso
 import com.zachkirlew.applications.waxwanderer.R
 import com.zachkirlew.applications.waxwanderer.data.model.Message
 import com.zachkirlew.applications.waxwanderer.vinyl_detail.VinylDetailActivity
+import durdinapps.rxfirebase2.RxFirebaseRecyclerAdapter
 import java.util.*
 
-class MessageAdapter(private val messageList: ArrayList<Message>, private val mId: String, val messageFragment: MessageFragment) : RecyclerView.Adapter<MessageAdapter.ViewHolder>() {
+class MessageAdapter(private val messageList: ArrayList<Message>, private val mId: String, val messageFragment: MessageFragment) : RxFirebaseRecyclerAdapter<MessageAdapter.ViewHolder,Message>(Message::class.java) {
+
+    private val TAG = MessageAdapter::class.java.simpleName
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MessageAdapter.ViewHolder {
         val view: View = if (viewType == MESSAGE_SENT) {
@@ -29,14 +33,6 @@ class MessageAdapter(private val messageList: ArrayList<Message>, private val mI
         return ViewHolder(view)
     }
 
-    fun addMessage(message: Message){
-        messageList.add(message)
-    }
-
-    fun updateMessage(message: Message,itemPosition : Int){
-        messageList[itemPosition] = message
-        notifyItemChanged(itemPosition)
-    }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val message = messageList[position]
@@ -96,6 +92,8 @@ class MessageAdapter(private val messageList: ArrayList<Message>, private val mI
         }
     }
 
+
+
     override fun getItemCount(): Int {
         return messageList.size
     }
@@ -107,6 +105,24 @@ class MessageAdapter(private val messageList: ArrayList<Message>, private val mI
     fun getItemPosition(key : String) : Int {
         val message = messageList.filter { key == it.id }[0]
         return messageList.indexOf(message)
+    }
+
+    override fun itemAdded(message: Message, key: String, position: Int) {
+        Log.d(TAG, "Added a new item to the adapter.")
+        messageList.add(message)
+        notifyItemInserted(position)
+    }
+
+    override fun itemChanged(oldMessage: Message, newMessage: Message, key: String, position: Int) {
+        notifyItemChanged(position)
+    }
+
+    override fun itemRemoved(item: Message, key: String, position: Int) {
+        notifyItemRemoved(position)
+    }
+
+    override fun itemMoved(item: Message, key: String, oldPosition: Int, newPosition: Int) {
+        notifyItemMoved(oldPosition,newPosition)
     }
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {

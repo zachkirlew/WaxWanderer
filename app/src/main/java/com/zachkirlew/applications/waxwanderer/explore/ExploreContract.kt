@@ -18,7 +18,7 @@ interface ExploreContract {
 
     interface Presenter : BasePresenter {
 
-        fun loadVinylReleases(styles : List<String>)
+        fun loadVinylReleases()
 
         fun searchVinylReleases(searchText : String?)
 

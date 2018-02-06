@@ -110,6 +110,8 @@ class VinylDetailActivity : AppCompatActivity(), VinylDetailContract.View, View.
         }
     }
 
+
+
     override fun addRemovedResult(isRemoved: Boolean) {
         this.isRemovedFromFavourites = isRemoved
     }
@@ -181,6 +183,11 @@ class VinylDetailActivity : AppCompatActivity(), VinylDetailContract.View, View.
             }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        presenter.dispose()
     }
 
     class TrackListAdapter
