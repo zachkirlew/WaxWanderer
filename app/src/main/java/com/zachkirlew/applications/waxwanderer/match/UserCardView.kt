@@ -10,6 +10,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.mindorks.placeholderview.SwipePlaceHolderView
 import com.mindorks.placeholderview.annotations.Layout
+import com.mindorks.placeholderview.annotations.Position
 import com.mindorks.placeholderview.annotations.Resolve
 import com.mindorks.placeholderview.annotations.swipe.*
 import com.squareup.picasso.Picasso
@@ -23,7 +24,7 @@ import org.joda.time.Period
 import org.joda.time.PeriodType
 import java.util.*
 
-@Layout(R.layout.card_similar_user)
+@Layout(R.layout.card_user)
 class UserCardView(private val mContext: Context, private val userCard: UserCard, private val mSwipeView: SwipePlaceHolderView,private val callback : OnSwipeLeftListener)
 {
     @com.mindorks.placeholderview.annotations.View(R.id.profile_image_view)

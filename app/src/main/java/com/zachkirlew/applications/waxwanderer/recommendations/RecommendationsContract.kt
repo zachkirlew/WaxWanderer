@@ -22,7 +22,7 @@ interface RecommendationsContract {
 
         fun loadRecommendedUsers()
 
-        fun likeUser(userId : String,position : Int)
+        fun likeUser(likedUserId : String, position : Int)
 
         fun dispose()
     }

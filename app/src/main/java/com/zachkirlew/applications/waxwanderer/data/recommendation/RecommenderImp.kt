@@ -30,7 +30,6 @@ class RecommenderImp (context: Context) : Recommender{
                     .setTimestamp(date)
                     .setCascadeCreate(true))
 
-
             e.onSuccess(responseString)
         })
     }
@@ -46,6 +45,7 @@ class RecommenderImp (context: Context) : Recommender{
 
     override fun addRating(userId: String, itemId: String, rating: Double): Single<String> {
         return Single.create({ e ->
+
             val responseString = recombeeClient.send(AddRating(userId, itemId, rating))
 
             e.onSuccess(responseString)

@@ -90,7 +90,7 @@ class MatchFragment : Fragment(), MatchContract.View,OnSignOutListener, OnSwipeL
 
 
     override fun onSwipedLeft(user: User) {
-        matchPresenter.handleLike(user)
+        matchPresenter.likeUser(user)
     }
 
 

@@ -55,19 +55,38 @@ class MatchPresenter(private @NonNull var matchView: MatchContract.View,
         val usersRef = myRef.child("users")
         val matchesRef = myRef.child("matches").child(userId)
 
-        val query = getQuery(usersRef)
+        val userQuery = getQuery(usersRef)
 
         InternetConnectionUtil.isInternetOn()
                 .flatMap { isInternetOn -> if (isInternetOn) RxFirebaseDatabase.observeValueEvent(matchesRef).toObservable() else Observable.error(Exception("No internet connection"))}
                 .doOnNext { dataSnapshot -> matchedUserIds = dataSnapshot.children.map{it.key} }
-                .flatMap { RxFirebaseDatabase.observeValueEvent(query,{dataSnapshot -> dataSnapshot.children.map { it.getValue<User>(User::class.java)!!}}).toObservable() }
-                .map { list -> list.filter{dobToAge(it.dob) in lowerAgeLimit..upperAgeLimit} } //remove anyone not in user match age range
-                .map {list -> list.filter{!matchedUserIds!!.contains(it.id)}} // filter any already matched users
+                .flatMap { RxFirebaseDatabase.observeValueEvent(userQuery,{dataSnapshot -> dataSnapshot.children.map { it.getValue<User>(User::class.java)!!}}).toObservable() }
+                .map { list -> list.filter{dobToAge(it.dob) in lowerAgeLimit..upperAgeLimit} } //remove anyone not in current user's match age range preference
+                .map {list -> list.filter{!matchedUserIds!!.contains(it.id)}} // filter out any already matched users
                 .map { list -> list.filter {userId != it.id} } //remove current user from list
+                .flatMap {list-> Observable.fromIterable(list) }
+                .flatMap {user->  Observable.zip(
+                        Observable.just(user),
+                        RxFirebaseDatabase.observeValueEvent(myRef.child("favourites").child(user.id).limitToLast(4)).toObservable(),
+                        RxFirebaseDatabase.observeValueEvent(myRef.child("vinylPreferences").child(user.id)).toObservable()
+                                .doOnSubscribe { compositeDisposable.add(it) },
+                        zipFunction) }
                 .subscribe(observer)
     }
 
-    private val observer  = object : Observer<List<User>>{
+    private val zipFunction = Function3<User,DataSnapshot, DataSnapshot, UserCard> { user,favouritesSnapshot, vinylPrefSnapshot ->
+        var vinyls : List<VinylRelease>? = null
+
+        if (favouritesSnapshot.exists()) {
+            vinyls = favouritesSnapshot.children.map { it.getValue<VinylRelease>(VinylRelease::class.java)!! }
+        }
+
+        val styles = vinylPrefSnapshot.children.map { it.value as String }
+
+        UserCard(user,styles,vinyls)
+    }
+
+    private val observer  = object : Observer<UserCard>{
         override fun onSubscribe(d: Disposable) {
             compositeDisposable.add(d)
         }
@@ -80,9 +99,8 @@ class MatchPresenter(private @NonNull var matchView: MatchContract.View,
             Log.i(TAG,"Potential matches retrieved")
         }
 
-        override fun onNext(userList: List<User>) {
-            //matchView.showUsers(userList)
-            getUserData(userList)
+        override fun onNext(userCard: UserCard) {
+            matchView.addUserCard(userCard)
         }
     }
 
@@ -102,66 +120,55 @@ class MatchPresenter(private @NonNull var matchView: MatchContract.View,
         }
     }
 
-    private fun getUserData(userList: List<User>){
 
-        val myRef = database.reference
 
-        Observable.fromIterable(userList)
-        .flatMap { it -> Observable.zip(
-                        Observable.just(it),
-                        RxFirebaseDatabase.observeValueEvent(myRef.child("favourites").child(it.id).limitToLast(5)).toObservable(),
-                        RxFirebaseDatabase.observeValueEvent(myRef.child("vinylPreferences").child(it.id)).toObservable(),
-                        zipFunction) }
-                .subscribe{matchView.addUserCard(it)}
-
-    }
-
-    private val zipFunction = Function3<User,DataSnapshot, DataSnapshot, UserCard> { user,favouritesSnapshot, vinylPrefSnapshot ->
-        var vinyls : List<VinylRelease>? = null
-
-        if (favouritesSnapshot.exists()) {
-            vinyls = favouritesSnapshot.children.map { it.getValue<VinylRelease>(VinylRelease::class.java)!! }
-        }
-
-        val styles = vinylPrefSnapshot.children.map { it.value as String }
-
-        UserCard(user,styles,vinyls)
-    }
-
-    override fun handleLike(likedUser: User) {
-
-        val myRef = database.reference
+    override fun likeUser(likedUser: User) {
 
         val likeRef = database.reference.child("likes").child(likedUser.id).child(userId)
 
         RxFirebaseDatabase.observeSingleValueEvent(likeRef)
                 .doOnSubscribe{ compositeDisposable.add(it) }
-                .subscribe { dataSnapshot ->
-                    //liked user has current user in likes
-                    if (dataSnapshot.exists()) {
-                        //It's a match!
-                        likedUser.name?.let { matchView.showMatchDialog(it) }
-
-                        val chatKey = myRef.child("chat").push().key
-
-                        //add to both accounts and set chat id
-                        myRef.child("matches").child(userId)
-                                .child(likedUser.id).setValue(chatKey)
-
-                        myRef.child("matches").child(likedUser.id)
-                                .child(userId).setValue(chatKey)
-
-                        //remove old like from liked user's account
-                        myRef.child("likes").child(likedUser.id)
-                                .child(userId).setValue(null)
-                    }
-                    //user doesn't have current user in their likes
-                    else {
-                        myRef.child("likes").child(userId)
-                                .child(likedUser.id).setValue(true)
-                    }
-                }
+                .subscribe ({ handleLikeLogic(it,likedUser)})
     }
+
+    private fun handleLikeLogic(dataSnapshot : DataSnapshot,likedUser: User){
+        val myRef = database.reference
+
+        if (dataSnapshot.exists()) {
+            //It's a match!
+            likedUser.name?.let { matchView.showMatchDialog(it) }
+
+            recordMatch(myRef,likedUser.id)
+            removeOldLike(myRef,likedUser.id)
+        }
+        //user doesn't have current user in their likes
+        else {
+            recordLike(myRef,likedUser.id)
+        }
+    }
+
+    private fun recordMatch(myRef: DatabaseReference, likedUserId: String?){
+
+        val chatKey = myRef.child("chat").push().key
+
+        //add to both accounts and set chat id
+        myRef.child("matches").child(userId)
+                .child(likedUserId).setValue(chatKey)
+
+        myRef.child("matches").child(likedUserId)
+                .child(userId).setValue(chatKey)
+    }
+
+    private fun removeOldLike(myRef: DatabaseReference, likedUserId: String?) {
+        myRef.child("likes").child(likedUserId)
+                .child(userId).setValue(null)
+    }
+
+    private fun recordLike(myRef: DatabaseReference, likedUserId: String?) {
+        myRef.child("likes").child(userId)
+                .child(likedUserId).setValue(true)
+    }
+
 
     override fun dispose() {
         compositeDisposable.dispose()

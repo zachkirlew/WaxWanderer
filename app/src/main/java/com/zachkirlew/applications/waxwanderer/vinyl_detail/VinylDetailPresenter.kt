@@ -4,10 +4,7 @@ package com.zachkirlew.applications.waxwanderer.vinyl_detail
 import android.support.annotation.NonNull
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.*
 import com.zachkirlew.applications.waxwanderer.data.VinylRepository
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.detail.DetailVinylRelease
@@ -27,39 +24,28 @@ class VinylDetailPresenter(private @NonNull var vinylRepository: VinylRepository
 
     private val TAG = VinylDetailActivity::class.java.simpleName
 
-    private val mFirebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
+    private val user = FirebaseAuth.getInstance().currentUser
     private val database = FirebaseDatabase.getInstance()
 
     private val compositeDisposable : CompositeDisposable? = null
 
     override fun checkInFavourites(releaseId: String) {
-        val user = mFirebaseAuth.currentUser
 
         val myRef = database.reference.child("favourites").child(user?.uid).child(releaseId)
 
-        RxFirebaseDatabase.observeValueEvent(myRef)
-                .toObservable()
-                .subscribe(object : Observer<DataSnapshot>{
-                    override fun onSubscribe(d: Disposable) {
-                        compositeDisposable?.add(d)
-                    }
+        RxFirebaseDatabase.observeValueEvent(myRef).toObservable()
+                .doOnSubscribe { compositeDisposable?.add(it) }
+                .subscribe({ setButtonColor(it) },
+                            { error -> vinylDetailView.showMessage(error.message) })
+    }
 
-                    override fun onComplete() {
-                    }
+    private fun setButtonColor(dataSnapshot: DataSnapshot){
 
-                    override fun onNext(dataSnapshot: DataSnapshot) {
-
-                        if (dataSnapshot.exists()) {
-                            vinylDetailView.editButtonColor(true)
-                        } else {
-                            vinylDetailView.editButtonColor(false)
-                        }
-
-                    }
-                    override fun onError(e: Throwable) {
-                        vinylDetailView.showMessage(e.message)
-                    }
-                })
+        if (dataSnapshot.exists()) {
+            vinylDetailView.editButtonColor(true)
+        } else {
+            vinylDetailView.editButtonColor(false)
+        }
     }
 
     override fun loadVinylRelease(releaseId: String) {
@@ -94,44 +80,40 @@ class VinylDetailPresenter(private @NonNull var vinylRepository: VinylRepository
 
     override fun addToFavourites(vinylRelease: VinylRelease) {
 
-        val user = mFirebaseAuth.currentUser
+        val favouriteRef = database.reference.child("favourites").child(user?.uid).child(vinylRelease.id.toString())
 
-        val myRef = database.reference.child("favourites").child(user?.uid).child(vinylRelease.id.toString())
-
-        myRef.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-
-                //if user has already favourited track then remove
-                if (dataSnapshot.exists()) {
-
-                    myRef.setValue(null)
-
-                    vinylDetailView.showMessage("Removed from favourites")
-                    removeFavouriteFromRecommender(user?.uid!!,vinylRelease.id.toString())
-                    vinylDetailView.addRemovedResult(true)
-                } else {
-                    myRef.setValue(vinylRelease)
-
-                    vinylDetailView.showMessage("Successfully added to favourites")
-                    addFavouriteToRecommender(user?.uid!!,vinylRelease.id.toString())
-                    vinylDetailView.addRemovedResult(false)
-                }
-            }
-
-            override fun onCancelled(databaseError: DatabaseError) {
-                Log.e(TAG, "onCancelled", databaseError.toException())
-            }
-        })
+        RxFirebaseDatabase.observeSingleValueEvent(favouriteRef).toObservable()
+                .doOnSubscribe { compositeDisposable?.add(it) }
+                .subscribe({ handleFavouriteLogic(it,favouriteRef,vinylRelease) },
+                            {error-> vinylDetailView.showMessage(error.message)})
     }
 
+    private fun handleFavouriteLogic(dataSnapshot: DataSnapshot,favouriteRef : DatabaseReference,vinylRelease: VinylRelease){
 
+        if (dataSnapshot.exists()) {
+
+            favouriteRef.setValue(null)
+
+            vinylDetailView.showMessage("Removed from favourites")
+            removeFavouriteFromRecommender(user?.uid!!,vinylRelease.id.toString())
+
+            vinylDetailView.addRemovedResult(true)
+
+        } else {
+
+            favouriteRef.setValue(vinylRelease)
+
+            vinylDetailView.showMessage("Successfully added to favourites")
+            addFavouriteToRecommender(user?.uid!!,vinylRelease.id.toString())
+            vinylDetailView.addRemovedResult(false)
+        }
+    }
 
     override fun addFavouriteToRecommender(userId : String, itemId : String) {
         recommender.addFavourite(userId,itemId)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(recommenderObserver)
-
     }
 
     override fun removeFavouriteFromRecommender(userId : String, itemId : String) {
@@ -141,7 +123,7 @@ class VinylDetailPresenter(private @NonNull var vinylRepository: VinylRepository
                 .subscribe(recommenderObserver)
     }
 
-    object recommenderObserver : SingleObserver<String>{
+    private val  recommenderObserver = object : SingleObserver<String>{
         override fun onSuccess(responseString: String) {
             Log.i("VinylDetailPres",responseString)
         }
@@ -150,6 +132,7 @@ class VinylDetailPresenter(private @NonNull var vinylRepository: VinylRepository
         }
 
         override fun onSubscribe(d: Disposable) {
+            compositeDisposable?.add(d)
         }
     }
 

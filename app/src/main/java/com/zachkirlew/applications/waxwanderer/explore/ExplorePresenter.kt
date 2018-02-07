@@ -15,6 +15,7 @@ import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import org.intellij.lang.annotations.Flow
@@ -26,7 +27,7 @@ class ExplorePresenter(private @NonNull var vinylRepository: VinylRepository, pr
 
     private val TAG = ExplorePresenter::class.java.simpleName
 
-    private var disposable : Disposable? = null
+    private var compositeDisposable : CompositeDisposable = CompositeDisposable()
 
     init {
         exploreView.setPresenter(this)
@@ -46,6 +47,7 @@ class ExplorePresenter(private @NonNull var vinylRepository: VinylRepository, pr
 
         InternetConnectionUtil.isInternetOn()
                 .flatMap { isInternetOn -> if (isInternetOn) RxFirebaseDatabase.observeValueEvent(vinylRef,{it.children.map { it.value as String }}).toObservable()   else Observable.error(Exception("No internet connection")) }
+                .doOnSubscribe { compositeDisposable.add(it) }
                 .subscribe {  loadVinylReleases(it)}
     }
 
@@ -70,7 +72,7 @@ class ExplorePresenter(private @NonNull var vinylRepository: VinylRepository, pr
 
     private val observer = object : Observer<DiscogsResponse>{
         override fun onSubscribe(d: Disposable) {
-            disposable = d
+            compositeDisposable.add(d)
         }
 
         override fun onNext(response: DiscogsResponse) {
@@ -93,6 +95,6 @@ class ExplorePresenter(private @NonNull var vinylRepository: VinylRepository, pr
     }
 
     override fun dispose() {
-        disposable?.dispose()
+        compositeDisposable.dispose()
     }
 }

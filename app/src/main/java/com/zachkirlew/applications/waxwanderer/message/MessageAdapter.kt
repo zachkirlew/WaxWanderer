@@ -92,8 +92,6 @@ class MessageAdapter(private val messageList: ArrayList<Message>, private val mI
         }
     }
 
-
-
     override fun getItemCount(): Int {
         return messageList.size
     }
@@ -102,22 +100,18 @@ class MessageAdapter(private val messageList: ArrayList<Message>, private val mI
         return if (messageList[position].author == mId) MESSAGE_SENT else MESSAGE_RECEIVED
     }
 
-    fun getItemPosition(key : String) : Int {
-        val message = messageList.filter { key == it.id }[0]
-        return messageList.indexOf(message)
-    }
-
     override fun itemAdded(message: Message, key: String, position: Int) {
-        Log.d(TAG, "Added a new item to the adapter.")
         messageList.add(message)
         notifyItemInserted(position)
     }
 
     override fun itemChanged(oldMessage: Message, newMessage: Message, key: String, position: Int) {
+        messageList[position] = newMessage
         notifyItemChanged(position)
     }
 
     override fun itemRemoved(item: Message, key: String, position: Int) {
+        messageList.removeAt(position)
         notifyItemRemoved(position)
     }
 

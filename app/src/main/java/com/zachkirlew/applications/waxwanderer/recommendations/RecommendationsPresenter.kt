@@ -2,14 +2,11 @@ package com.zachkirlew.applications.waxwanderer.recommendations
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
 import com.zachkirlew.applications.waxwanderer.data.model.User
 import com.zachkirlew.applications.waxwanderer.data.recommendation.RecommenderImp
 import durdinapps.rxfirebase2.RxFirebaseDatabase
-import io.reactivex.Flowable
-import io.reactivex.FlowableSubscriber
 import io.reactivex.Observable
 import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -23,9 +20,11 @@ class RecommendationsPresenter(private @NonNull var recommendationsView: Recomme
                                private @NonNull val recommender: RecommenderImp) : RecommendationsContract.Presenter {
 
     private val database: FirebaseDatabase = FirebaseDatabase.getInstance()
-    private val mFirebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
+    private val userId = FirebaseAuth.getInstance().uid
 
     private val compositeDisposable = CompositeDisposable()
+
+    private val RECOMMENDATION_COUNT : Long = 10
 
     override fun start() {
         loadRecommendedUsers()
@@ -33,11 +32,9 @@ class RecommendationsPresenter(private @NonNull var recommendationsView: Recomme
 
     override fun loadRecommendedUsers() {
 
-        val currentUserId = mFirebaseAuth.currentUser?.uid
-
         val userRef = database.reference.child("users")
 
-        recommender.recommendUserToUser(currentUserId!!, 5)
+        recommender.recommendUserToUser(userId!!, RECOMMENDATION_COUNT)
                 .flatMap { userIds ->
                     Observable.fromIterable(userIds).flatMap { RxFirebaseDatabase.observeValueEvent(userRef.child(it),
                             { dataSnapshot -> dataSnapshot.getValue<User>(User::class.java)!! }).toObservable() } }
@@ -63,44 +60,52 @@ class RecommendationsPresenter(private @NonNull var recommendationsView: Recomme
         }
     }
 
-    private  fun checkIdList(userIds: List<String>){
-        if (userIds.isEmpty()) {
-            recommendationsView.showNoRecommendationsView()
-        }
-    }
+    override fun likeUser(likedUserId: String, position: Int) {
 
-    override fun likeUser(userId: String, position: Int) {
-        val myRef = database.reference
-
-        val currentUserId = mFirebaseAuth.currentUser?.uid
-        val likeRef = myRef.child("likes").child(userId).child(currentUserId)
+        val likeRef = database.reference.child("likes").child(likedUserId).child(userId)
 
         RxFirebaseDatabase.observeSingleValueEvent(likeRef)
-                .doOnSubscribe{compositeDisposable.add(it)}
-                .subscribe { dataSnapshot ->
-                    //liked user has current user in likes
-                    if (dataSnapshot.exists()) {
-
-                        val chatKey = myRef.child("chat").push().key
-
-                        //add to both accounts and set chat id
-                        myRef.child("matches").child(currentUserId)
-                                .child(userId).setValue(chatKey)
-
-                        myRef.child("matches").child(userId)
-                                .child(currentUserId).setValue(chatKey)
-
-                        //remove old like from liked user's account
-                        likeRef.setValue(null)
-                    }
-                    //user doesn't have current user in their likes
-                    else {
-                        myRef.child("likes").child(currentUserId)
-                                .child(userId).setValue(true)
-                    }
-                    recommendationsView.removeUser(position)
-                }
+                .doOnSubscribe{ compositeDisposable.add(it) }
+                .subscribe ({ handleLikeLogic(it,likedUserId,position)})
     }
+
+    private fun handleLikeLogic(dataSnapshot : DataSnapshot,likedUser: String,position: Int){
+        val myRef = database.reference
+
+        if (dataSnapshot.exists()) {
+            //It's a match!
+            recordMatch(myRef,likedUser)
+            removeOldLike(myRef,likedUser)
+        }
+        //user doesn't have current user in their likes
+        else {
+            recordLike(myRef,likedUser)
+        }
+        recommendationsView.removeUser(position)
+    }
+
+    private fun recordMatch(myRef: DatabaseReference, likedUserId: String?){
+
+        val chatKey = myRef.child("chat").push().key
+
+        //add to both accounts and set chat id
+        myRef.child("matches").child(userId)
+                .child(likedUserId).setValue(chatKey)
+
+        myRef.child("matches").child(likedUserId)
+                .child(userId).setValue(chatKey)
+    }
+
+    private fun removeOldLike(myRef: DatabaseReference, likedUserId: String?) {
+        myRef.child("likes").child(likedUserId)
+                .child(userId).setValue(null)
+    }
+
+    private fun recordLike(myRef: DatabaseReference, likedUserId: String?) {
+        myRef.child("likes").child(userId)
+                .child(likedUserId).setValue(true)
+    }
+
 
     override fun dispose() {
         compositeDisposable.dispose()

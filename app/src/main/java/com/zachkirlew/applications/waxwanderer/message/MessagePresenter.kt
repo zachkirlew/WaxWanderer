@@ -21,6 +21,8 @@ import io.reactivex.schedulers.Schedulers
 class MessagePresenter(private @NonNull var messageView: MessageContract.View,
                        private @NonNull val recommender: RecommenderImp) : MessageContract.Presenter {
 
+    private val TAG = MessagePresenter::class.java.simpleName
+
     private val database : FirebaseDatabase = FirebaseDatabase.getInstance()
     private val mFirebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
 
@@ -115,7 +117,8 @@ class MessagePresenter(private @NonNull var messageView: MessageContract.View,
         recommender.addRating(uid, vinylId.toString(),scaledRating)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe{it ->Log.i("MessagePresenter",it)}
+                .subscribe({it ->Log.i("MessagePresenter",it)},
+                            {error -> Log.e(TAG,error.message)})
     }
 
     private fun awardPointsToUser(points : Int) {

@@ -20,8 +20,7 @@ class UserDetailPresenter(private @NonNull var userDetailView: UserDetailContrac
 
         val ref = myRef.child("favourites").child(userId).limitToLast(5)
 
-        RxFirebaseDatabase.observeValueEvent(ref)
-                .toObservable()
+        RxFirebaseDatabase.observeValueEvent(ref).toObservable()
                 .doOnSubscribe { compositeDisposable.add(it) }
                 .subscribe{dataSnapshot->
                     if(dataSnapshot.exists()){
@@ -39,8 +38,7 @@ class UserDetailPresenter(private @NonNull var userDetailView: UserDetailContrac
 
         val ref = myRef.child("vinylPreferences").child(userId)
 
-        RxFirebaseDatabase.observeValueEvent(ref)
-                .toObservable()
+        RxFirebaseDatabase.observeValueEvent(ref).toObservable()
                 .doOnSubscribe { compositeDisposable.add(it) }
                 .subscribe{dataSnapshot->
                     val preferredStyles = dataSnapshot.children.map { it.value as String }
