@@ -3,25 +3,20 @@ package com.zachkirlew.applications.waxwanderer.explore
 import android.support.annotation.NonNull
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
-import com.zachkirlew.applications.waxwanderer.data.VinylRepository
+import com.zachkirlew.applications.waxwanderer.data.VinylDataSource
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.DiscogsResponse
 import com.zachkirlew.applications.waxwanderer.util.InternetConnectionUtil
 import durdinapps.rxfirebase2.RxFirebaseDatabase
-import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import org.intellij.lang.annotations.Flow
 import java.lang.Exception
 
-class ExplorePresenter(private @NonNull var vinylRepository: VinylRepository, private @NonNull var exploreView: ExploreContract.View) : ExploreContract.Presenter {
+class ExplorePresenter(private @NonNull var vinylDataSource: VinylDataSource, private @NonNull var exploreView: ExploreContract.View) : ExploreContract.Presenter {
     private val mFirebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private val database = FirebaseDatabase.getInstance()
 
@@ -34,10 +29,10 @@ class ExplorePresenter(private @NonNull var vinylRepository: VinylRepository, pr
     }
 
     override fun start() {
-        loadStyles()
+        loadVinylPreferences()
     }
 
-    private fun loadStyles(){
+    private fun loadVinylPreferences(){
 
         val myRef = database.reference
 
@@ -54,7 +49,7 @@ class ExplorePresenter(private @NonNull var vinylRepository: VinylRepository, pr
     override fun loadVinylReleases(styles : List<String>) {
 
         Observable.fromIterable(styles)
-                .flatMap { style -> vinylRepository.getVinyls(style)}
+                .flatMap { style -> vinylDataSource.getVinyls(style)}
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(observer)
@@ -63,7 +58,7 @@ class ExplorePresenter(private @NonNull var vinylRepository: VinylRepository, pr
     override fun searchVinylReleases(searchText: String?) {
 
         if (!searchText.isNullOrEmpty()) {
-            vinylRepository.searchVinyl(searchText!!)
+            vinylDataSource.searchVinyl(searchText!!)
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(observer)
@@ -76,8 +71,6 @@ class ExplorePresenter(private @NonNull var vinylRepository: VinylRepository, pr
         }
 
         override fun onNext(response: DiscogsResponse) {
-
-            println("on next")
             if (response.results?.isEmpty()!!)
                 exploreView.showNoVinylsView()
             else

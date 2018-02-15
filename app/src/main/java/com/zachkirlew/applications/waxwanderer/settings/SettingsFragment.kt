@@ -2,7 +2,6 @@ package com.zachkirlew.applications.waxwanderer.settings
 
 import android.app.Activity.RESULT_OK
 import android.app.DatePickerDialog
-import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -13,7 +12,7 @@ import com.squareup.picasso.Picasso
 import com.zachkirlew.applications.waxwanderer.R
 import com.zachkirlew.applications.waxwanderer.data.local.UserPreferences
 import com.zachkirlew.applications.waxwanderer.data.model.User
-import com.zachkirlew.applications.waxwanderer.styles.StylesActivity
+import com.zachkirlew.applications.waxwanderer.vinyl_preferences.VinylPreferencesActivity
 import com.zachkirlew.applications.waxwanderer.util.BorderedCircleTransform
 import java.text.DateFormat
 import java.util.*
@@ -48,17 +47,16 @@ class SettingsFragment : Fragment(), SettingsContract.View, DatePickerDialog.OnD
         favouritePresenter.start()
     }
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
-        activity.title = "Settings"
+        activity?.title = "Settings"
 
-        val root = inflater?.inflate(R.layout.fragment_settings, container, false)
+        val root = inflater.inflate(R.layout.fragment_settings, container, false)
 
         userGenderSpinner = root?.findViewById<Spinner>(R.id.user_gender_spinner) as Spinner
 
         val userGendersAdapter = ArrayAdapter<String>(activity,
-                android.R.layout.simple_spinner_item, activity.resources.getStringArray(R.array.spinner_user_genders))
+                android.R.layout.simple_spinner_item, activity?.resources?.getStringArray(R.array.spinner_user_genders))
 
         userGendersAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
 
@@ -66,7 +64,7 @@ class SettingsFragment : Fragment(), SettingsContract.View, DatePickerDialog.OnD
 
         matchGenderSpinner = root.findViewById<Spinner>(R.id.match_gender_spinner) as Spinner
         val matchGenderAdapter = ArrayAdapter<String>(activity,
-                android.R.layout.simple_spinner_item, activity.resources.getStringArray(R.array.spinner_matching_genders))
+                android.R.layout.simple_spinner_item, activity?.resources?.getStringArray(R.array.spinner_matching_genders))
 
         matchGenderAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         matchGenderSpinner.adapter = matchGenderAdapter
@@ -146,7 +144,7 @@ class SettingsFragment : Fragment(), SettingsContract.View, DatePickerDialog.OnD
         //DISPLAY DIALOG TO CHOOSE CAMERA OR GALLERY
 
         val items = arrayOf<CharSequence>("Choose from Library", "Cancel")
-        val builder = AlertDialog.Builder(activity)
+        val builder = AlertDialog.Builder(activity!!)
         builder.setTitle("Add Photo!")
 
         builder.setItems(items, { dialog, item ->
@@ -165,7 +163,7 @@ class SettingsFragment : Fragment(), SettingsContract.View, DatePickerDialog.OnD
     }
 
     override fun startStylesActivity() {
-        val intent = Intent(activity, StylesActivity::class.java)
+        val intent = Intent(activity, VinylPreferencesActivity::class.java)
         intent.putExtra("fromSettings",true)
         startActivity(intent)
     }
@@ -221,12 +219,12 @@ class SettingsFragment : Fragment(), SettingsContract.View, DatePickerDialog.OnD
 
         dobText.setText(dateFormatted)
 
-        val userGenders = activity.resources.getStringArray(R.array.spinner_user_genders)
+        val userGenders = activity?.resources?.getStringArray(R.array.spinner_user_genders)
 
-        userGenders.forEachIndexed { index, gender ->  if(gender == user.gender) userGenderSpinner.setSelection(index)}
+        userGenders?.forEachIndexed { index, gender ->  if(gender == user.gender) userGenderSpinner.setSelection(index)}
 
-        val matchGenders = activity.resources.getStringArray(R.array.spinner_matching_genders)
-        matchGenders.forEachIndexed { index, gender ->
+        val matchGenders = activity?.resources?.getStringArray(R.array.spinner_matching_genders)
+        matchGenders?.forEachIndexed { index, gender ->
 
             println(gender)
             if(gender == matchGender) matchGenderSpinner.setSelection(index)
@@ -308,6 +306,11 @@ class SettingsFragment : Fragment(), SettingsContract.View, DatePickerDialog.OnD
 //        }
         }
 
+    }
+
+    override fun onStop() {
+        super.onStop()
+        favouritePresenter.dispose()
     }
 
 

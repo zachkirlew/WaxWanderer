@@ -1,5 +1,6 @@
 package com.zachkirlew.applications.waxwanderer.settings
 
+import android.annotation.SuppressLint
 import android.net.Uri
 import android.support.annotation.NonNull
 import com.google.android.gms.tasks.OnFailureListener
@@ -11,14 +12,18 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.storage.FirebaseStorage
 import com.zachkirlew.applications.waxwanderer.data.local.UserPreferences
 import com.zachkirlew.applications.waxwanderer.data.model.User
+import durdinapps.rxfirebase2.RxFirebaseDatabase
+import io.reactivex.disposables.Disposable
 import java.text.DateFormat
 import java.util.*
 
 
-class SettingsPresenter(private @NonNull var settingsView: SettingsContract.View, private @NonNull val preferences: UserPreferences) : SettingsContract.Presenter {
+class SettingsPresenter(@NonNull private var settingsView: SettingsContract.View, @NonNull private val preferences: UserPreferences) : SettingsContract.Presenter {
 
     private val mFirebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private val database = FirebaseDatabase.getInstance()
+
+    private var disposable : Disposable? = null
 
     private var dob: Date? = null
 
@@ -38,19 +43,11 @@ class SettingsPresenter(private @NonNull var settingsView: SettingsContract.View
 
         val ref = myRef.child("users").child(user?.uid)
 
-        ref.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-
-                val userInfo = dataSnapshot.getValue(User::class.java)
-
-                dob = userInfo?.dob
-
-                settingsView.showUserDetails(userInfo!!, preferences.minMatchAge, preferences.maxMatchAge, preferences.matchGender)
-            }
-
-            override fun onCancelled(databaseError: DatabaseError) {
-            }
-        })
+        RxFirebaseDatabase.observeSingleValueEvent(ref,{it.getValue(User::class.java)!!})
+                .doOnSubscribe { disposable = it}
+                .doOnSuccess { dob = it.dob }
+                .subscribe({settingsView.showUserDetails(it, preferences.minMatchAge, preferences.maxMatchAge, preferences.matchGender)},
+                        {error ->settingsView.showMessage(error.message) })
     }
 
     override fun submitDetails(name: String, userGender: String, matchGender: String, minMatchAge: Int, maxMatchAge: Int) {
@@ -104,5 +101,9 @@ class SettingsPresenter(private @NonNull var settingsView: SettingsContract.View
                         settingsView.showMessage("Profile picture changed")
                     }).addOnFailureListener({ exception -> settingsView.showMessage(exception.message)})
         }
+    }
+
+    override fun dispose() {
+        disposable?.dispose()
     }
 }

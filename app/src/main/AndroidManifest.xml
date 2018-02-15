@@ -48,7 +48,7 @@
             android:screenOrientation="portrait">
         </activity>
 
-        <activity android:name=".styles.StylesActivity"
+        <activity android:name=".vinyl_preferences.VinylPreferencesActivity"
             android:screenOrientation="portrait">
         </activity>
 

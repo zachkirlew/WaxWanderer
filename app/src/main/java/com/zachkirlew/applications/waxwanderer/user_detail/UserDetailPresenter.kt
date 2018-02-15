@@ -7,7 +7,7 @@ import durdinapps.rxfirebase2.RxFirebaseDatabase
 import io.reactivex.disposables.CompositeDisposable
 
 
-class UserDetailPresenter(private @NonNull var userDetailView: UserDetailContract.View) : UserDetailContract.Presenter  {
+class UserDetailPresenter(@NonNull private var userDetailView: UserDetailContract.View) : UserDetailContract.Presenter  {
 
     private val database = FirebaseDatabase.getInstance()
 

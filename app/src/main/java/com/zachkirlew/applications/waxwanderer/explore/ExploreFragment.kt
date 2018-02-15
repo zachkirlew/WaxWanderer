@@ -11,7 +11,7 @@ import android.widget.TextView
 import android.widget.Toast
 import com.zachkirlew.applications.waxwanderer.R
 import com.zachkirlew.applications.waxwanderer.base.OnSignOutListener
-import com.zachkirlew.applications.waxwanderer.data.VinylRepository
+import com.zachkirlew.applications.waxwanderer.data.VinylDataSource
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
 import com.zachkirlew.applications.waxwanderer.data.remote.VinylsRemoteSource
 import com.zachkirlew.applications.waxwanderer.util.EqualSpaceItemDecoration
@@ -32,13 +32,14 @@ class ExploreFragment: Fragment(), ExploreContract.View, OnSearchSubmitted,OnSig
         exploreAdapter = ExploreAdapter(ArrayList<VinylRelease>(0))
     }
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
-        val root = inflater?.inflate(R.layout.fragment_explore, container, false)
 
-        activity.title = "Explore"
 
-        explorePresenter = ExplorePresenter(VinylRepository.getInstance(VinylsRemoteSource.instance),this)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val root = inflater.inflate(R.layout.fragment_explore, container, false)
+
+        activity?.title = "Explore"
+
+        explorePresenter = ExplorePresenter(VinylsRemoteSource.instance,this)
 
         val exploreList = root?.findViewById<RecyclerView>(R.id.explore_list) as RecyclerView
 

@@ -14,6 +14,7 @@ import kotlinx.android.synthetic.main.explore_item.view.*
 class FavouriteAdapter(private var vinyls: ArrayList<VinylRelease>, private val fragment : FavouriteFragment) : RecyclerView.Adapter<FavouriteAdapter.ViewHolder>() {
 
     fun addVinyls(vinyls : List<VinylRelease>){
+        this.vinyls.clear()
         this.vinyls.addAll(vinyls)
         notifyDataSetChanged()
     }

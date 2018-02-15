@@ -18,10 +18,10 @@ interface ExploreContract {
 
     interface Presenter : BasePresenter {
 
-
         fun searchVinylReleases(searchText : String?)
 
-        fun dispose()
         fun loadVinylReleases(styles: List<String>)
+
+        fun dispose()
     }
 }

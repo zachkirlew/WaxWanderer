@@ -1,16 +1,17 @@
 package com.zachkirlew.applications.waxwanderer.vinyl_detail
 
 
+import android.os.Parcel
+import android.os.Parcelable
 import android.support.annotation.NonNull
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
-import com.zachkirlew.applications.waxwanderer.data.VinylRepository
+import com.zachkirlew.applications.waxwanderer.data.VinylDataSource
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.detail.DetailVinylRelease
 import com.zachkirlew.applications.waxwanderer.data.recommendation.RecommenderImp
 import durdinapps.rxfirebase2.RxFirebaseDatabase
-import io.reactivex.Observer
 import io.reactivex.SingleObserver
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -18,11 +19,9 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 
 
-class VinylDetailPresenter(private @NonNull var vinylRepository: VinylRepository,
-                           private @NonNull var vinylDetailView: VinylDetailContract.View,
-                           private @NonNull var recommender: RecommenderImp) : VinylDetailContract.Presenter {
-
-    private val TAG = VinylDetailActivity::class.java.simpleName
+class VinylDetailPresenter(@NonNull private val vinylDataSource: VinylDataSource,
+                           @NonNull private val vinylDetailView: VinylDetailContract.View,
+                           private @NonNull val recommender: RecommenderImp) : VinylDetailContract.Presenter, Parcelable {
 
     private val user = FirebaseAuth.getInstance().currentUser
     private val database = FirebaseDatabase.getInstance()
@@ -50,7 +49,7 @@ class VinylDetailPresenter(private @NonNull var vinylRepository: VinylRepository
 
     override fun loadVinylRelease(releaseId: String) {
 
-        vinylRepository.getVinyl(releaseId)
+        vinylDataSource.getVinyl(releaseId)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(object : SingleObserver<DetailVinylRelease> {
@@ -136,7 +135,31 @@ class VinylDetailPresenter(private @NonNull var vinylRepository: VinylRepository
         }
     }
 
+    constructor(parcel: Parcel) : this(
+            TODO("vinylDataSource"),
+            TODO("vinylDetailView"),
+            TODO("recommender")) {
+    }
+
     override fun dispose() {
         compositeDisposable?.dispose()
+    }
+
+    override fun writeToParcel(parcel: Parcel, flags: Int) {
+
+    }
+
+    override fun describeContents(): Int {
+        return 0
+    }
+
+    companion object CREATOR : Parcelable.Creator<VinylDetailPresenter> {
+        override fun createFromParcel(parcel: Parcel): VinylDetailPresenter {
+            return VinylDetailPresenter(parcel)
+        }
+
+        override fun newArray(size: Int): Array<VinylDetailPresenter?> {
+            return arrayOfNulls(size)
+        }
     }
 }

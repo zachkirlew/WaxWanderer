@@ -29,12 +29,11 @@ class MatchFragment : Fragment(), MatchContract.View,OnSignOutListener, OnSwipeL
 
     private lateinit var mContext: Context
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
-        activity.title = "Match"
+        activity?.title = "Match"
 
-        val root = inflater?.inflate(R.layout.fragment_match, container, false)
+        val root = inflater.inflate(R.layout.fragment_match, container, false)
 
         mSwipeView = root?.findViewById<SwipePlaceHolderView>(R.id.swipeView) as SwipePlaceHolderView
 
@@ -72,7 +71,7 @@ class MatchFragment : Fragment(), MatchContract.View,OnSignOutListener, OnSwipeL
     }
 
     override fun showMatchDialog(likedUserName: String) {
-        val builder = AlertDialog.Builder(activity)
+        val builder = AlertDialog.Builder(activity!!)
         builder.setMessage("You matched with $likedUserName")
                 .setPositiveButton("Okay", { dialog, id ->
                     dialog.dismiss()

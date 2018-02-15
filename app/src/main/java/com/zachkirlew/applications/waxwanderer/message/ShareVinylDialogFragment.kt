@@ -28,17 +28,17 @@ class ShareVinylDialogFragment() : DialogFragment() {
 
     @Override
     override  fun  onCreateDialog(savedInstanceState : Bundle?) : Dialog {
-        val dialog = AlertDialog.Builder(activity)
+        val dialog = AlertDialog.Builder(activity!!)
                 .setTitle("Choose a vinyl")
                 .setNegativeButton("Cancel",{dialogInterface: DialogInterface?, i: Int ->
                     dialogInterface?.dismiss()
                 })
 
-        val list = arguments.getSerializable("favouriteList") as List<VinylRelease>
+        val list = arguments?.getSerializable("favouriteList") as List<VinylRelease>
 
-        val  rootView = activity.layoutInflater.inflate(R.layout.fragment_favourites, null)
+        val  rootView = activity?.layoutInflater?.inflate(R.layout.fragment_favourites, null)
 
-        mRecyclerView = rootView?.findViewById<RecyclerView>(R.id.explore_list) as RecyclerView
+        mRecyclerView = rootView?.findViewById(R.id.explore_list) as RecyclerView
         mRecyclerView?.layoutManager = LinearLayoutManager(context)
 
 
@@ -58,7 +58,7 @@ class ShareVinylDialogFragment() : DialogFragment() {
     class FavouriteAdapter(private var vinyls: List<VinylRelease>,private val mCallback : OnShareClickedListener?) : RecyclerView.Adapter<FavouriteAdapter.ViewHolder>() {
 
         interface OnShareClickedListener {
-            fun ShareClicked(sharedVinyl: VinylRelease)
+            fun onShared(sharedVinyl: VinylRelease)
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FavouriteAdapter.ViewHolder {
@@ -70,7 +70,7 @@ class ShareVinylDialogFragment() : DialogFragment() {
             holder.bindItems(vinyls[position])
 
             holder.itemView.setOnClickListener {
-                mCallback?.ShareClicked(vinyls[position])
+                mCallback?.onShared(vinyls[position])
             }
         }
 

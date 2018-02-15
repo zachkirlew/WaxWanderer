@@ -1,5 +1,6 @@
 package com.zachkirlew.applications.waxwanderer.message
 
+import android.annotation.SuppressLint
 import android.support.annotation.NonNull
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
@@ -31,6 +32,7 @@ class MessagePresenter(private @NonNull var messageView: MessageContract.View,
     private lateinit var chatId : String
 
     private lateinit var recipientUid : String
+    
 
     override fun loadMessages(matchedUserId: String) {
 
@@ -121,6 +123,7 @@ class MessagePresenter(private @NonNull var messageView: MessageContract.View,
                             {error -> Log.e(TAG,error.message)})
     }
 
+    @SuppressLint("CheckResult")
     private fun awardPointsToUser(points : Int) {
         val userRef = database.reference.child("users").child(recipientUid)
 

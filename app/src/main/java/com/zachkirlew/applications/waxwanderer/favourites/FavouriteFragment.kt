@@ -34,16 +34,15 @@ class FavouriteFragment: Fragment(), FavouriteContract.View,OnSignOutListener {
         super.onCreate(savedInstanceState)
         favouriteAdapter = FavouriteAdapter(ArrayList<VinylRelease>(),this)
 
-        user = activity.intent.getSerializableExtra("selected user") as User?
+        user = activity?.intent?.getSerializableExtra("selected user") as User?
     }
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
         //reuse explore frgment layout as similar
-        val root = inflater?.inflate(R.layout.fragment_favourites, container, false)
+        val root = inflater.inflate(R.layout.fragment_favourites, container, false)
 
-        activity.title = "Favourites"
+        activity?.title = "Favourites"
 
         favouritePresenter = FavouritePresenter(this)
 
@@ -59,6 +58,12 @@ class FavouriteFragment: Fragment(), FavouriteContract.View,OnSignOutListener {
 
         noFavouritesText = root.findViewById<TextView>(R.id.text_no_favourites)
 
+        return root
+    }
+
+    override fun onResume() {
+        super.onResume()
+
         //user is viewing someone else's favourite list
         if(user!=null){
             val userId = user?.id
@@ -68,13 +73,11 @@ class FavouriteFragment: Fragment(), FavouriteContract.View,OnSignOutListener {
         else{
             favouritePresenter.loadFavouriteVinyls()
         }
-
-        return root
     }
 
-    override fun onResume() {
-        super.onResume()
-        if (favouriteAdapter.itemCount > 0) noFavouritesText?.visibility = View.GONE
+    override fun onPause() {
+        super.onPause()
+        favouritePresenter.dispose()
     }
 
     override fun setPresenter(presenter: FavouriteContract.Presenter) {
@@ -99,10 +102,7 @@ class FavouriteFragment: Fragment(), FavouriteContract.View,OnSignOutListener {
         }
     }
 
-    override fun onStop() {
-        super.onStop()
-        favouritePresenter.dispose()
-    }
+
 
     override fun onSignOut() {
         favouritePresenter.dispose()

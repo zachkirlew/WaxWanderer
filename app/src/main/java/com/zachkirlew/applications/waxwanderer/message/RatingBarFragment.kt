@@ -18,14 +18,14 @@ class RatingBarFragment : DialogFragment() {
 
     @Override
     override  fun  onCreateDialog(savedInstanceState : Bundle?) : Dialog {
-        val  rootView = activity.layoutInflater.inflate(R.layout.fragment_rating, null)
+        val  rootView = activity?.layoutInflater?.inflate(R.layout.fragment_rating, null)
 
         ratingBar = rootView?.findViewById<RatingBar>(R.id.rating_bar_shared_vinyl) as RatingBar
 
-        val messageId = arguments.getSerializable("message_id") as String
-        val vinylId = arguments.getSerializable("vinyl_id") as Int
+        val messageId = arguments?.getSerializable("message_id") as String
+        val vinylId = arguments?.getSerializable("vinyl_id") as Int
 
-        val dialog = AlertDialog.Builder(activity)
+        val dialog = AlertDialog.Builder(activity!!)
                 .setTitle("Rate that vinyl!")
                 .setPositiveButton("Okay",{ dialogInterface: DialogInterface?, i: Int ->
                     mCallback?.onRatingSubmitted(vinylId, ratingBar.rating.toDouble(),messageId)

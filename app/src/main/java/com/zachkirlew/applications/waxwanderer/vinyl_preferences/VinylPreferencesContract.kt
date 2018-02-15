@@ -1,8 +1,8 @@
-package com.zachkirlew.applications.waxwanderer.styles
+package com.zachkirlew.applications.waxwanderer.vinyl_preferences
 
 import com.zachkirlew.applications.waxwanderer.data.model.Style
 
-interface StylesContract {
+interface VinylPreferencesContract {
     interface View {
 
         fun startNextActivity()
@@ -24,6 +24,8 @@ interface StylesContract {
         fun loadStyles(genre : String)
 
         fun loadVinylPrefs()
+
+        fun dispose()
 
     }
 }

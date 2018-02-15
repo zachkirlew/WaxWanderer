@@ -12,14 +12,12 @@ import android.view.*
 import android.widget.*
 import com.squareup.picasso.Picasso
 import com.zachkirlew.applications.waxwanderer.R
-import com.zachkirlew.applications.waxwanderer.data.VinylRepository
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.detail.DetailVinylRelease
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.detail.Tracklist
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.detail.Video
 import com.zachkirlew.applications.waxwanderer.data.recommendation.RecommenderImp
 import com.zachkirlew.applications.waxwanderer.data.remote.VinylsRemoteSource
-import com.zachkirlew.applications.waxwanderer.login.LoginActivity
 
 
 class VinylDetailActivity : AppCompatActivity(), VinylDetailContract.View, View.OnClickListener {
@@ -45,7 +43,7 @@ class VinylDetailActivity : AppCompatActivity(), VinylDetailContract.View, View.
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_vinyl_detail)
 
-        setPresenter(VinylDetailPresenter(VinylRepository.getInstance(VinylsRemoteSource.instance),
+        setPresenter(VinylDetailPresenter((VinylsRemoteSource.instance),
                 this, RecommenderImp(this)))
 
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
@@ -119,7 +117,7 @@ class VinylDetailActivity : AppCompatActivity(), VinylDetailContract.View, View.
     override fun showVideos(videos: List<Video>?) {
         val listView = findViewById<LinearLayout>(R.id.list_youtube_videos) as LinearLayout
 
-        val adapter = VideosAdapter(this,0, videos)
+        val adapter = VideoAdapter(this,0, videos)
         (0 until adapter.count)
                 .map { adapter.getView(it, null, listView) }
                 .forEach { listView.addView(it) }
@@ -162,7 +160,6 @@ class VinylDetailActivity : AppCompatActivity(), VinylDetailContract.View, View.
         ratingBar.rating = starRating.toFloat()
     }
 
-    //handle fab press
     override fun onClick(p0: View?) {
         presenter.addToFavourites(vinyl)
     }
@@ -189,77 +186,4 @@ class VinylDetailActivity : AppCompatActivity(), VinylDetailContract.View, View.
         super.onStop()
         presenter.dispose()
     }
-
-    class TrackListAdapter
-    (context: Context, resource: Int, tracklist: List<Tracklist>?) : ArrayAdapter<Tracklist>(context, resource, tracklist) {
-
-        override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-
-            var convertView = convertView
-
-            // Get the data item for this position
-            val track = getItem(position)
-
-            // Check if an existing view is being reused, otherwise inflate the view
-            if (convertView == null) {
-                convertView = LayoutInflater.from(context).inflate(R.layout.tracklist_item, parent, false)
-            }
-            // Lookup view for data population
-            val sideText = convertView?.findViewById<TextView>(R.id.text_track_side) as TextView
-            val trackText = convertView.findViewById<TextView>(R.id.text_track_name) as TextView
-            // Populate the data into the template view using the data object
-
-            sideText.text = track?.position
-            trackText.text = track?.title
-
-            // Return the completed view to render on screen
-            return convertView
-        }
-    }
-
-    class VideosAdapter
-    (context: Context, resource: Int, videos: List<Video>?) : ArrayAdapter<Video>(context, resource, videos) {
-
-        override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-
-            var convertView = convertView
-
-            // Get the data item for this position
-            val video = getItem(position)
-
-            // Check if an existing view is being reused, otherwise inflate the view
-            if (convertView == null) {
-                convertView = LayoutInflater.from(context).inflate(R.layout.video_item, parent, false)
-            }
-            // Lookup view for data population
-            val titleText = convertView?.findViewById<TextView>(R.id.text_title) as TextView
-            val durationText = convertView.findViewById<TextView>(R.id.text_duration) as TextView
-            // Populate the data into the template view using the data object
-
-
-            titleText.text = video?.title
-            durationText.text = formatDuration(video?.duration!!)
-
-            convertView.setOnClickListener {
-                val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(video.uri))
-                convertView?.context?.startActivity(browserIntent)
-            }
-
-            // Return the completed view to render on screen
-            return convertView
-        }
-
-        private fun formatDuration(duration : Int): String {
-
-            val minutes = duration / 60
-            val seconds = duration % 60
-
-            val disMinu = (if (minutes < 10) "0" else "") + minutes
-            val disSec = (if (seconds < 10) "0" else "") + seconds
-
-            return disMinu + ":" + disSec
-        }
-    }
-
-
 }

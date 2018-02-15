@@ -30,13 +30,12 @@ class MatchesFragment: Fragment(), MatchesContract.View, OnMatchDeletedListener,
         matchesAdapter = MatchesAdapter(ArrayList<User>(0),this)
     }
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
         //reuse explore frgment layout as similar
-        val root = inflater?.inflate(R.layout.fragment_matches, container, false)
+        val root = inflater.inflate(R.layout.fragment_matches, container, false)
 
-        activity.title = "Matches"
+        activity?.title = "Matches"
 
         matchesPresenter = MatchesPresenter(this)
 

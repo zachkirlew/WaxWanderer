@@ -21,5 +21,6 @@ interface SettingsContract {
         fun getFormattedDate(year : Int, month : Int, day : Int)
         fun submitDetails(name : String, userGender : String, matchGender : String,minMatchAge : Int,maxMatchAge : Int)
         fun saveProfileImage(imageHoldUri : Uri?)
+        fun dispose()
     }
 }

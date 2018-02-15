@@ -25,7 +25,7 @@ import com.zachkirlew.applications.waxwanderer.login.LoginActivity
 import com.zachkirlew.applications.waxwanderer.matches.MatchesFragment
 import com.zachkirlew.applications.waxwanderer.settings.SettingsFragment
 import com.zachkirlew.applications.waxwanderer.match.MatchFragment
-import com.zachkirlew.applications.waxwanderer.styles.StylesActivity
+import com.zachkirlew.applications.waxwanderer.vinyl_preferences.VinylPreferencesActivity
 import com.zachkirlew.applications.waxwanderer.util.ActivityUtils
 import com.zachkirlew.applications.waxwanderer.util.BorderedCircleTransform
 import kotlinx.android.synthetic.main.activity_main.*
@@ -100,7 +100,7 @@ class MainActivity : AppCompatActivity(), MainContract.View {
     }
 
     override fun startStylesActivity() {
-        val intent = Intent(this, StylesActivity::class.java)
+        val intent = Intent(this, VinylPreferencesActivity::class.java)
         intent.putExtra("fromMain",true)
         startActivity(intent)
     }

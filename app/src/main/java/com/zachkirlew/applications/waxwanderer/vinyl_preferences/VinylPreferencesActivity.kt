@@ -1,4 +1,4 @@
-package com.zachkirlew.applications.waxwanderer.styles
+package com.zachkirlew.applications.waxwanderer.vinyl_preferences
 
 import android.content.Intent
 import android.os.Bundle
@@ -15,9 +15,9 @@ import com.zachkirlew.applications.waxwanderer.data.model.Style
 import com.zachkirlew.applications.waxwanderer.main.MainActivity
 
 
-class StylesActivity : AppCompatActivity(), StylesContract.View, AdapterView.OnItemSelectedListener {
+class VinylPreferencesActivity : AppCompatActivity(), VinylPreferencesContract.View, AdapterView.OnItemSelectedListener {
 
-    private lateinit var presenter: StylesPresenter
+    private lateinit var presenter: VinylPreferencesPresenter
 
     private val recyclerView by lazy{findViewById<RecyclerView>(R.id.recycler_view)}
     private val spinner by lazy{findViewById<Spinner>(R.id.spinner_genres)}
@@ -35,7 +35,7 @@ class StylesActivity : AppCompatActivity(), StylesContract.View, AdapterView.OnI
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_styles)
 
-        presenter = StylesPresenter(this)
+        presenter = VinylPreferencesPresenter(this)
 
         hasComeFromMain = intent.getBooleanExtra("fromMain",false)
 
@@ -130,9 +130,9 @@ class StylesActivity : AppCompatActivity(), StylesContract.View, AdapterView.OnI
             submitButton.visibility = View.GONE
     }
 
-    companion object {
-
-        private val TAG = StylesActivity::class.java.simpleName
+    override fun onStop() {
+        super.onStop()
+        presenter.dispose()
     }
 
     internal inner class StylesAdapter(private var styles: List<Style>) : RecyclerView.Adapter<StylesAdapter.MyViewHolder>() {
@@ -144,10 +144,6 @@ class StylesActivity : AppCompatActivity(), StylesContract.View, AdapterView.OnI
         inner class MyViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             var name: TextView = view.findViewById(R.id.style_name)
             var checkBox : CheckBox = view.findViewById(R.id.check_box)
-        }
-
-        fun getAllSelectedStyles(): List<String> {
-            return styles.filter {it.isSelected}.map { it.styleName }
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
@@ -180,7 +176,6 @@ class StylesActivity : AppCompatActivity(), StylesContract.View, AdapterView.OnI
                     removeStyleFromSelectedList(styles[holder.adapterPosition].styleName)
             }
         }
-
 
         override fun getItemCount(): Int {
             return styles.size

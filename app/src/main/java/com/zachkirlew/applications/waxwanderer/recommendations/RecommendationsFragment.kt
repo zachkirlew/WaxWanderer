@@ -31,11 +31,10 @@ class RecommendationsFragment: Fragment(), RecommendationsContract.View, Recomme
         recommendedUsers = ArrayList(0)
     }
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
-        val view = inflater!!.inflate(R.layout.fragment_recommendations, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val view = inflater.inflate(R.layout.fragment_recommendations, container, false)
 
-        activity.title = "User recommendations"
+        activity?.title = "User recommendations"
 
         recommendationsList = view.findViewById<RecyclerView>(R.id.list_recommendations)
         noRecommendationsText = view.findViewById<TextView>(R.id.text_no_recommendations)
@@ -78,7 +77,7 @@ class RecommendationsFragment: Fragment(), RecommendationsContract.View, Recomme
     }
 
     private fun initializePresenter() {
-        presenter = RecommendationsPresenter(this, RecommenderImp(activity))
+        presenter = RecommendationsPresenter(this, RecommenderImp(activity!!))
     }
 
     private fun setupAdapter() {

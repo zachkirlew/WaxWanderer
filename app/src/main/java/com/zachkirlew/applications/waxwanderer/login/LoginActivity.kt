@@ -22,7 +22,7 @@ import com.zachkirlew.applications.waxwanderer.R
 import com.zachkirlew.applications.waxwanderer.main.MainActivity
 import com.zachkirlew.applications.waxwanderer.match_preferences.MatchPreferencesActivity
 import com.zachkirlew.applications.waxwanderer.sign_up.SignUpActivity
-import com.zachkirlew.applications.waxwanderer.styles.StylesActivity
+import com.zachkirlew.applications.waxwanderer.vinyl_preferences.VinylPreferencesActivity
 
 
 class LoginActivity : AppCompatActivity(), LoginContract.View, GoogleApiClient.OnConnectionFailedListener {
@@ -155,7 +155,7 @@ class LoginActivity : AppCompatActivity(), LoginContract.View, GoogleApiClient.O
     }
 
     override fun startStylesActivity() {
-        val intent = Intent(this, StylesActivity::class.java)
+        val intent = Intent(this, VinylPreferencesActivity::class.java)
         startActivity(intent)
 
         showProgressBar(false)

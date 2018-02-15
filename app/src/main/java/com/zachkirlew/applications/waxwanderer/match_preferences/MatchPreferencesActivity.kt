@@ -8,7 +8,7 @@ import android.support.v7.app.AppCompatActivity
 import android.widget.*
 import com.zachkirlew.applications.waxwanderer.R
 import com.zachkirlew.applications.waxwanderer.data.local.UserPreferences
-import com.zachkirlew.applications.waxwanderer.styles.StylesActivity
+import com.zachkirlew.applications.waxwanderer.vinyl_preferences.VinylPreferencesActivity
 import java.util.*
 
 class MatchPreferencesActivity : AppCompatActivity(), MatchPreferencesContract.View,DatePickerDialog.OnDateSetListener {
@@ -87,6 +87,7 @@ class MatchPreferencesActivity : AppCompatActivity(), MatchPreferencesContract.V
 
         toAgePicker.minValue = 18
         toAgePicker.maxValue = 100
+        toAgePicker.value = 28
     }
 
     override fun showDOBErrorMessage(message: String) {
@@ -130,7 +131,7 @@ class MatchPreferencesActivity : AppCompatActivity(), MatchPreferencesContract.V
 
 
     override fun startStylesActivity() {
-        val intent = Intent(this, StylesActivity::class.java)
+        val intent = Intent(this, VinylPreferencesActivity::class.java)
         startActivity(intent)
     }
 

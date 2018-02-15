@@ -26,12 +26,11 @@ class LeaderBoardFragment : Fragment(), LeaderBoardContract.View,OnSignOutListen
         leaderboardAdapter = LeaderBoardAdapter(ArrayList<User>(0))
     }
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
-        val root = inflater?.inflate(R.layout.fragment_leader_board, container, false)
+        val root = inflater.inflate(R.layout.fragment_leader_board, container, false)
 
-        activity.title = "Leader Board"
+        activity?.title = "Leader Board"
 
         leaderboardPresenter = LeaderBoardPresenter(this)
 

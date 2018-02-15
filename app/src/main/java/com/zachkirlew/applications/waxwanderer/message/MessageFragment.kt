@@ -49,9 +49,8 @@ class MessageFragment : Fragment(), MessageContract.View, ShareVinylDialogFragme
         uid = FirebaseAuth.getInstance().currentUser?.uid!!
     }
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
-        val view = inflater!!.inflate(R.layout.fragment_message, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val view = inflater.inflate(R.layout.fragment_message, container, false)
 
         chatList = view.findViewById<RecyclerView>(R.id.list_chat)
 
@@ -68,10 +67,10 @@ class MessageFragment : Fragment(), MessageContract.View, ShareVinylDialogFragme
         setupAdapter()
         setupList()
 
-        val matchedUser = activity.intent.getSerializableExtra("matchedUserId") as User
+        val matchedUser = activity?.intent?.getSerializableExtra("matchedUserId") as User
 
         println(matchedUser.name)
-        activity.title = matchedUser.name
+        activity?.title = matchedUser.name
 
         shareVinylButton = view.findViewById<ImageView>(R.id.button_vinyl_share)
         shareVinylButton.setOnClickListener { presenter?.loadFavourites() }
@@ -122,7 +121,7 @@ class MessageFragment : Fragment(), MessageContract.View, ShareVinylDialogFragme
 
     private fun initializePresenter() {
         if (presenter == null)
-            presenter = MessagePresenter(this, RecommenderImp(activity))
+            presenter = MessagePresenter(this, RecommenderImp(activity!!))
     }
 
     override fun showChooseRecordDialog(favourites: List<VinylRelease>) {
@@ -132,10 +131,10 @@ class MessageFragment : Fragment(), MessageContract.View, ShareVinylDialogFragme
         bundle.putSerializable("favouriteList", favourites as Serializable)
         shareVinylDialogFragment?.arguments = bundle
         shareVinylDialogFragment?.setOnShareClickedListener(this)
-        shareVinylDialogFragment?.show(activity.supportFragmentManager, "now")
+        shareVinylDialogFragment?.show(activity?.supportFragmentManager, "now")
     }
 
-    override fun ShareClicked(sharedVinyl: VinylRelease) {
+    override fun onShared(sharedVinyl: VinylRelease) {
         shareVinylDialogFragment?.dismiss()
         presenter?.sendMessage("", uid, sharedVinyl)
     }
