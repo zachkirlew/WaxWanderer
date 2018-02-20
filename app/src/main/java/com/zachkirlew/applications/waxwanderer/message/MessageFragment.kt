@@ -1,6 +1,7 @@
 package com.zachkirlew.applications.waxwanderer.message
 
 
+import android.content.DialogInterface
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
@@ -26,7 +27,7 @@ import durdinapps.rxfirebase2.RxFirebaseChildEvent
 
 
 
-class MessageFragment : Fragment(), MessageContract.View, ShareVinylDialogFragment.FavouriteAdapter.OnShareClickedListener, RatingBarFragment.RatingSubmittedListener {
+class MessageFragment : Fragment(), MessageContract.View, ShareVinylDialogFragment.FavouriteAdapter.OnShareClickedListener, RatingBarFragment.RatingSubmittedListener, DialogInterface.OnDismissListener {
 
     private var messages: ArrayList<Message>? = null
     private lateinit var adapter: MessageAdapter
@@ -73,7 +74,10 @@ class MessageFragment : Fragment(), MessageContract.View, ShareVinylDialogFragme
         activity?.title = matchedUser.name
 
         shareVinylButton = view.findViewById(R.id.button_vinyl_share)
-        shareVinylButton.setOnClickListener { presenter?.loadFavourites() }
+        shareVinylButton.setOnClickListener {
+            it.isClickable = false
+            presenter?.loadFavourites()
+        }
 
         presenter?.loadMessages(matchedUser.id!!)
 
@@ -129,16 +133,26 @@ class MessageFragment : Fragment(), MessageContract.View, ShareVinylDialogFragme
     override fun showChooseRecordDialog(favourites: List<VinylRelease>) {
 
         shareVinylDialogFragment = ShareVinylDialogFragment()
+
         val bundle = Bundle()
         bundle.putSerializable("favouriteList", favourites as Serializable)
+
         shareVinylDialogFragment?.arguments = bundle
         shareVinylDialogFragment?.setOnShareClickedListener(this)
+        shareVinylDialogFragment?.setOnDismissedListener(this)
         shareVinylDialogFragment?.show(activity?.supportFragmentManager, "now")
     }
 
     override fun onShared(sharedVinyl: VinylRelease) {
         shareVinylDialogFragment?.dismiss()
         presenter?.sendMessage("", uid, sharedVinyl)
+
+        shareVinylButton.isClickable = true
+    }
+
+    override fun onDismiss(p0: DialogInterface?) {
+
+        shareVinylButton.isClickable = true
     }
 
     private fun sendMessage() {

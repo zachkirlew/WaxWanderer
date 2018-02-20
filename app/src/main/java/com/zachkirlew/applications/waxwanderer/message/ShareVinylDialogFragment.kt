@@ -19,18 +19,20 @@ import com.zachkirlew.applications.waxwanderer.message.ShareVinylDialogFragment.
 
 
 
-class ShareVinylDialogFragment() : DialogFragment() {
+class ShareVinylDialogFragment : DialogFragment() {
 
     private var mRecyclerView: RecyclerView? = null
     private lateinit var favouriteAdapter : FavouriteAdapter
 
-    var mCallback: FavouriteAdapter.OnShareClickedListener? = null
+    var shareCallback: FavouriteAdapter.OnShareClickedListener? = null
+    var dismissCallback: DialogInterface.OnDismissListener? = null
 
     @Override
     override  fun  onCreateDialog(savedInstanceState : Bundle?) : Dialog {
         val dialog = AlertDialog.Builder(activity!!)
                 .setTitle("Choose a vinyl")
                 .setNegativeButton("Cancel",{dialogInterface: DialogInterface?, i: Int ->
+                    dismissCallback?.onDismiss(dialogInterface)
                     dialogInterface?.dismiss()
                 })
 
@@ -42,16 +44,19 @@ class ShareVinylDialogFragment() : DialogFragment() {
         mRecyclerView?.layoutManager = LinearLayoutManager(context)
 
 
-        favouriteAdapter = FavouriteAdapter(list,mCallback)
+        favouriteAdapter = FavouriteAdapter(list,shareCallback)
         mRecyclerView?.adapter = favouriteAdapter
 
         dialog.setView(rootView)
         return dialog.create()
     }
 
+    fun setOnDismissedListener(mCallback: DialogInterface.OnDismissListener) {
+        this.dismissCallback = mCallback
+    }
 
     fun setOnShareClickedListener(mCallback: OnShareClickedListener) {
-        this.mCallback = mCallback
+        this.shareCallback = mCallback
     }
 
 
