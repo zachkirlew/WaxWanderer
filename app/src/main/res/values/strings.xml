@@ -59,6 +59,7 @@
     <string name="message_rating_current_user_rated">You rated:</string>
     <string name="message_rating_other_user_rated">They rated:</string>
     <string name="message_rating_current_user_unrated">Review this suggestion...</string>
-    <string name="message_rating_other_user_unrated">Not rated yet:</string>
+    <string name="message_rating_other_user_unrated">Not rated yet</string>
+    <string name="view_my_favourites">View my favourites</string>
 
 </resources>

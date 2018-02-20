@@ -41,6 +41,7 @@ class SettingsFragment : Fragment(), SettingsContract.View, DatePickerDialog.OnD
     lateinit var fromAgePicker : NumberPicker
     lateinit var toAgePicker : NumberPicker
 
+    private var dob: Date? = null
 
     override fun onResume() {
         super.onResume()
@@ -53,7 +54,7 @@ class SettingsFragment : Fragment(), SettingsContract.View, DatePickerDialog.OnD
 
         val root = inflater.inflate(R.layout.fragment_settings, container, false)
 
-        userGenderSpinner = root?.findViewById<Spinner>(R.id.user_gender_spinner) as Spinner
+        userGenderSpinner = root?.findViewById(R.id.user_gender_spinner) as Spinner
 
         val userGendersAdapter = ArrayAdapter<String>(activity,
                 android.R.layout.simple_spinner_item, activity?.resources?.getStringArray(R.array.spinner_user_genders))
@@ -192,13 +193,11 @@ class SettingsFragment : Fragment(), SettingsContract.View, DatePickerDialog.OnD
     }
 
     private fun showDateDialog() {
+        val cal = Calendar.getInstance()
 
-        val  c = Calendar.getInstance()
-        val mYear = c.get(Calendar.YEAR)
-        val mMonth = c.get(Calendar.MONTH)
-        val mDay = c.get(Calendar.DAY_OF_MONTH)
+        cal.time = dob
 
-        DatePickerDialog (activity, this, mYear, mMonth, mDay).show()
+        DatePickerDialog(activity, this, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH)).show()
     }
 
 
@@ -211,6 +210,7 @@ class SettingsFragment : Fragment(), SettingsContract.View, DatePickerDialog.OnD
     }
 
     override fun showUserDetails(user: User, minMatchAge: Int, maxMatchAge: Int, matchGender: String?) {
+        dob = user.dob
 
         nameText.setText(user.name)
 

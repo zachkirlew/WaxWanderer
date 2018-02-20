@@ -6,6 +6,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.View
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import com.mindorks.placeholderview.SwipePlaceHolderView
@@ -36,8 +37,8 @@ class UserCardView(private val mContext: Context, private val userCard: UserCard
     @com.mindorks.placeholderview.annotations.View(R.id.text_no_user_favourites)
     private val noFavouritesText: TextView? = null
 
-    @com.mindorks.placeholderview.annotations.View(R.id.text_top_tracks)
-    private val topTracksText: TextView? = null
+    @com.mindorks.placeholderview.annotations.View(R.id.button_view_favourites)
+    private val viewFavourites: Button? = null
 
     @com.mindorks.placeholderview.annotations.View(R.id.text_age_location)
     private val locationNameTxt: TextView? = null
@@ -60,7 +61,7 @@ class UserCardView(private val mContext: Context, private val userCard: UserCard
         favouriteAdapter.notifyDataSetChanged()
     }
 
-    fun showStyles(vinylPreference: List<String>) {
+    private fun showStyles(vinylPreference: List<String>) {
         val commaSeparatedStyles = android.text.TextUtils.join(", ", vinylPreference)
         stylesText?.text = commaSeparatedStyles
     }
@@ -93,7 +94,7 @@ class UserCardView(private val mContext: Context, private val userCard: UserCard
             noFavouritesText?.visibility = View.VISIBLE
         }
 
-        topTracksText?.setOnClickListener {
+        viewFavourites?.setOnClickListener {
 
             val intent = Intent(mContext, FavouriteActivity::class.java)
             intent.putExtra("selected user", user)
@@ -120,20 +121,5 @@ class UserCardView(private val mContext: Context, private val userCard: UserCard
     private fun onSwipeIn() {
         Log.d("EVENT", "onSwipedIn")
         callback.onSwipedLeft(userCard.user)
-    }
-
-    @SwipeCancelState
-    private fun onSwipeCancelState() {
-        Log.d("EVENT", "onSwipeCancelState")
-    }
-
-    @SwipeInState
-    private fun onSwipeInState() {
-        Log.d("EVENT", "onSwipeInState")
-    }
-
-    @SwipeOutState
-    private fun onSwipeOutState() {
-        Log.d("EVENT", "onSwipeOutState")
     }
 }

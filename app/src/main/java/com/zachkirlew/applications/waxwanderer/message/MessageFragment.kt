@@ -52,11 +52,11 @@ class MessageFragment : Fragment(), MessageContract.View, ShareVinylDialogFragme
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_message, container, false)
 
-        chatList = view.findViewById<RecyclerView>(R.id.list_chat)
+        chatList = view.findViewById(R.id.list_chat)
 
         initializePresenter()
 
-        messageInput = view.findViewById<EditText>(R.id.input_message)
+        messageInput = view.findViewById(R.id.input_message)
 
         val sendFab = view.findViewById<ImageButton>(R.id.button_sent)
 
@@ -72,7 +72,7 @@ class MessageFragment : Fragment(), MessageContract.View, ShareVinylDialogFragme
         println(matchedUser.name)
         activity?.title = matchedUser.name
 
-        shareVinylButton = view.findViewById<ImageView>(R.id.button_vinyl_share)
+        shareVinylButton = view.findViewById(R.id.button_vinyl_share)
         shareVinylButton.setOnClickListener { presenter?.loadFavourites() }
 
         presenter?.loadMessages(matchedUser.id!!)
@@ -82,11 +82,13 @@ class MessageFragment : Fragment(), MessageContract.View, ShareVinylDialogFragme
 
     override fun addMessage(message: RxFirebaseChildEvent<DataSnapshot>) {
         adapter.manageChildItem(message)
-        chatList.scrollToPosition(adapter.itemCount - 1)
+
+        if(message.eventType==RxFirebaseChildEvent.EventType.ADDED)
+            chatList.scrollToPosition(adapter.itemCount - 1)
     }
 
     private fun setupAdapter() {
-        messages = ArrayList<Message>()
+        messages = ArrayList()
         adapter = MessageAdapter(messages!!, uid, this)
     }
 

@@ -16,19 +16,20 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import java.lang.Exception
 
-class ExplorePresenter(private @NonNull var vinylDataSource: VinylDataSource, private @NonNull var exploreView: ExploreContract.View) : ExploreContract.Presenter {
+class ExplorePresenter(@NonNull private var vinylDataSource: VinylDataSource, @NonNull private var exploreView: ExploreContract.View) : ExploreContract.Presenter {
     private val mFirebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private val database = FirebaseDatabase.getInstance()
 
     private val TAG = ExplorePresenter::class.java.simpleName
 
-    private var compositeDisposable : CompositeDisposable = CompositeDisposable()
+    private var compositeDisposable : CompositeDisposable? = null
 
     init {
         exploreView.setPresenter(this)
     }
 
     override fun start() {
+        compositeDisposable = CompositeDisposable()
         loadVinylPreferences()
     }
 
@@ -40,10 +41,12 @@ class ExplorePresenter(private @NonNull var vinylDataSource: VinylDataSource, pr
 
         val vinylRef = myRef.child("vinylPreferences").child(user?.uid)
 
+
         InternetConnectionUtil.isInternetOn()
                 .flatMap { isInternetOn -> if (isInternetOn) RxFirebaseDatabase.observeValueEvent(vinylRef,{it.children.map { it.value as String }}).toObservable()   else Observable.error(Exception("No internet connection")) }
-                .doOnSubscribe { compositeDisposable.add(it) }
-                .subscribe {  loadVinylReleases(it)}
+                .doOnSubscribe { compositeDisposable?.add(it) }
+                .subscribe ({loadVinylReleases(it)},
+                            {error -> exploreView.showMessage(error.message)})
     }
 
     override fun loadVinylReleases(styles : List<String>) {
@@ -56,7 +59,6 @@ class ExplorePresenter(private @NonNull var vinylDataSource: VinylDataSource, pr
     }
 
     override fun searchVinylReleases(searchText: String?) {
-
         if (!searchText.isNullOrEmpty()) {
             vinylDataSource.searchVinyl(searchText!!)
                     .subscribeOn(Schedulers.newThread())
@@ -67,7 +69,7 @@ class ExplorePresenter(private @NonNull var vinylDataSource: VinylDataSource, pr
 
     private val observer = object : Observer<DiscogsResponse>{
         override fun onSubscribe(d: Disposable) {
-            compositeDisposable.add(d)
+            compositeDisposable?.add(d)
         }
 
         override fun onNext(response: DiscogsResponse) {
@@ -88,6 +90,6 @@ class ExplorePresenter(private @NonNull var vinylDataSource: VinylDataSource, pr
     }
 
     override fun dispose() {
-        compositeDisposable.dispose()
+        compositeDisposable?.dispose()
     }
 }

@@ -6,10 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.RatingBar
-import android.widget.TextView
+import android.widget.*
 import com.squareup.picasso.Picasso
 import com.zachkirlew.applications.waxwanderer.R
 import com.zachkirlew.applications.waxwanderer.data.model.Message
@@ -67,21 +64,28 @@ class MessageAdapter(private val messageList: ArrayList<Message>, private val mI
             if(itemViewType== MESSAGE_RECEIVED){
 
                 if(message.isRated){
+                    holder.rateButton?.visibility = View.GONE
                     holder.ratingBar.rating = message.rating?.toFloat()!!
                     holder.ratedText.text = holder.itemView.context.getString(R.string.message_rating_current_user_rated)
+                    holder.ratingBar.visibility = View.VISIBLE
                 }
                 else{
-                    holder.ratedText.text = holder.itemView.context.getString(R.string.message_rating_current_user_unrated)
+                    holder.ratingBar.visibility = View.GONE
+                    holder.rateButton?.visibility = View.VISIBLE
                     holder.ratingBar.rating = 0f
-                    holder.ratedText.setOnClickListener{messageFragment.showRatingDialog(message.id,attachedVinyl!!.id,position)}
+                    holder.ratedText.text = ""
+                    holder.rateButton?.setOnClickListener{messageFragment.showRatingDialog(message.id,attachedVinyl!!.id,position)}
                 }
             }
             else{
+                holder.rateButton?.visibility = View.GONE
                 if(message.isRated){
+                    holder.ratingBar.visibility = View.VISIBLE
                     holder.ratingBar.rating = message.rating?.toFloat()!!
                     holder.ratedText.text = holder.itemView.context.getString(R.string.message_rating_other_user_rated)
                 }
                 else{
+                    holder.ratingBar.visibility = View.GONE
                     holder.ratedText.text = holder.itemView.context.getString(R.string.message_rating_other_user_unrated)
                     holder.ratingBar.rating = 0f
                 }
@@ -121,10 +125,11 @@ class MessageAdapter(private val messageList: ArrayList<Message>, private val mI
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
-        internal var txtMessage: TextView = view.findViewById<TextView>(R.id.txt_message) as TextView
-        internal var layoutAttachedVinyl : LinearLayout = view.findViewById<LinearLayout>(R.id.layout_attached_vinyl) as LinearLayout
-        internal var ratedText : TextView = view.findViewById<TextView>(R.id.text_rated) as TextView
-        internal var ratingBar : RatingBar = view.findViewById<RatingBar>(R.id.rating_bar_message) as RatingBar
+        internal var txtMessage: TextView = view.findViewById(R.id.txt_message) as TextView
+        internal var layoutAttachedVinyl : LinearLayout = view.findViewById(R.id.layout_attached_vinyl) as LinearLayout
+        internal var ratedText : TextView = view.findViewById(R.id.text_rated) as TextView
+        internal var ratingBar : RatingBar = view.findViewById(R.id.rating_bar_message) as RatingBar
+        internal var rateButton : Button? = view.findViewById(R.id.button_view_favourites) as Button?
     }
 
     companion object {

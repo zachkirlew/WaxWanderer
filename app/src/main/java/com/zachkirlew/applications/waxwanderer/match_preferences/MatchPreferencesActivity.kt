@@ -28,8 +28,8 @@ class MatchPreferencesActivity : AppCompatActivity(), MatchPreferencesContract.V
 
     private val submitButton by lazy {findViewById<Button>(R.id.button_submit_details)}
 
-    private val fromAgePicker by lazy{findViewById<NumberPicker>(R.id.age_from) as NumberPicker}
-    private val toAgePicker by lazy{findViewById<NumberPicker>(R.id.age_to) as NumberPicker}
+    private val fromAgePicker by lazy{ findViewById<NumberPicker>(R.id.age_from) }
+    private val toAgePicker by lazy{ findViewById<NumberPicker>(R.id.age_to) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

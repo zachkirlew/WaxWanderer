@@ -61,7 +61,7 @@ class VinylDetailPresenter(@NonNull private val vinylDataSource: VinylDataSource
 
                         detailVinylRelease.tracklist?.let { vinylDetailView.showTrackList(detailVinylRelease.tracklist) }
 
-                        detailVinylRelease.videos?.let { vinylDetailView.showVideos(detailVinylRelease.videos) }
+                        detailVinylRelease.videos?.let { if(detailVinylRelease.videos?.isNotEmpty()!!) vinylDetailView.showVideos(detailVinylRelease.videos) }
 
                         vinylDetailView.showRating(detailVinylRelease.community?.rating?.average!!)
                     }

@@ -49,13 +49,11 @@ class ExploreFragment: Fragment(), ExploreContract.View, OnSearchSubmitted,OnSig
         val spacingInPixels = resources.getDimensionPixelSize(R.dimen.list_item_padding)
         exploreList.addItemDecoration(EqualSpaceItemDecoration(spacingInPixels))
 
-        noFavouritesText = root.findViewById<TextView>(R.id.text_no_favourites)
+        noFavouritesText = root.findViewById(R.id.text_no_favourites)
 
-        progressBar = root.findViewById<ProgressBar>(R.id.progress_bar_explore)
+        progressBar = root.findViewById(R.id.progress_bar_explore)
 
         progressBar.visibility = View.VISIBLE
-
-        explorePresenter.start()
 
         return root
     }
@@ -94,8 +92,14 @@ class ExploreFragment: Fragment(), ExploreContract.View, OnSearchSubmitted,OnSig
         noFavouritesText?.visibility = View.VISIBLE
     }
 
-    override fun onStop() {
-        super.onStop()
+    override fun onResume() {
+        super.onResume()
+        exploreAdapter.removeVinyls()
+        explorePresenter.start()
+    }
+
+    override fun onPause() {
+        super.onPause()
         explorePresenter.dispose()
     }
 

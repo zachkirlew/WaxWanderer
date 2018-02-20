@@ -13,6 +13,7 @@ import android.support.v7.widget.SearchView
 import android.support.v7.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import com.squareup.picasso.Picasso
@@ -30,9 +31,11 @@ import com.zachkirlew.applications.waxwanderer.util.ActivityUtils
 import com.zachkirlew.applications.waxwanderer.util.BorderedCircleTransform
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity(), MainContract.View {
+class MainActivity : AppCompatActivity(), MainContract.View, View.OnClickListener {
 
     private val mDrawerLayout: DrawerLayout by lazy { findViewById<DrawerLayout>(R.id.drawer_layout) }
+
+    private val profileImage : ImageView by lazy {nav_view.getHeaderView(0).findViewById(R.id.profile_image) as ImageView}
 
     private var showSearchIcon = true
 
@@ -46,7 +49,7 @@ class MainActivity : AppCompatActivity(), MainContract.View {
 
         presenter = MainPresenter(this)
 
-        val toolbar = findViewById<Toolbar>(R.id.toolbar) as Toolbar
+        val toolbar = findViewById(R.id.toolbar) as Toolbar
         setSupportActionBar(toolbar)
         val ab = supportActionBar
         ab?.setDisplayHomeAsUpEnabled(true)
@@ -62,7 +65,9 @@ class MainActivity : AppCompatActivity(), MainContract.View {
         mDrawerLayout.addDrawerListener(mDrawerToggle);
         mDrawerToggle.syncState()
 
-        navigationView = findViewById<NavigationView>(R.id.nav_view) as NavigationView
+        navigationView = findViewById(R.id.nav_view)
+
+        profileImage.setOnClickListener(this)
 
         setupDrawerContent()
 
@@ -98,6 +103,17 @@ class MainActivity : AppCompatActivity(), MainContract.View {
         super.onPause()
         presenter.dispose()
     }
+
+    //on profile image click
+    override fun onClick(p0: View?) {
+        uncheckAllMenuItems(navigationView)
+
+        showSearchIcon = false
+        ActivityUtils.changeFragment(
+                supportFragmentManager, SettingsFragment(), R.id.content)
+        mDrawerLayout.closeDrawers()
+    }
+
 
     override fun startStylesActivity() {
         val intent = Intent(this, VinylPreferencesActivity::class.java)
@@ -205,7 +221,6 @@ class MainActivity : AppCompatActivity(), MainContract.View {
             menuItem.isChecked = true
             mDrawerLayout.closeDrawers()
             invalidateOptionsMenu()
-
             true
         }
     }
@@ -223,9 +238,6 @@ class MainActivity : AppCompatActivity(), MainContract.View {
     }
 
     override fun showProfilePicture(imageUrl: String) {
-        val header = nav_view.getHeaderView(0)
-
-        val profileImage = header?.findViewById<ImageView>(R.id.profile_image) as ImageView
 
         Picasso.with(this@MainActivity)
                 .load(imageUrl)

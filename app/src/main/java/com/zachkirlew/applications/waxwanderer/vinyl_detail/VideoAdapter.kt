@@ -35,7 +35,7 @@ class VideoAdapter
 
         convertView.setOnClickListener {
             val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(video.uri))
-            convertView?.context?.startActivity(browserIntent)
+            convertView.context?.startActivity(browserIntent)
         }
 
         // Return the completed view to render on screen

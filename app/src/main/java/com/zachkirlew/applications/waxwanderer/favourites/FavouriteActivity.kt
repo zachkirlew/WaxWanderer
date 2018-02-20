@@ -27,7 +27,7 @@ class FavouriteActivity : AppCompatActivity() {
 
         val firstName = user.name?.let { StringUtils.getFirstName(it) }
 
-        title = "$firstName's Top Vinyls"
+        title = "$firstName's Favourites"
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

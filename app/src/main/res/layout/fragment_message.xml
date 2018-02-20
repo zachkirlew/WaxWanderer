@@ -4,20 +4,20 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/list_chat"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_above="@+id/bottomlayout"
-            android:layout_marginBottom="4dp"
-            android:clipToPadding="false"
-            android:divider="@drawable/chat_divider"
-            android:paddingBottom="4dp"
-            android:paddingTop="8dp"
-            android:scrollbarStyle="outsideOverlay"
-            android:scrollbars="vertical"
-            android:stackFromBottom="false"
-            android:transcriptMode="normal" />
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/list_chat"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/bottomlayout"
+        android:layout_marginBottom="4dp"
+        android:clipToPadding="false"
+        android:divider="@drawable/chat_divider"
+        android:paddingBottom="4dp"
+        android:paddingTop="8dp"
+        android:scrollbarStyle="outsideOverlay"
+        android:scrollbars="vertical"
+        android:stackFromBottom="false"
+        android:transcriptMode="normal" />
 
 
 <LinearLayout
@@ -47,7 +47,7 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_gravity="bottom"
-            android:src="@drawable/ic_share_vinyl"/>
+            android:src="@drawable/ic_music_record"/>
 
         <EditText
             android:id="@+id/input_message"

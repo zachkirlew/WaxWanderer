@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.support.design.widget.*
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.CardView
 import android.support.v7.widget.Toolbar
 import android.view.*
 import android.widget.*
@@ -34,6 +35,8 @@ class VinylDetailActivity : AppCompatActivity(), VinylDetailContract.View, View.
     private val releaseDateText by lazy { findViewById<TextView>(R.id.text_release_date) }
     private val genreText by lazy { findViewById<TextView>(R.id.text_genre) }
     private val stylesText by lazy { findViewById<TextView>(R.id.text_styles) }
+
+    private val cardYouTube by lazy{findViewById<CardView>(R.id.card_youtube)}
 
     private var isRemovedFromFavourites : Boolean = false
 
@@ -115,7 +118,8 @@ class VinylDetailActivity : AppCompatActivity(), VinylDetailContract.View, View.
     }
 
     override fun showVideos(videos: List<Video>?) {
-        val listView = findViewById<LinearLayout>(R.id.list_youtube_videos) as LinearLayout
+        cardYouTube.visibility = View.VISIBLE
+        val listView = findViewById<LinearLayout>(R.id.list_youtube_videos)
 
         val adapter = VideoAdapter(this,0, videos)
         (0 until adapter.count)

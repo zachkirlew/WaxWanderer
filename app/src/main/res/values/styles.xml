@@ -16,11 +16,19 @@
 
 
     <style name="chat_timings">
-
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textSize">12sp</item>
         <item name="android:textColor">#a6abad</item>
+    </style>
 
+    <style name="FlatButtonStyle" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorControlHighlight">@color/transparent</item>
+    </style>
+
+    <style name="PrimaryFlatButton" parent="Theme.AppCompat.Light">
+        <item name="android:buttonStyle">@style/Widget.AppCompat.Button.Borderless.Colored</item>
+        <item name="colorControlHighlight">@color/colorAccent</item>
+        <item name="colorAccent">@color/colorPrimary</item>
     </style>
 </resources>

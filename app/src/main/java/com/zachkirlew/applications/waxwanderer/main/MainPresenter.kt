@@ -20,7 +20,7 @@ class MainPresenter(private @NonNull val mainView: MainContract.View): MainContr
     private val mFirebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private val TAG = MainActivity::class.java.simpleName
 
-    private var compositeDisposable : CompositeDisposable = CompositeDisposable()
+    private var disposable : Disposable? = null
 
     private val mAuthListener = FirebaseAuth.AuthStateListener { firebaseAuth ->
         // Check if user is signed in (non-null) and update UI accordingly.
@@ -64,7 +64,7 @@ class MainPresenter(private @NonNull val mainView: MainContract.View): MainContr
         val ref = myRef.child("users").child(user?.uid).child("imageurl")
 
         RxFirebaseDatabase.observeSingleValueEvent(ref)
-                .doOnSubscribe { compositeDisposable.add(it) }
+                .doOnSubscribe { disposable = it }
                 .subscribe{dataSnapshot ->
                     if(dataSnapshot.exists()){
                         val imageUrl = dataSnapshot.value as String
@@ -82,6 +82,6 @@ class MainPresenter(private @NonNull val mainView: MainContract.View): MainContr
     }
 
     override fun dispose() {
-        compositeDisposable.dispose()
+        disposable?.dispose()
     }
 }
