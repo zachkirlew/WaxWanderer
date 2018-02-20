@@ -30,10 +30,9 @@ class ExplorePresenter(@NonNull private var vinylDataSource: VinylDataSource, @N
 
     override fun start() {
         compositeDisposable = CompositeDisposable()
-        loadVinylPreferences()
     }
 
-    private fun loadVinylPreferences(){
+    override fun loadVinylPreferences(){
 
         val myRef = database.reference
 

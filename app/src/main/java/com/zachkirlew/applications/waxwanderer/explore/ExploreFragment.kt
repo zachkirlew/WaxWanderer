@@ -26,12 +26,13 @@ class ExploreFragment: Fragment(), ExploreContract.View, OnSearchSubmitted,OnSig
 
     private var noFavouritesText: TextView? = null
 
+    private var lastSearch : String? = null
+
     override fun onCreate(@Nullable savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
         exploreAdapter = ExploreAdapter(ArrayList<VinylRelease>(0))
     }
-
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -41,7 +42,7 @@ class ExploreFragment: Fragment(), ExploreContract.View, OnSearchSubmitted,OnSig
 
         explorePresenter = ExplorePresenter(VinylsRemoteSource.instance,this)
 
-        val exploreList = root?.findViewById<RecyclerView>(R.id.explore_list) as RecyclerView
+        val exploreList = root?.findViewById(R.id.explore_list) as RecyclerView
 
         exploreList.layoutManager = LinearLayoutManager(activity)
         exploreList.adapter = exploreAdapter
@@ -59,6 +60,7 @@ class ExploreFragment: Fragment(), ExploreContract.View, OnSearchSubmitted,OnSig
     }
 
     override fun searchSubmitted(searchText: String?) {
+        lastSearch = searchText
         exploreAdapter.removeVinyls()
         explorePresenter.searchVinylReleases(searchText)
     }
@@ -94,8 +96,12 @@ class ExploreFragment: Fragment(), ExploreContract.View, OnSearchSubmitted,OnSig
 
     override fun onResume() {
         super.onResume()
-        exploreAdapter.removeVinyls()
         explorePresenter.start()
+
+        if(lastSearch==null){
+            exploreAdapter.removeVinyls()
+            explorePresenter.loadVinylPreferences()
+        }
     }
 
     override fun onPause() {
