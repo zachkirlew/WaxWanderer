@@ -31,7 +31,7 @@ class ExploreFragment: Fragment(), ExploreContract.View, OnSearchSubmitted,OnSig
     override fun onCreate(@Nullable savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-        exploreAdapter = ExploreAdapter(ArrayList<VinylRelease>(0))
+        exploreAdapter = ExploreAdapter(ArrayList(0))
     }
 
 

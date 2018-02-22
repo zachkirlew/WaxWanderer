@@ -43,51 +43,52 @@ dependencies {
     implementation 'com.android.support:support-vector-drawable:27.0.0'
     implementation 'com.google.firebase:firebase-storage:11.8.0'
     implementation 'com.google.firebase:firebase-auth:11.8.0'
-    compile 'com.android.support:design:27.0.0'
+    implementation 'com.android.support:design:27.0.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
 
     //Retrofit
-    compile 'com.squareup.retrofit2:retrofit:2.2.0'
-    compile 'com.squareup.retrofit2:converter-gson:2.1.0'
+    implementation 'com.squareup.retrofit2:retrofit:2.2.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.1.0'
 
     //RxAndroid
-    compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
     // Because RxAndroid releases are few and far between, it is recommended you also
     // explicitly depend on RxJava's latest version for bug fixes and new features.
-    compile 'io.reactivex.rxjava2:rxjava:2.1.0'
+    implementation 'io.reactivex.rxjava2:rxjava:2.1.0'
 
     //RxJava x Retrofit
-    compile 'com.squareup.retrofit2:adapter-rxjava2:2.2.0'
+    implementation 'com.squareup.retrofit2:adapter-rxjava2:2.2.0'
 
     //Gson
-    compile 'com.google.code.gson:gson:2.8.0'
+    implementation 'com.google.code.gson:gson:2.8.0'
 
     //Picasso
-    compile 'com.squareup.picasso:picasso:2.5.2'
-    compile 'com.android.support:cardview-v7:27.0.0'
+    implementation 'com.squareup.picasso:picasso:2.5.2'
+    implementation 'com.android.support:cardview-v7:27.0.0'
 
-    compile 'com.google.firebase:firebase-auth:11.8.0'
+    implementation 'com.google.firebase:firebase-auth:11.8.0'
 
-    compile 'com.google.firebase:firebase-database:11.8.0'
+    implementation 'com.google.firebase:firebase-database:11.8.0'
 
-    compile 'com.google.android.gms:play-services-auth:11.8.0'
+    implementation 'com.google.android.gms:play-services-auth:11.8.0'
 
     //facebook login dependency
-    compile 'com.facebook.android:facebook-android-sdk:4.28.0'
+    implementation 'com.facebook.android:facebook-android-sdk:4.28.0'
 
-    compile 'joda-time:joda-time:2.9.9'
+    implementation 'joda-time:joda-time:2.9.9'
 
-    compile 'com.lucasurbas:listitemview:1.0.5'
+    implementation 'com.lucasurbas:listitemview:1.0.5'
 
-    compile 'com.mindorks:placeholderview:0.7.2'
+    implementation 'com.mindorks:placeholderview:0.7.2'
 
-    compile 'com.recombee:api-client:1.6.2'
+    implementation 'com.recombee:api-client:1.6.2'
 
-    compile 'commons-codec:commons-codec:1.9'
+    implementation 'commons-codec:commons-codec:1.9'
 
-    compile 'com.github.frangsierra:rx2firebase:1.1.3'
+    implementation 'com.github.frangsierra:rx2firebase:1.1.3'
+
 }
 
 

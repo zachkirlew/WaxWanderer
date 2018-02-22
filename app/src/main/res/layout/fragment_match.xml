@@ -4,9 +4,25 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+
+    <TextView
+        android:id="@+id/text_no_users"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical|center_horizontal"
+        android:padding="@dimen/activity_horizontal_margin"
+        android:text="@string/match_no_users"
+        android:visibility="visible" />
+
+    <com.mindorks.placeholderview.SwipePlaceHolderView
+        android:id="@+id/swipeView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="80dp" />
+
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="80dp"
         android:layout_gravity="bottom"
         android:gravity="center"
         android:orientation="horizontal">
@@ -15,7 +31,7 @@
             android:id="@+id/rejectBtn"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:background="@drawable/ic_close"
+            android:background="@drawable/match_dislike"
             android:backgroundTint="@android:color/holo_red_light" />
 
         <ImageButton
@@ -23,13 +39,8 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_marginLeft="30dp"
-            android:background="@drawable/ic_star"
+            android:background="@drawable/match_like"
             android:backgroundTint="@color/colorAccent" />
     </LinearLayout>
 
-    <com.mindorks.placeholderview.SwipePlaceHolderView
-        android:id="@+id/swipeView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginBottom="50dp" />
 </FrameLayout>

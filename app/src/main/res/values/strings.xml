@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <resources>
-    <string name="app_name">WaxWanderer</string>
+    <string name="app_name">Wax Wanderer</string>
 
     <string name="explore_title">Explore</string>
 
@@ -61,5 +61,6 @@
     <string name="message_rating_current_user_unrated">Review this suggestion...</string>
     <string name="message_rating_other_user_unrated">Not rated yet</string>
     <string name="view_my_favourites">View my favourites</string>
+    <string name="match_no_users">Unfortunately there\'s no new profiles to show you</string>
 
 </resources>

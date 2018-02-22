@@ -11,9 +11,9 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.mindorks.placeholderview.SwipePlaceHolderView
 import com.mindorks.placeholderview.annotations.Layout
-import com.mindorks.placeholderview.annotations.Position
 import com.mindorks.placeholderview.annotations.Resolve
-import com.mindorks.placeholderview.annotations.swipe.*
+import com.mindorks.placeholderview.annotations.swipe.SwipeIn
+import com.mindorks.placeholderview.annotations.swipe.SwipeOut
 import com.squareup.picasso.Picasso
 import com.zachkirlew.applications.waxwanderer.R
 import com.zachkirlew.applications.waxwanderer.data.model.UserCard
