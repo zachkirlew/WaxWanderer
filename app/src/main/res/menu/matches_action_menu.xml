@@ -2,11 +2,6 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/action_message"
-        android:icon="@drawable/ic_action_chat_bubble_outline"
-        android:title="@string/matches_action_message"
-        app:showAsAction="collapseActionView" />
-    <item
         android:id="@+id/action_remove"
         android:icon="@drawable/ic_close"
         android:title="@string/matches_action_remove"

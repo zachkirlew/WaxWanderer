@@ -39,7 +39,7 @@ class MatchesFragment: Fragment(), MatchesContract.View, OnMatchDeletedListener,
 
         matchesPresenter = MatchesPresenter(this)
 
-        val exploreList = root?.findViewById<RecyclerView>(R.id.matches_list) as RecyclerView
+        val exploreList = root?.findViewById(R.id.matches_list) as RecyclerView
 
         val mLayoutManager = LinearLayoutManager(activity)
 
@@ -49,7 +49,7 @@ class MatchesFragment: Fragment(), MatchesContract.View, OnMatchDeletedListener,
         val spacingInPixels = resources.getDimensionPixelSize(R.dimen.list_item_padding)
         exploreList.addItemDecoration(EqualSpaceItemDecoration(spacingInPixels))
 
-        noMatchesText = root.findViewById<TextView>(R.id.text_no_matches) as TextView
+        noMatchesText = root.findViewById(R.id.text_no_matches) as TextView
 
         matchesPresenter.loadMatches()
 

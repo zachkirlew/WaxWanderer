@@ -7,10 +7,8 @@ import android.support.v4.app.Fragment
 import android.support.v7.app.AlertDialog
 import android.view.*
 import android.widget.ImageButton
-import android.widget.ImageView
 import android.widget.Toast
 import com.facebook.FacebookSdk.getApplicationContext
-import com.jackpocket.pulse.layouts.PulseLayout
 import com.mindorks.placeholderview.SwipePlaceHolderView
 import com.zachkirlew.applications.waxwanderer.R
 import com.zachkirlew.applications.waxwanderer.base.OnSignOutListener
@@ -31,7 +29,6 @@ class MatchFragment : Fragment(), MatchContract.View,OnSignOutListener, OnSwipeL
 
     private lateinit var mContext: Context
 
-    private lateinit var pulseLayout: PulseLayout
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
         activity?.title = "Match"

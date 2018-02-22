@@ -1,20 +1,21 @@
 package com.zachkirlew.applications.waxwanderer.vinyl_detail
 
 import android.content.Context
-import android.content.Intent
-import android.net.Uri
+import android.support.v7.app.AppCompatActivity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import android.widget.TextView
+import com.google.android.youtube.player.YouTubeStandalonePlayer
 import com.lucasurbas.listitemview.ListItemView
+import com.squareup.picasso.Picasso
 import com.zachkirlew.applications.waxwanderer.R
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.detail.Video
 import kotlinx.android.synthetic.main.video_item.view.*
 
+
 class VideoAdapter
-(context: Context, resource: Int, videos: List<Video>?) : ArrayAdapter<Video>(context, resource, videos) {
+(private val mContext: Context, resource: Int, videos: List<Video>?) : ArrayAdapter<Video>(mContext, resource, videos) {
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
 
@@ -31,12 +32,42 @@ class VideoAdapter
         convertView.list_item_view.title = video?.title
         convertView.list_item_view.subtitle = formatDuration(video?.duration!!)
 
-        convertView.list_item_view.avatarView.setImageDrawable(context.resources.getDrawable(R.drawable.ic_youtube))
+        val videoId = video.uri?.takeLast(11)
+
+        val thumbnailUrl = "https://i1.ytimg.com/vi/$videoId/default.jpg"
+
+        Picasso.with(convertView.context)
+                .load(thumbnailUrl)
+                .placeholder(R.drawable.ic_youtube)
+                .into(convertView.list_item_view.avatarView)
+
 
         convertView.setOnClickListener {
-            val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(video.uri))
-            convertView.context?.startActivity(browserIntent)
+            val intent = YouTubeStandalonePlayer.createVideoIntent(mContext as AppCompatActivity, DeveloperKey.DEVELOPER_KEY, videoId)
+            convertView.context?.startActivity(intent)
+
         }
+
+
+//        val youTubeThumbnailView = convertView.findViewById(R.id.youtube_thumbnail) as YouTubeThumbnailView
+//        youTubeThumbnailView.initialize(DeveloperKey.DEVELOPER_KEY, object : YouTubeThumbnailView.OnInitializedListener {
+//            override fun onInitializationSuccess(youTubeThumbnailView: YouTubeThumbnailView, youTubeThumbnailLoader: YouTubeThumbnailLoader) {
+//                youTubeThumbnailLoader.setVideo(videoId)
+//                youTubeThumbnailLoader.setOnThumbnailLoadedListener(object : YouTubeThumbnailLoader.OnThumbnailLoadedListener {
+//                    override fun onThumbnailLoaded(youTubeThumbnailView: YouTubeThumbnailView, s: String) {
+//                        youTubeThumbnailLoader.release()
+//                    }
+//
+//                    override fun onThumbnailError(youTubeThumbnailView: YouTubeThumbnailView, errorReason: YouTubeThumbnailLoader.ErrorReason) {
+//
+//                    }
+//                })
+//            }
+//
+//            override fun onInitializationFailure(youTubeThumbnailView: YouTubeThumbnailView, youTubeInitializationResult: YouTubeInitializationResult) {
+//
+//            }
+//        })
 
         // Return the completed view to render on screen
         return convertView

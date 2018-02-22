@@ -14,7 +14,7 @@ interface VinylDetailContract {
         fun showDetailVinylInfo(detailVinylRelease : DetailVinylRelease)
 
         fun showTrackList(trackList: List<Tracklist>?)
-        fun showVideos(videos : List<Video>?)
+        fun showVideos(videos : List<Video>)
 
         fun showRating(starRating: Double)
 

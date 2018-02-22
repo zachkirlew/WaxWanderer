@@ -42,9 +42,10 @@ class MatchesAdapter(private var matches: ArrayList<User>,val callback : OnMatch
 
             val context = holder.itemView.context
 
-            val intent = Intent(context, UserDetailActivity::class.java)
-            intent.putExtra("selected user", matches[position])
+            val intent = Intent(context, MessageActivity::class.java)
+            intent.putExtra("matchedUserId",matches[position])
             context.startActivity(intent)
+
         }
     }
 
@@ -65,14 +66,17 @@ class MatchesAdapter(private var matches: ArrayList<User>,val callback : OnMatch
                     .transform(CircleTransform())
                     .into(itemView.list_item_view.avatarView)
 
+            itemView.list_item_view.avatarView.setOnClickListener {
+
+                val context = itemView.context
+
+                val intent = Intent(context, UserDetailActivity::class.java)
+                intent.putExtra("selected user", match)
+                context.startActivity(intent)
+            }
+
             itemView.list_item_view.setOnMenuItemClickListener { item ->
                 when (item.itemId) {
-                    R.id.action_message -> {
-
-                        val intent = Intent(itemView.context, MessageActivity::class.java)
-                        intent.putExtra("matchedUserId",match)
-                        itemView.context.startActivity(intent)
-                    }
 
                     R.id.action_remove -> {
                         callback.onMatchDeleted(match.id)

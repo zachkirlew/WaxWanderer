@@ -111,13 +111,11 @@ class VinylDetailActivity : AppCompatActivity(), VinylDetailContract.View, View.
         }
     }
 
-
-
     override fun addRemovedResult(isRemoved: Boolean) {
         this.isRemovedFromFavourites = isRemoved
     }
 
-    override fun showVideos(videos: List<Video>?) {
+    override fun showVideos(videos: List<Video>) {
         cardYouTube.visibility = View.VISIBLE
         val listView = findViewById<LinearLayout>(R.id.list_youtube_videos)
 
