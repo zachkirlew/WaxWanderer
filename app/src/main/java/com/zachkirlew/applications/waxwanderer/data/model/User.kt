@@ -14,4 +14,5 @@ class User : Serializable{
     var gender: String? = null
     var location: String? = null
     var score : Int = 0
+    var pushToken : String? = null
 }

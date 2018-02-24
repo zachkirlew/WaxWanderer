@@ -22,6 +22,7 @@ import com.zachkirlew.applications.waxwanderer.data.recommendation.RecommenderIm
 import java.io.Serializable
 import java.util.*
 import com.google.firebase.database.DataSnapshot
+import com.zachkirlew.applications.waxwanderer.data.remote.PushHelper
 import durdinapps.rxfirebase2.RxFirebaseChildEvent
 
 
@@ -57,7 +58,7 @@ class MessageFragment : Fragment(), MessageContract.View, ShareVinylDialogFragme
 
         initializePresenter()
 
-        messageInput = view.findViewById(R.id.input_message)
+        messageInput = view.findViewById<EditText>(R.id.input_message)
 
         val sendFab = view.findViewById<ImageButton>(R.id.button_sent)
 
@@ -79,7 +80,7 @@ class MessageFragment : Fragment(), MessageContract.View, ShareVinylDialogFragme
             presenter?.loadFavourites()
         }
 
-        presenter?.loadMessages(matchedUser.id!!)
+        presenter?.loadMessages(matchedUser)
 
         return view
     }
@@ -127,7 +128,7 @@ class MessageFragment : Fragment(), MessageContract.View, ShareVinylDialogFragme
 
     private fun initializePresenter() {
         if (presenter == null)
-            presenter = MessagePresenter(this, RecommenderImp(activity!!))
+            presenter = MessagePresenter(this, RecommenderImp(activity!!), PushHelper.instance)
     }
 
     override fun showChooseRecordDialog(favourites: List<VinylRelease>) {

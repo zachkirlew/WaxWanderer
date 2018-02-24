@@ -23,30 +23,36 @@ import org.joda.time.Period
 import org.joda.time.PeriodType
 import java.lang.Exception
 import java.util.*
+import com.google.firebase.messaging.FirebaseMessaging
+import com.google.firebase.messaging.RemoteMessage
+
+
 
 
 class MatchPresenter(private @NonNull var matchView: MatchContract.View,
                      private @NonNull val preferences: UserPreferences) : MatchContract.Presenter {
 
+    private val FCM_SERVER_CONNECTION = "@gcm.googleapis.com"
+
     private val TAG = MatchPresenter::class.java.simpleName
 
-    private lateinit var compositeDisposable : CompositeDisposable
+    private lateinit var compositeDisposable: CompositeDisposable
     private val database = FirebaseDatabase.getInstance()
 
     private val userId = FirebaseAuth.getInstance().currentUser?.uid
 
-    private var matchedUserIds : List<String>? = null
+    private var matchedUserIds: List<String>? = null
 
     init {
         matchView.setPresenter(this)
     }
 
     override fun start() {
-        compositeDisposable= CompositeDisposable()
+        compositeDisposable = CompositeDisposable()
         getUsers()
     }
 
-    private fun getUsers(){
+    private fun getUsers() {
         val lowerAgeLimit = preferences.minMatchAge
         val upperAgeLimit = preferences.maxMatchAge
 
@@ -58,24 +64,26 @@ class MatchPresenter(private @NonNull var matchView: MatchContract.View,
         val userQuery = getQuery(usersRef)
 
         InternetConnectionUtil.isInternetOn()
-                .flatMap { isInternetOn -> if (isInternetOn) RxFirebaseDatabase.observeValueEvent(matchesRef).toObservable() else Observable.error(Exception("No internet connection"))}
-                .doOnNext { dataSnapshot -> matchedUserIds = dataSnapshot.children.map{it.key} }
-                .flatMap { RxFirebaseDatabase.observeValueEvent(userQuery,{dataSnapshot -> dataSnapshot.children.map { it.getValue<User>(User::class.java)!!}}).toObservable() }
-                .map { list -> list.filter{dobToAge(it.dob) in lowerAgeLimit..upperAgeLimit} } //remove anyone not in current user's match age range preference
-                .map {list -> list.filter{!matchedUserIds!!.contains(it.id)}} // filter out any already matched users
-                .map { list -> list.filter {userId != it.id} } //remove current user from list
-                .flatMap {list-> Observable.fromIterable(list) }
-                .flatMap {user->  Observable.zip(
-                        Observable.just(user),
-                        RxFirebaseDatabase.observeValueEvent(myRef.child("favourites").child(user.id).limitToLast(4)).toObservable(),
-                        RxFirebaseDatabase.observeValueEvent(myRef.child("vinylPreferences").child(user.id)).toObservable()
-                                .doOnSubscribe { compositeDisposable.add(it) },
-                        zipFunction) }
+                .flatMap { isInternetOn -> if (isInternetOn) RxFirebaseDatabase.observeValueEvent(matchesRef).toObservable() else Observable.error(Exception("No internet connection")) }
+                .doOnNext { dataSnapshot -> matchedUserIds = dataSnapshot.children.map { it.key } }
+                .flatMap { RxFirebaseDatabase.observeValueEvent(userQuery, { dataSnapshot -> dataSnapshot.children.map { it.getValue<User>(User::class.java)!! } }).toObservable() }
+                .map { list -> list.filter { dobToAge(it.dob) in lowerAgeLimit..upperAgeLimit } } //remove anyone not in current user's match age range preference
+                .map { list -> list.filter { !matchedUserIds!!.contains(it.id) } } // filter out any already matched users
+                .map { list -> list.filter { userId != it.id } } //remove current user from list
+                .flatMap { list -> Observable.fromIterable(list) }
+                .flatMap { user ->
+                    Observable.zip(
+                            Observable.just(user),
+                            RxFirebaseDatabase.observeValueEvent(myRef.child("favourites").child(user.id).limitToLast(4)).toObservable(),
+                            RxFirebaseDatabase.observeValueEvent(myRef.child("vinylPreferences").child(user.id)).toObservable()
+                                    .doOnSubscribe { compositeDisposable.add(it) },
+                            zipFunction)
+                }
                 .subscribe(observer)
     }
 
-    private val zipFunction = Function3<User,DataSnapshot, DataSnapshot, UserCard> { user,favouritesSnapshot, vinylPrefSnapshot ->
-        var vinyls : List<VinylRelease>? = null
+    private val zipFunction = Function3<User, DataSnapshot, DataSnapshot, UserCard> { user, favouritesSnapshot, vinylPrefSnapshot ->
+        var vinyls: List<VinylRelease>? = null
 
         if (favouritesSnapshot.exists()) {
             vinyls = favouritesSnapshot.children.map { it.getValue<VinylRelease>(VinylRelease::class.java)!! }
@@ -83,10 +91,10 @@ class MatchPresenter(private @NonNull var matchView: MatchContract.View,
 
         val styles = vinylPrefSnapshot.children.map { it.value as String }
 
-        UserCard(user,styles,vinyls)
+        UserCard(user, styles, vinyls)
     }
 
-    private val observer  = object : Observer<UserCard>{
+    private val observer = object : Observer<UserCard> {
         override fun onSubscribe(d: Disposable) {
             compositeDisposable.add(d)
         }
@@ -96,7 +104,7 @@ class MatchPresenter(private @NonNull var matchView: MatchContract.View,
         }
 
         override fun onComplete() {
-            Log.i(TAG,"Potential matches retrieved")
+            Log.i(TAG, "Potential matches retrieved")
         }
 
         override fun onNext(userCard: UserCard) {
@@ -121,33 +129,33 @@ class MatchPresenter(private @NonNull var matchView: MatchContract.View,
     }
 
 
-
     override fun likeUser(likedUser: User) {
 
         val likeRef = database.reference.child("likes").child(likedUser.id).child(userId)
 
         RxFirebaseDatabase.observeSingleValueEvent(likeRef)
-                .doOnSubscribe{ compositeDisposable.add(it) }
-                .subscribe ({ handleLikeLogic(it,likedUser)})
+                .doOnSubscribe { compositeDisposable.add(it) }
+                .subscribe({ handleLikeLogic(it, likedUser) })
     }
 
-    private fun handleLikeLogic(dataSnapshot : DataSnapshot,likedUser: User){
+    private fun handleLikeLogic(dataSnapshot: DataSnapshot, likedUser: User) {
         val myRef = database.reference
 
         if (dataSnapshot.exists()) {
             //It's a match!
             likedUser.name?.let { matchView.showMatchDialog(it) }
+            likedUser.pushToken?.let { sendNotification(likedUser.pushToken) }
 
-            recordMatch(myRef,likedUser.id)
-            removeOldLike(myRef,likedUser.id)
+            recordMatch(myRef, likedUser.id)
+            removeOldLike(myRef, likedUser.id)
         }
         //user doesn't have current user in their likes
         else {
-            recordLike(myRef,likedUser.id)
+            recordLike(myRef, likedUser.id)
         }
     }
 
-    private fun recordMatch(myRef: DatabaseReference, likedUserId: String?){
+    private fun recordMatch(myRef: DatabaseReference, likedUserId: String?) {
 
         val chatKey = myRef.child("chat").push().key
 
@@ -169,6 +177,17 @@ class MatchPresenter(private @NonNull var matchView: MatchContract.View,
                 .child(likedUserId).setValue(true)
     }
 
+
+    private fun sendNotification(token: String?) {
+        // This registration token comes from the client FCM SDKs.
+
+        val fm = FirebaseMessaging.getInstance()
+        fm.send(RemoteMessage.Builder("1087890678356@gcm.googleapis.com")
+                .setMessageId(Integer.toString(Random().nextInt()))
+                .addData("my_message", "Hello World")
+                .addData("my_action", "SAY_HELLO")
+                .build())
+    }
 
     override fun dispose() {
         compositeDisposable.dispose()

@@ -4,12 +4,17 @@ import android.annotation.SuppressLint
 import android.support.annotation.NonNull
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.*
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.messaging.FirebaseMessaging
+import com.google.firebase.messaging.RemoteMessage
 import com.zachkirlew.applications.waxwanderer.data.model.Message
-import com.zachkirlew.applications.waxwanderer.data.model.RxChildEvent
 import com.zachkirlew.applications.waxwanderer.data.model.User
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
 import com.zachkirlew.applications.waxwanderer.data.recommendation.RecommenderImp
+import com.zachkirlew.applications.waxwanderer.data.remote.Notification
+import com.zachkirlew.applications.waxwanderer.data.remote.PushHelper
+import com.zachkirlew.applications.waxwanderer.data.remote.PushPayload
 import durdinapps.rxfirebase2.RxFirebaseChildEvent
 import durdinapps.rxfirebase2.RxFirebaseDatabase
 import io.reactivex.Observer
@@ -17,10 +22,12 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import java.util.*
 
 
-class MessagePresenter(private @NonNull var messageView: MessageContract.View,
-                       private @NonNull val recommender: RecommenderImp) : MessageContract.Presenter {
+class MessagePresenter(@NonNull private val messageView: MessageContract.View,
+                       @NonNull private val recommender: RecommenderImp,
+                       @NonNull private val pushHelper : PushHelper) : MessageContract.Presenter {
 
     private val TAG = MessagePresenter::class.java.simpleName
 
@@ -31,18 +38,18 @@ class MessagePresenter(private @NonNull var messageView: MessageContract.View,
 
     private lateinit var chatId : String
 
-    private lateinit var recipientUid : String
+    private lateinit var recipient : User
     
 
-    override fun loadMessages(matchedUserId: String) {
+    override fun loadMessages(matchedUser: User) {
 
-        recipientUid = matchedUserId
+        recipient = matchedUser
 
         val user = mFirebaseAuth.currentUser
 
         val myRef = database.reference
 
-        val matchesRef = myRef.child("matches").child(user?.uid).child(matchedUserId)
+        val matchesRef = myRef.child("matches").child(user?.uid).child(recipient.id)
 
         RxFirebaseDatabase.observeSingleValueEvent(matchesRef,{it.value as String})
                 .doOnSubscribe { compositeDisposable.add(it) }
@@ -78,6 +85,31 @@ class MessagePresenter(private @NonNull var messageView: MessageContract.View,
         val message = Message(key, messageText, authorId, attachedRelease, System.currentTimeMillis().toString(),false,null)
 
         database.reference.child("chat").child(chatId).child(key).setValue(message)
+
+        recipient.pushToken?.let { sendNotification(recipient.pushToken,messageText) }
+    }
+
+
+    private fun sendNotification(token: String?,message : String?) {
+        // This registration token comes from the client FCM SDKs.
+
+        val notification = Notification()
+        notification.title = mFirebaseAuth.currentUser?.displayName
+        notification.body = message
+        notification.sound = "default"
+        notification.priority = "high"
+
+        val pushPayload = PushPayload()
+        pushPayload.to = token
+        pushPayload.notification = notification
+
+
+        pushHelper.sendNotification(pushPayload)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({it ->Log.i("MessagePresenter",it.string())},
+                        {error -> Log.e(TAG,"errro: " + error.message)})
+
     }
 
     override fun loadFavourites() {
@@ -125,7 +157,7 @@ class MessagePresenter(private @NonNull var messageView: MessageContract.View,
 
     @SuppressLint("CheckResult")
     private fun awardPointsToUser(points : Int) {
-        val userRef = database.reference.child("users").child(recipientUid)
+        val userRef = database.reference.child("users").child(recipient.id)
 
         RxFirebaseDatabase.observeSingleValueEvent(userRef, User::class.java)
                 .doOnSubscribe { compositeDisposable.add(it) }

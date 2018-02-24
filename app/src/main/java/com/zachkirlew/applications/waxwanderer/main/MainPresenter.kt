@@ -5,19 +5,17 @@ import android.support.v4.app.Fragment
 import android.util.Log
 import com.facebook.login.LoginManager
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
 import com.zachkirlew.applications.waxwanderer.base.OnSignOutListener
+import com.zachkirlew.applications.waxwanderer.data.local.UserPreferences
 import durdinapps.rxfirebase2.RxFirebaseDatabase
-import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 
 
-class MainPresenter(private @NonNull val mainView: MainContract.View): MainContract.Presenter {
+class MainPresenter(@NonNull private val mainView: MainContract.View,private val userPreferences: UserPreferences): MainContract.Presenter {
 
     private val mFirebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
+    private val database = FirebaseDatabase.getInstance()
     private val TAG = MainActivity::class.java.simpleName
 
     private var disposable : Disposable? = null
@@ -31,6 +29,8 @@ class MainPresenter(private @NonNull val mainView: MainContract.View): MainContr
             mainView.startLoginActivity()
         }
         else{
+            savePushToken(userPreferences.pushToken)
+
             mainView.startExploreFragment()
             loadUserDetails()
         }
@@ -50,6 +50,7 @@ class MainPresenter(private @NonNull val mainView: MainContract.View): MainContr
 
     override fun signOut() {
         dispose()
+
         LoginManager.getInstance().logOut()
         FirebaseAuth.getInstance().signOut()
 
@@ -71,6 +72,10 @@ class MainPresenter(private @NonNull val mainView: MainContract.View): MainContr
                         mainView.showProfilePicture(imageUrl)
                     }
                 }
+    }
+
+    private fun savePushToken(token: String?){
+        database.reference.child("users").child(FirebaseAuth.getInstance().currentUser?.uid).child("pushToken").setValue(token)
     }
 
     override fun setAuthListener() {

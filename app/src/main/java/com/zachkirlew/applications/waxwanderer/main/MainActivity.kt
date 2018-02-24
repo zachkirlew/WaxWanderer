@@ -18,6 +18,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.squareup.picasso.Picasso
 import com.zachkirlew.applications.waxwanderer.R
+import com.zachkirlew.applications.waxwanderer.data.local.UserPreferences
 import com.zachkirlew.applications.waxwanderer.explore.ExploreFragment
 import com.zachkirlew.applications.waxwanderer.explore.OnSearchSubmitted
 import com.zachkirlew.applications.waxwanderer.favourites.FavouriteFragment
@@ -47,9 +48,9 @@ class MainActivity : AppCompatActivity(), MainContract.View, View.OnClickListene
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        presenter = MainPresenter(this)
+        presenter = MainPresenter(this, UserPreferences())
 
-        val toolbar = findViewById(R.id.toolbar) as Toolbar
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
         val ab = supportActionBar
         ab?.setDisplayHomeAsUpEnabled(true)

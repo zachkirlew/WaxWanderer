@@ -91,6 +91,8 @@ dependencies {
 
     implementation 'com.github.tommus:youtube-android-player-api:1.2.2'
 
+    implementation 'com.google.firebase:firebase-messaging:11.8.0'
+
 }
 
 
