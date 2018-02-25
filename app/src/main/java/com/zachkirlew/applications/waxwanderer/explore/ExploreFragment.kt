@@ -1,5 +1,6 @@
 package com.zachkirlew.applications.waxwanderer.explore
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.annotation.Nullable
 import android.support.design.widget.CoordinatorLayout
@@ -10,14 +11,14 @@ import android.support.v7.widget.RecyclerView
 import android.view.*
 import android.widget.ProgressBar
 import android.widget.TextView
-import android.widget.Toast
 import com.zachkirlew.applications.waxwanderer.R
 import com.zachkirlew.applications.waxwanderer.base.OnSignOutListener
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
 import com.zachkirlew.applications.waxwanderer.data.remote.VinylsRemoteSource
 import com.zachkirlew.applications.waxwanderer.util.EqualSpaceItemDecoration
+import com.zachkirlew.applications.waxwanderer.vinyl_preferences.VinylPreferencesActivity
 
-class ExploreFragment: Fragment(), ExploreContract.View, OnSearchSubmitted,OnSignOutListener, OnAddToFavouritesListener {
+class ExploreFragment: Fragment(), ExploreContract.View, OnQueryTextListener,OnSignOutListener, OnAddToFavouritesListener {
 
     private lateinit var explorePresenter : ExploreContract.Presenter
 
@@ -62,10 +63,32 @@ class ExploreFragment: Fragment(), ExploreContract.View, OnSearchSubmitted,OnSig
         return root
     }
 
-    override fun searchSubmitted(searchText: String?) {
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.explore_toolbar, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+
+            R.id.action_vinyl_settings -> startVinylPreferenceActivity()
+        }
+        return false
+    }
+
+    override fun startVinylPreferenceActivity() {
+        val intent = Intent(activity, VinylPreferencesActivity::class.java)
+        intent.putExtra("fromMain",true)
+        startActivity(intent)
+    }
+
+    override fun onQueryTextSubmit(searchText: String?) {
         lastSearch = searchText
         exploreAdapter.removeVinyls()
         explorePresenter.searchVinylReleases(searchText)
+    }
+
+    override fun onQueryTextChange(searchText: String?) {
     }
 
     override fun showMessage(message: String?) {

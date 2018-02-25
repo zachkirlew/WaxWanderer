@@ -20,14 +20,13 @@ import com.squareup.picasso.Picasso
 import com.zachkirlew.applications.waxwanderer.R
 import com.zachkirlew.applications.waxwanderer.data.local.UserPreferences
 import com.zachkirlew.applications.waxwanderer.explore.ExploreFragment
-import com.zachkirlew.applications.waxwanderer.explore.OnSearchSubmitted
+import com.zachkirlew.applications.waxwanderer.explore.OnQueryTextListener
 import com.zachkirlew.applications.waxwanderer.favourites.FavouriteFragment
 import com.zachkirlew.applications.waxwanderer.leaderboard.LeaderBoardFragment
 import com.zachkirlew.applications.waxwanderer.login.LoginActivity
 import com.zachkirlew.applications.waxwanderer.matches.MatchesFragment
 import com.zachkirlew.applications.waxwanderer.settings.SettingsFragment
 import com.zachkirlew.applications.waxwanderer.match.MatchFragment
-import com.zachkirlew.applications.waxwanderer.vinyl_preferences.VinylPreferencesActivity
 import com.zachkirlew.applications.waxwanderer.util.ActivityUtils
 import com.zachkirlew.applications.waxwanderer.util.BorderedCircleTransform
 import kotlinx.android.synthetic.main.activity_main.*
@@ -116,11 +115,7 @@ class MainActivity : AppCompatActivity(), MainContract.View, View.OnClickListene
     }
 
 
-    override fun startStylesActivity() {
-        val intent = Intent(this, VinylPreferencesActivity::class.java)
-        intent.putExtra("fromMain",true)
-        startActivity(intent)
-    }
+
 
     public override fun onSaveInstanceState(bundle: Bundle?) {
         super.onSaveInstanceState(bundle)
@@ -138,11 +133,14 @@ class MainActivity : AppCompatActivity(), MainContract.View, View.OnClickListene
                 override fun onQueryTextSubmit(query: String?): Boolean {
 
                     val fragment = supportFragmentManager.findFragmentById(R.id.content)
-                    if (fragment is OnSearchSubmitted)
-                        fragment.searchSubmitted(query)
+                    if (fragment is OnQueryTextListener)
+                        fragment.onQueryTextSubmit(query)
                     return false
                 }
-                override fun onQueryTextChange(newText: String?): Boolean {
+                override fun onQueryTextChange(query: String?): Boolean {
+                    val fragment = supportFragmentManager.findFragmentById(R.id.content)
+                    if (fragment is OnQueryTextListener)
+                        fragment.onQueryTextChange(query)
                     return true
                 }
             })
@@ -157,11 +155,6 @@ class MainActivity : AppCompatActivity(), MainContract.View, View.OnClickListene
             android.R.id.home -> {
                 // Open the navigation drawer when the home icon is selected from the toolbar.
                 mDrawerLayout.openDrawer(GravityCompat.START)
-                return true
-            }
-            R.id.action_vinyl_settings -> {
-                // Open the navigation drawer when the home icon is selected from the toolbar.
-                startStylesActivity()
                 return true
             }
         }
@@ -189,7 +182,7 @@ class MainActivity : AppCompatActivity(), MainContract.View, View.OnClickListene
                 }
 
                 R.id.favourites_navigation_menu_item ->{
-                    showSearchIcon = false
+                    showSearchIcon = true
                     ActivityUtils.changeFragment(
                             supportFragmentManager, FavouriteFragment(), R.id.content)
                 }

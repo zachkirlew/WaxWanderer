@@ -14,6 +14,8 @@ interface ExploreContract {
         fun showNoVinylsView()
 
         fun showNoInternetMessage()
+
+        fun startVinylPreferenceActivity()
     }
 
     interface Presenter : BasePresenter {

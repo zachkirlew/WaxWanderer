@@ -12,7 +12,6 @@ interface MainContract {
 
         fun startExploreFragment()
 
-        fun startStylesActivity()
     }
 
     interface Presenter {

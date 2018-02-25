@@ -3,6 +3,7 @@ package com.zachkirlew.applications.waxwanderer.favourites
 import android.os.Bundle
 import android.support.annotation.Nullable
 import android.support.v4.app.Fragment
+import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.*
@@ -11,14 +12,11 @@ import com.zachkirlew.applications.waxwanderer.R
 import com.zachkirlew.applications.waxwanderer.base.OnSignOutListener
 import com.zachkirlew.applications.waxwanderer.data.model.User
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
+import com.zachkirlew.applications.waxwanderer.explore.OnQueryTextListener
 import com.zachkirlew.applications.waxwanderer.util.EqualSpaceItemDecoration
-import android.view.MenuInflater
-import android.content.DialogInterface
-import android.support.v7.app.AlertDialog
 
 
-class FavouriteFragment : Fragment(), FavouriteContract.View, OnSignOutListener, OnFavouriteRemovedListener {
-
+class FavouriteFragment : Fragment(), FavouriteContract.View, OnSignOutListener, OnFavouriteRemovedListener, OnQueryTextListener {
 
     private lateinit var favouritePresenter: FavouriteContract.Presenter
 
@@ -96,6 +94,16 @@ class FavouriteFragment : Fragment(), FavouriteContract.View, OnSignOutListener,
             R.id.action_sort -> showSortByDialog()
         }
         return false
+    }
+
+
+
+    override fun onQueryTextSubmit(searchText: String?) {
+        favouriteAdapter.filter.filter(searchText)
+    }
+
+    override fun onQueryTextChange(searchText: String?) {
+        favouriteAdapter.filter.filter(searchText)
     }
 
     private fun showSortByDialog(){

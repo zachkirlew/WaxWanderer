@@ -5,15 +5,26 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Filter
+import android.widget.Filterable
 import com.squareup.picasso.Picasso
 import com.zachkirlew.applications.waxwanderer.R
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
 import com.zachkirlew.applications.waxwanderer.vinyl_detail.VinylDetailActivity
 import kotlinx.android.synthetic.main.vinyl_item.view.*
 
+
 class FavouriteAdapter(private var vinyls: ArrayList<VinylRelease>,
                        private val fragment: FavouriteFragment,
-                       private val callback: OnFavouriteRemovedListener) : RecyclerView.Adapter<FavouriteAdapter.ViewHolder>() {
+                       private val callback: OnFavouriteRemovedListener) : RecyclerView.Adapter<FavouriteAdapter.ViewHolder>(), Filterable {
+
+    private val mFilter: CustomFilter
+
+    private val copy = vinyls
+
+    init {
+        mFilter = CustomFilter(this)
+    }
 
     fun addVinyls(vinyls: List<VinylRelease>) {
         this.vinyls.clear()
@@ -23,7 +34,7 @@ class FavouriteAdapter(private var vinyls: ArrayList<VinylRelease>,
 
     fun sortVinyls(sortBy : String){
         when(sortBy){
-            "Release title" -> vinyls.sortBy { it.title }
+            "Release title" -> {vinyls.sortBy { it.title} }
             "Year" -> vinyls.sortBy { it.year }
             "Catalogue number" -> vinyls.sortBy { it.catno }
             else -> return
@@ -59,6 +70,33 @@ class FavouriteAdapter(private var vinyls: ArrayList<VinylRelease>,
         return vinyls.size
     }
 
+    inner class CustomFilter constructor(private val mAdapter: FavouriteAdapter) : Filter() {
+
+        override fun performFiltering(constraint: CharSequence): Filter.FilterResults {
+
+            vinyls = copy
+
+            val filteredVinyls = ArrayList<VinylRelease>()
+
+            val results = Filter.FilterResults()
+            if (constraint.isEmpty()) {
+                filteredVinyls.addAll(vinyls)
+            } else {
+                val filterPattern = constraint.toString().toLowerCase().trim { it <= ' ' }
+                vinyls.filterTo(filteredVinyls) { it.title?.toLowerCase()?.contains(filterPattern)!! }
+            }
+            System.out.println("Count Number " + filteredVinyls.size)
+            results.values = filteredVinyls
+            results.count = filteredVinyls.size
+            return results
+        }
+
+        override fun publishResults(constraint: CharSequence, results: Filter.FilterResults) {
+            mAdapter.vinyls = (results.values as ArrayList<VinylRelease>)
+            mAdapter.notifyDataSetChanged()
+        }
+    }
+
     class ViewHolder(itemView: View, private val callback: OnFavouriteRemovedListener) : RecyclerView.ViewHolder(itemView) {
 
         fun bindItems(vinyl: VinylRelease) {
@@ -84,5 +122,9 @@ class FavouriteAdapter(private var vinyls: ArrayList<VinylRelease>,
                 }
             }
         }
+    }
+
+    override fun getFilter(): Filter {
+        return mFilter
     }
 }
