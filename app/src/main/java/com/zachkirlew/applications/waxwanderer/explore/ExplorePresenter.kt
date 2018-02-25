@@ -66,6 +66,7 @@ class ExplorePresenter(@NonNull private var vinylDataSource: VinylDataSource, @N
         }
     }
 
+
     private val observer = object : Observer<DiscogsResponse>{
         override fun onSubscribe(d: Disposable) {
             compositeDisposable?.add(d)

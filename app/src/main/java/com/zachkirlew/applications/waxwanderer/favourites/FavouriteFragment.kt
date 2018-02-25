@@ -1,7 +1,5 @@
 package com.zachkirlew.applications.waxwanderer.favourites
 
-import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
 import android.support.annotation.Nullable
 import android.support.v4.app.Fragment
@@ -18,7 +16,7 @@ import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
 import com.zachkirlew.applications.waxwanderer.util.EqualSpaceItemDecoration
 
 
-class FavouriteFragment: Fragment(), FavouriteContract.View,OnSignOutListener {
+class FavouriteFragment: Fragment(), FavouriteContract.View,OnSignOutListener, OnFavouriteRemovedListener {
 
 
     private lateinit var favouritePresenter : FavouriteContract.Presenter
@@ -32,7 +30,7 @@ class FavouriteFragment: Fragment(), FavouriteContract.View,OnSignOutListener {
 
     override fun onCreate(@Nullable savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        favouriteAdapter = FavouriteAdapter(ArrayList<VinylRelease>(),this)
+        favouriteAdapter = FavouriteAdapter(ArrayList(),this,this)
 
         user = activity?.intent?.getSerializableExtra("selected user") as User?
     }
@@ -56,7 +54,7 @@ class FavouriteFragment: Fragment(), FavouriteContract.View,OnSignOutListener {
         val spacingInPixels = resources.getDimensionPixelSize(R.dimen.list_item_padding)
         exploreList.addItemDecoration(EqualSpaceItemDecoration(spacingInPixels))
 
-        noFavouritesText = root.findViewById<TextView>(R.id.text_no_favourites)
+        noFavouritesText = root.findViewById(R.id.text_no_favourites)
 
         return root
     }
@@ -93,15 +91,14 @@ class FavouriteFragment: Fragment(), FavouriteContract.View,OnSignOutListener {
         favouriteAdapter.addVinyls(vinyls)
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        println("got here mate and requestCode= $requestCode and result is $resultCode")
-        if (requestCode == 1 && resultCode == Activity.RESULT_OK) {
-            val vinylRelease = data?.getSerializableExtra("deletedVinyl") as VinylRelease
-            favouriteAdapter.removeVinyl(vinylRelease)
-        }
+
+    override fun showVinylRemoved(vinylId: Int) {
+        favouriteAdapter.removeVinyl(vinylId)
     }
 
+    override fun onFavouriteRemoved(vinylId: Int) {
+        favouritePresenter.removeVinylFromFavourites(vinylId)
+    }
 
 
     override fun onSignOut() {

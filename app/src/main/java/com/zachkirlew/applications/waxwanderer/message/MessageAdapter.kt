@@ -14,7 +14,7 @@ import com.zachkirlew.applications.waxwanderer.vinyl_detail.VinylDetailActivity
 import durdinapps.rxfirebase2.RxFirebaseRecyclerAdapter
 import java.util.*
 
-class MessageAdapter(private val messageList: ArrayList<Message>, private val mId: String, val messageFragment: MessageFragment) : RxFirebaseRecyclerAdapter<MessageAdapter.ViewHolder,Message>(Message::class.java) {
+class MessageAdapter(private val messageList: ArrayList<Message>, private val mId: String, private val messageFragment: MessageFragment) : RxFirebaseRecyclerAdapter<MessageAdapter.ViewHolder,Message>(Message::class.java) {
 
     private val TAG = MessageAdapter::class.java.simpleName
 
@@ -40,10 +40,10 @@ class MessageAdapter(private val messageList: ArrayList<Message>, private val mI
 
             val attachedVinyl = message.attachedVinyl
 
-            val coverArt = holder.layoutAttachedVinyl.findViewById<ImageView>(R.id.cover_art) as ImageView
-            val releaseTxt = holder.layoutAttachedVinyl.findViewById<TextView>(R.id.release_title) as TextView
-            val yearTxt = holder.layoutAttachedVinyl.findViewById<TextView>(R.id.release_year) as TextView
-            val codeTxt = holder.layoutAttachedVinyl.findViewById<TextView>(R.id.release_code) as TextView
+            val coverArt = holder.layoutAttachedVinyl.findViewById(R.id.cover_art) as ImageView
+            val releaseTxt = holder.layoutAttachedVinyl.findViewById(R.id.release_title) as TextView
+            val yearTxt = holder.layoutAttachedVinyl.findViewById(R.id.release_year) as TextView
+            val codeTxt = holder.layoutAttachedVinyl.findViewById(R.id.release_code) as TextView
 
             releaseTxt.text = attachedVinyl?.title
             yearTxt.text = attachedVinyl?.year

@@ -15,7 +15,7 @@ import io.reactivex.Observer
 import io.reactivex.disposables.Disposable
 import java.lang.Exception
 
-class FavouritePresenter(private @NonNull var favouriteView: FavouriteContract.View) : FavouriteContract.Presenter {
+class FavouritePresenter(@NonNull private var favouriteView: FavouriteContract.View) : FavouriteContract.Presenter {
 
 
     private val mFirebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
@@ -41,6 +41,12 @@ class FavouritePresenter(private @NonNull var favouriteView: FavouriteContract.V
         InternetConnectionUtil.isInternetOn()
                 .flatMap { isInternetOn -> if (isInternetOn) RxFirebaseDatabase.observeValueEvent(ref).toObservable() else Observable.error(Exception("No internet connection")) }
                 .subscribe(observer)
+    }
+
+    override fun removeVinylFromFavourites(vinylId: Int) {
+        database.reference.child("favourites").child(mFirebaseAuth.uid).child(vinylId.toString()).setValue(null)
+//        favouriteView.showVinylRemoved(vinylId)
+//
     }
 
     private val observer = object : Observer<DataSnapshot>{

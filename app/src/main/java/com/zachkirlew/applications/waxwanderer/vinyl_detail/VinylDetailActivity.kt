@@ -38,8 +38,6 @@ class VinylDetailActivity : AppCompatActivity(), VinylDetailContract.View, View.
 
     private val cardYouTube by lazy{findViewById<CardView>(R.id.card_youtube)}
 
-    private var isRemovedFromFavourites : Boolean = false
-
     private val coordinatorLayout by lazy{findViewById<CoordinatorLayout>(R.id.main_content)}
 
     public override fun onCreate(savedInstanceState: Bundle?) {
@@ -98,22 +96,6 @@ class VinylDetailActivity : AppCompatActivity(), VinylDetailContract.View, View.
         this.presenter = presenter
     }
 
-    override fun onBackPressed() {
-        println(isRemovedFromFavourites)
-        if(isRemovedFromFavourites){
-            val data = Intent()
-            data.putExtra("deletedVinyl",vinyl)
-            setResult(Activity.RESULT_OK,data)
-            finish()
-        }
-        else{
-            super.onBackPressed()
-        }
-    }
-
-    override fun addRemovedResult(isRemoved: Boolean) {
-        this.isRemovedFromFavourites = isRemoved
-    }
 
     override fun showVideos(videos: List<Video>) {
         cardYouTube.visibility = View.VISIBLE

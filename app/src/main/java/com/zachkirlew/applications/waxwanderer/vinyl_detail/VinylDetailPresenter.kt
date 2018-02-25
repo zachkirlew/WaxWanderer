@@ -21,7 +21,7 @@ import io.reactivex.schedulers.Schedulers
 
 class VinylDetailPresenter(@NonNull private val vinylDataSource: VinylDataSource,
                            @NonNull private val vinylDetailView: VinylDetailContract.View,
-                           private @NonNull val recommender: RecommenderImp) : VinylDetailContract.Presenter, Parcelable {
+                           private @NonNull val recommender: RecommenderImp) : VinylDetailContract.Presenter {
 
     private val user = FirebaseAuth.getInstance().currentUser
     private val database = FirebaseDatabase.getInstance()
@@ -96,15 +96,12 @@ class VinylDetailPresenter(@NonNull private val vinylDataSource: VinylDataSource
             vinylDetailView.showMessage("Removed from favourites")
             removeFavouriteFromRecommender(user?.uid!!,vinylRelease.id.toString())
 
-            vinylDetailView.addRemovedResult(true)
-
         } else {
 
             favouriteRef.setValue(vinylRelease)
 
             vinylDetailView.showMessage("Successfully added to favourites")
             addFavouriteToRecommender(user?.uid!!,vinylRelease.id.toString())
-            vinylDetailView.addRemovedResult(false)
         }
     }
 
@@ -135,31 +132,9 @@ class VinylDetailPresenter(@NonNull private val vinylDataSource: VinylDataSource
         }
     }
 
-    constructor(parcel: Parcel) : this(
-            TODO("vinylDataSource"),
-            TODO("vinylDetailView"),
-            TODO("recommender")) {
-    }
 
     override fun dispose() {
         compositeDisposable?.dispose()
     }
 
-    override fun writeToParcel(parcel: Parcel, flags: Int) {
-
-    }
-
-    override fun describeContents(): Int {
-        return 0
-    }
-
-    companion object CREATOR : Parcelable.Creator<VinylDetailPresenter> {
-        override fun createFromParcel(parcel: Parcel): VinylDetailPresenter {
-            return VinylDetailPresenter(parcel)
-        }
-
-        override fun newArray(size: Int): Array<VinylDetailPresenter?> {
-            return arrayOfNulls(size)
-        }
-    }
 }

@@ -15,7 +15,7 @@ import com.zachkirlew.applications.waxwanderer.util.CircleTransform
 import durdinapps.rxfirebase2.RxFirebaseChildEvent
 import kotlinx.android.synthetic.main.match_item.view.*
 
-class MatchesAdapter(private var matches: ArrayList<User>,val callback : OnMatchDeletedListener) : RecyclerView.Adapter<MatchesAdapter.ViewHolder>() {
+class MatchesAdapter(private var matches: ArrayList<User>, private val callback : OnMatchDeletedListener) : RecyclerView.Adapter<MatchesAdapter.ViewHolder>() {
 
     fun addMatch(match : User?){
         if (match != null) {
@@ -53,12 +53,13 @@ class MatchesAdapter(private var matches: ArrayList<User>,val callback : OnMatch
         return matches.size
     }
 
-    class ViewHolder(itemView: ListItemView, val callback : OnMatchDeletedListener) : RecyclerView.ViewHolder(itemView) {
+    class ViewHolder(itemView: ListItemView, private val callback : OnMatchDeletedListener) : RecyclerView.ViewHolder(itemView) {
 
         fun bindItems(match: User) {
 
             itemView.list_item_view.title = match.name
             itemView.list_item_view.subtitle = match.location
+
 
             Picasso.with(itemView.context)
                     .load(match.imageurl)

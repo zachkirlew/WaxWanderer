@@ -9,6 +9,8 @@ interface FavouriteContract {
     interface View: BaseView<Presenter> {
 
         fun showFavouriteVinyls(vinyls: List<VinylRelease>)
+
+        fun showVinylRemoved(vinylId : Int)
     }
 
     interface Presenter {
@@ -16,6 +18,8 @@ interface FavouriteContract {
         fun loadFavouriteVinyls()
 
         fun loadFavouriteVinyls(userId : String)
+
+        fun removeVinylFromFavourites(vinylId : Int)
 
         fun dispose()
     }
