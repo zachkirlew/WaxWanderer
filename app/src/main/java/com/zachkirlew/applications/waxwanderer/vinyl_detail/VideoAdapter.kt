@@ -43,31 +43,10 @@ class VideoAdapter
 
 
         convertView.setOnClickListener {
-            val intent = YouTubeStandalonePlayer.createVideoIntent(mContext as AppCompatActivity, DeveloperKey.DEVELOPER_KEY, videoId)
+            val intent = YouTubeStandalonePlayer.createVideoIntent(mContext as AppCompatActivity, DeveloperKey.DEVELOPER_KEY, videoId,0, true, true)
             convertView.context?.startActivity(intent)
 
         }
-
-
-//        val youTubeThumbnailView = convertView.findViewById(R.id.youtube_thumbnail) as YouTubeThumbnailView
-//        youTubeThumbnailView.initialize(DeveloperKey.DEVELOPER_KEY, object : YouTubeThumbnailView.OnInitializedListener {
-//            override fun onInitializationSuccess(youTubeThumbnailView: YouTubeThumbnailView, youTubeThumbnailLoader: YouTubeThumbnailLoader) {
-//                youTubeThumbnailLoader.setVideo(videoId)
-//                youTubeThumbnailLoader.setOnThumbnailLoadedListener(object : YouTubeThumbnailLoader.OnThumbnailLoadedListener {
-//                    override fun onThumbnailLoaded(youTubeThumbnailView: YouTubeThumbnailView, s: String) {
-//                        youTubeThumbnailLoader.release()
-//                    }
-//
-//                    override fun onThumbnailError(youTubeThumbnailView: YouTubeThumbnailView, errorReason: YouTubeThumbnailLoader.ErrorReason) {
-//
-//                    }
-//                })
-//            }
-//
-//            override fun onInitializationFailure(youTubeThumbnailView: YouTubeThumbnailView, youTubeInitializationResult: YouTubeInitializationResult) {
-//
-//            }
-//        })
 
         // Return the completed view to render on screen
         return convertView

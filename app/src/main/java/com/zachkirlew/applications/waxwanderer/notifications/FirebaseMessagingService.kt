@@ -1,4 +1,4 @@
-package com.zachkirlew.applications.waxwanderer
+package com.zachkirlew.applications.waxwanderer.notifications
 
 import android.app.Notification
 import android.app.NotificationChannel
@@ -12,12 +12,13 @@ import android.support.v4.app.NotificationCompat
 import android.util.Log
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
+import com.zachkirlew.applications.waxwanderer.R
 import com.zachkirlew.applications.waxwanderer.main.MainActivity
 
 
-class MyFirebaseMessagingService : FirebaseMessagingService(){
+class FirebaseMessagingService : FirebaseMessagingService(){
 
-    private val TAG: String = MyFirebaseMessagingService::class.java.simpleName
+    private val TAG: String = FirebaseMessagingService::class.java.simpleName
 
     override fun onMessageReceived(remoteMessage: RemoteMessage?) {
 
@@ -50,7 +51,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService(){
         val channelId = getString(R.string.default_notification_channel_id)
         val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
         val notificationBuilder = NotificationCompat.Builder(this,channelId)
-                .setSmallIcon(R.mipmap.ic_launcher)
+                .setSmallIcon(R.drawable.ic_stat_thumbnail_icons8_music_record)
                 .setContentTitle(title)
                 .setContentText(messageBody)
                 .setPriority(Notification.PRIORITY_HIGH)

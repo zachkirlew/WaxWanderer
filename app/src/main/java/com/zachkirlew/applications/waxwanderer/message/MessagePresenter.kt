@@ -6,14 +6,12 @@ import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.messaging.FirebaseMessaging
-import com.google.firebase.messaging.RemoteMessage
 import com.zachkirlew.applications.waxwanderer.data.model.Message
 import com.zachkirlew.applications.waxwanderer.data.model.User
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
 import com.zachkirlew.applications.waxwanderer.data.recommendation.RecommenderImp
 import com.zachkirlew.applications.waxwanderer.data.remote.Notification
-import com.zachkirlew.applications.waxwanderer.data.remote.PushHelper
+import com.zachkirlew.applications.waxwanderer.data.remote.notification.PushHelper
 import com.zachkirlew.applications.waxwanderer.data.remote.PushPayload
 import durdinapps.rxfirebase2.RxFirebaseChildEvent
 import durdinapps.rxfirebase2.RxFirebaseDatabase
@@ -22,7 +20,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import java.util.*
 
 
 class MessagePresenter(@NonNull private val messageView: MessageContract.View,

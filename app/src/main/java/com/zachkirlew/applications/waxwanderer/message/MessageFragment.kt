@@ -22,7 +22,7 @@ import com.zachkirlew.applications.waxwanderer.data.recommendation.RecommenderIm
 import java.io.Serializable
 import java.util.*
 import com.google.firebase.database.DataSnapshot
-import com.zachkirlew.applications.waxwanderer.data.remote.PushHelper
+import com.zachkirlew.applications.waxwanderer.data.remote.notification.PushHelper
 import durdinapps.rxfirebase2.RxFirebaseChildEvent
 
 
@@ -128,7 +128,7 @@ class MessageFragment : Fragment(), MessageContract.View, ShareVinylDialogFragme
 
     private fun initializePresenter() {
         if (presenter == null)
-            presenter = MessagePresenter(this, RecommenderImp(activity!!), PushHelper.instance)
+            presenter = MessagePresenter(this, RecommenderImp(activity!!), PushHelper.getInstance(activity!!))
     }
 
     override fun showChooseRecordDialog(favourites: List<VinylRelease>) {
