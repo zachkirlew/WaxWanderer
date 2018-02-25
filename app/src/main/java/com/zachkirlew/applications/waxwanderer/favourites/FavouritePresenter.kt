@@ -45,8 +45,6 @@ class FavouritePresenter(@NonNull private var favouriteView: FavouriteContract.V
 
     override fun removeVinylFromFavourites(vinylId: Int) {
         database.reference.child("favourites").child(mFirebaseAuth.uid).child(vinylId.toString()).setValue(null)
-//        favouriteView.showVinylRemoved(vinylId)
-//
     }
 
     private val observer = object : Observer<DataSnapshot>{

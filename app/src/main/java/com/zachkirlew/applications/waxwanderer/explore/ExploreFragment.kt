@@ -2,6 +2,8 @@ package com.zachkirlew.applications.waxwanderer.explore
 
 import android.os.Bundle
 import android.support.annotation.Nullable
+import android.support.design.widget.CoordinatorLayout
+import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -15,7 +17,7 @@ import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
 import com.zachkirlew.applications.waxwanderer.data.remote.VinylsRemoteSource
 import com.zachkirlew.applications.waxwanderer.util.EqualSpaceItemDecoration
 
-class ExploreFragment: Fragment(), ExploreContract.View, OnSearchSubmitted,OnSignOutListener {
+class ExploreFragment: Fragment(), ExploreContract.View, OnSearchSubmitted,OnSignOutListener, OnAddToFavouritesListener {
 
     private lateinit var explorePresenter : ExploreContract.Presenter
 
@@ -27,10 +29,12 @@ class ExploreFragment: Fragment(), ExploreContract.View, OnSearchSubmitted,OnSig
 
     private var lastSearch : String? = null
 
+    private val coordinatorLayout : CoordinatorLayout by lazy{activity!!.findViewById<CoordinatorLayout>(R.id.coordinatorLayout)}
+
     override fun onCreate(@Nullable savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-        exploreAdapter = ExploreAdapter(ArrayList(0))
+        exploreAdapter = ExploreAdapter(ArrayList(0),this)
     }
 
 
@@ -65,8 +69,7 @@ class ExploreFragment: Fragment(), ExploreContract.View, OnSearchSubmitted,OnSig
     }
 
     override fun showMessage(message: String?) {
-        Toast.makeText(activity, message,
-                Toast.LENGTH_SHORT).show()
+        message?.let { Snackbar.make(coordinatorLayout, it, Snackbar.LENGTH_LONG).show() }
     }
 
     override fun setPresenter(presenter: ExploreContract.Presenter) {
@@ -91,6 +94,10 @@ class ExploreFragment: Fragment(), ExploreContract.View, OnSearchSubmitted,OnSig
         progressBar.visibility = View.GONE
         noFavouritesText?.text = getString(R.string.text_no_internet)
         noFavouritesText?.visibility = View.VISIBLE
+    }
+
+    override fun onAddedToFavourites(vinyl : VinylRelease) {
+        explorePresenter.addToFavourites(vinyl)
     }
 
     override fun onResume() {

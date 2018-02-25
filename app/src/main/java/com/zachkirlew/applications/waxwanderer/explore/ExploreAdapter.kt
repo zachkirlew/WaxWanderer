@@ -1,6 +1,7 @@
 package com.zachkirlew.applications.waxwanderer.explore
 
 import android.content.Intent
+import android.support.v7.view.menu.MenuBuilder
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -11,7 +12,8 @@ import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
 import com.zachkirlew.applications.waxwanderer.vinyl_detail.VinylDetailActivity
 import kotlinx.android.synthetic.main.vinyl_item.view.*
 
-class ExploreAdapter(private var vinyls: ArrayList<VinylRelease>) : RecyclerView.Adapter<ExploreAdapter.ViewHolder>() {
+class ExploreAdapter(private var vinyls: ArrayList<VinylRelease>,
+                     private val callback: OnAddToFavouritesListener) : RecyclerView.Adapter<ExploreAdapter.ViewHolder>() {
 
     fun addVinyls(vinyls : List<VinylRelease>){
         this.vinyls.addAll(vinyls)
@@ -25,7 +27,7 @@ class ExploreAdapter(private var vinyls: ArrayList<VinylRelease>) : RecyclerView
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ExploreAdapter.ViewHolder {
         val v = LayoutInflater.from(parent.context).inflate(R.layout.vinyl_item, parent, false)
-        return ViewHolder(v)
+        return ViewHolder(v,callback)
     }
 
     override fun onBindViewHolder(holder: ExploreAdapter.ViewHolder, position: Int) {
@@ -45,7 +47,7 @@ class ExploreAdapter(private var vinyls: ArrayList<VinylRelease>) : RecyclerView
         return vinyls.size
     }
 
-    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    class ViewHolder(itemView: View,private val callback: OnAddToFavouritesListener) : RecyclerView.ViewHolder(itemView) {
 
         fun bindItems(vinyl: VinylRelease) {
 
@@ -60,16 +62,16 @@ class ExploreAdapter(private var vinyls: ArrayList<VinylRelease>) : RecyclerView
                         .into(itemView.list_item_view.avatarView)
             }
 
+            itemView.list_item_view.inflateMenu(R.menu.explore_action_menu)
 
+            itemView.list_item_view.setOnMenuItemClickListener { item ->
+                when (item.itemId) {
 
-//            itemView.list_item_view.setOnMenuItemClickListener { item ->
-//                when (item.itemId) {
-//
-//                    R.id.action_remove -> {
-//                        callback.onMatchDeleted(match.id)
-//                    }
-//                }
-//            }
+                    R.id.action_add -> {
+                        callback.onAddedToFavourites(vinyl)
+                    }
+                }
+            }
         }
     }
 }

@@ -3,9 +3,11 @@ package com.zachkirlew.applications.waxwanderer.explore
 import android.support.annotation.NonNull
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.zachkirlew.applications.waxwanderer.data.VinylDataSource
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.DiscogsResponse
+import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
 import com.zachkirlew.applications.waxwanderer.util.InternetConnectionUtil
 import durdinapps.rxfirebase2.RxFirebaseDatabase
 import io.reactivex.Observable
@@ -17,6 +19,7 @@ import io.reactivex.schedulers.Schedulers
 import java.lang.Exception
 
 class ExplorePresenter(@NonNull private var vinylDataSource: VinylDataSource, @NonNull private var exploreView: ExploreContract.View) : ExploreContract.Presenter {
+
     private val mFirebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private val database = FirebaseDatabase.getInstance()
 
@@ -64,6 +67,23 @@ class ExplorePresenter(@NonNull private var vinylDataSource: VinylDataSource, @N
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(observer)
         }
+    }
+
+    override fun addToFavourites(vinyl: VinylRelease) {
+
+        val myRef = database.reference.child("favourites").child(mFirebaseAuth.currentUser?.uid).child(vinyl.id.toString())
+
+        RxFirebaseDatabase.observeSingleValueEvent(myRef).toObservable()
+                .map { dataSnapshot -> dataSnapshot.exists() }
+                .doOnSubscribe { compositeDisposable?.add(it) }
+                .subscribe({ isInFavourites -> if (!isInFavourites) addToFirebase(myRef,vinyl) else exploreView.showMessage("Already in your favourites") },
+                        { error -> exploreView.showMessage(error.message) })
+
+    }
+
+    private fun addToFirebase(myRef: DatabaseReference, vinyl: VinylRelease) {
+        myRef.setValue(vinyl)
+        exploreView.showMessage("Added to favourites")
     }
 
 

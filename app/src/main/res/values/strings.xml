@@ -63,5 +63,7 @@
     <string name="view_my_favourites">View my favourites</string>
     <string name="match_no_users">Unfortunately there\'s no new profiles to show you</string>
     <string name="default_notification_channel_id">wax_wanderer_default_channel</string>
+    <string name="explore_action_add">Add to favourites</string>
+    <string name="favourite_action_remove">Remove</string>
 
 </resources>

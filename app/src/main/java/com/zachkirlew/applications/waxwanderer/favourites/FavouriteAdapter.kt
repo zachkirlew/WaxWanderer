@@ -63,6 +63,8 @@ class FavouriteAdapter(private var vinyls: ArrayList<VinylRelease>,
                         .into(itemView.list_item_view.avatarView)
             }
 
+            itemView.list_item_view.inflateMenu(R.menu.favourite_action_menu)
+
             itemView.list_item_view.setOnMenuItemClickListener { item ->
                 when (item.itemId) {
 

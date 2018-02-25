@@ -18,6 +18,8 @@ interface ExploreContract {
 
     interface Presenter : BasePresenter {
 
+        fun addToFavourites(vinyl : VinylRelease)
+
         fun loadVinylPreferences()
 
         fun searchVinylReleases(searchText : String?)

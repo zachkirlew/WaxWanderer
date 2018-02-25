@@ -229,7 +229,7 @@ class MainActivity : AppCompatActivity(), MainContract.View, View.OnClickListene
     override fun showDisplayName(displayName: String) {
         val header = navigationView.getHeaderView(0)
 
-        val nameText = header?.findViewById<TextView>(R.id.name) as TextView
+        val nameText = header?.findViewById(R.id.name) as TextView
 
         nameText.text = displayName
     }
