@@ -65,5 +65,6 @@
     <string name="default_notification_channel_id">wax_wanderer_default_channel</string>
     <string name="explore_action_add">Add to favourites</string>
     <string name="favourite_action_remove">Remove</string>
+    <string name="favourite_toolbar_sort">Sort</string>
 
 </resources>

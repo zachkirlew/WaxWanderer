@@ -21,6 +21,16 @@ class FavouriteAdapter(private var vinyls: ArrayList<VinylRelease>,
         notifyDataSetChanged()
     }
 
+    fun sortVinyls(sortBy : String){
+        when(sortBy){
+            "Release title" -> vinyls.sortBy { it.title }
+            "Year" -> vinyls.sortBy { it.year }
+            "Catalogue number" -> vinyls.sortBy { it.catno }
+            else -> return
+        }
+        notifyDataSetChanged()
+    }
+
     fun removeVinyl(vinylId: Int) {
         val position = vinyls.indexOfFirst { vinylId == it.id }
         this.vinyls.removeAt(position)

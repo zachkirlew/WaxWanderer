@@ -5,21 +5,22 @@ import android.support.annotation.Nullable
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.TextView
 import com.zachkirlew.applications.waxwanderer.R
 import com.zachkirlew.applications.waxwanderer.base.OnSignOutListener
 import com.zachkirlew.applications.waxwanderer.data.model.User
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
 import com.zachkirlew.applications.waxwanderer.util.EqualSpaceItemDecoration
+import android.view.MenuInflater
+import android.content.DialogInterface
+import android.support.v7.app.AlertDialog
 
 
-class FavouriteFragment: Fragment(), FavouriteContract.View,OnSignOutListener, OnFavouriteRemovedListener {
+class FavouriteFragment : Fragment(), FavouriteContract.View, OnSignOutListener, OnFavouriteRemovedListener {
 
 
-    private lateinit var favouritePresenter : FavouriteContract.Presenter
+    private lateinit var favouritePresenter: FavouriteContract.Presenter
 
     private lateinit var favouriteAdapter: FavouriteAdapter
 
@@ -30,7 +31,9 @@ class FavouriteFragment: Fragment(), FavouriteContract.View,OnSignOutListener, O
 
     override fun onCreate(@Nullable savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        favouriteAdapter = FavouriteAdapter(ArrayList(),this,this)
+
+        setHasOptionsMenu(true)
+        favouriteAdapter = FavouriteAdapter(ArrayList(), this, this)
 
         user = activity?.intent?.getSerializableExtra("selected user") as User?
     }
@@ -44,7 +47,7 @@ class FavouriteFragment: Fragment(), FavouriteContract.View,OnSignOutListener, O
 
         favouritePresenter = FavouritePresenter(this)
 
-        val exploreList = root?.findViewById<RecyclerView>(R.id.explore_list) as RecyclerView
+        val exploreList = root?.findViewById(R.id.explore_list) as RecyclerView
 
         val mLayoutManager = LinearLayoutManager(activity)
 
@@ -63,12 +66,12 @@ class FavouriteFragment: Fragment(), FavouriteContract.View,OnSignOutListener, O
         super.onResume()
 
         //user is viewing someone else's favourite list
-        if(user!=null){
+        if (user != null) {
             val userId = user?.id
             favouritePresenter.loadFavouriteVinyls(userId!!)
         }
         //user is viewing their own list
-        else{
+        else {
             favouritePresenter.loadFavouriteVinyls()
         }
     }
@@ -80,6 +83,30 @@ class FavouriteFragment: Fragment(), FavouriteContract.View,OnSignOutListener, O
 
     override fun setPresenter(presenter: FavouriteContract.Presenter) {
         favouritePresenter = presenter
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.favourite, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+
+            R.id.action_sort -> showSortByDialog()
+        }
+        return false
+    }
+
+    private fun showSortByDialog(){
+        val singleChoiceItems = resources.getStringArray(R.array.favourite_dialog_sort)
+        var itemSelected = 0
+        AlertDialog.Builder(activity!!)
+                .setTitle("Sort releases by:")
+                .setSingleChoiceItems(singleChoiceItems, itemSelected, { _, selectedIndex -> itemSelected = selectedIndex})
+                .setPositiveButton("Ok", {d,i ->favouriteAdapter.sortVinyls(singleChoiceItems[itemSelected])})
+                .setNegativeButton("Cancel", null)
+                .show()
     }
 
     override fun showMessage(message: String?) {

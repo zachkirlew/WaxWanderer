@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="favourite_dialog_sort">
+        <item>Release title</item>
+        <item>Year</item>
+        <item>Catalogue number</item>
+    </string-array>
+</resources>
