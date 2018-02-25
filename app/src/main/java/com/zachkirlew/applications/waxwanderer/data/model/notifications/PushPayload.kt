@@ -1,4 +1,4 @@
-package com.zachkirlew.applications.waxwanderer.data.remote
+package com.zachkirlew.applications.waxwanderer.data.model.notifications
 
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
@@ -16,4 +16,7 @@ class PushPayload {
     @Expose
     var notification: Notification? = null
 
+    @SerializedName("data")
+    @Expose
+    var data :HashMap<String,Any>? = null
 }

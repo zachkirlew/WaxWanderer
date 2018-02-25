@@ -1,6 +1,6 @@
 package com.zachkirlew.applications.waxwanderer.data.remote.notification
 
-import com.zachkirlew.applications.waxwanderer.data.remote.PushPayload
+import com.zachkirlew.applications.waxwanderer.data.model.notifications.PushPayload
 import io.reactivex.Single
 import okhttp3.ResponseBody
 import retrofit2.http.Body

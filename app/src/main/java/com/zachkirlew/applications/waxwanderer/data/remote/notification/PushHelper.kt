@@ -7,7 +7,7 @@ import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import android.app.Activity
-import com.zachkirlew.applications.waxwanderer.data.remote.PushPayload
+import com.zachkirlew.applications.waxwanderer.data.model.notifications.PushPayload
 import java.lang.ref.WeakReference
 
 
@@ -33,7 +33,6 @@ class PushHelper private constructor(activity: Activity){
     }
 
     fun sendNotification(payload: PushPayload): Single<ResponseBody> {
-        println(key)
         return fcmPushService.send(key, payload)
     }
 

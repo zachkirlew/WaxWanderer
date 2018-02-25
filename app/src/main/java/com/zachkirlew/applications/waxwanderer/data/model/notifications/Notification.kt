@@ -1,4 +1,4 @@
-package com.zachkirlew.applications.waxwanderer.data.remote
+package com.zachkirlew.applications.waxwanderer.data.model.notifications
 
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName

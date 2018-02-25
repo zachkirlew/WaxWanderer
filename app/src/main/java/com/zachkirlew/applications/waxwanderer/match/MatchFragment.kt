@@ -15,6 +15,7 @@ import com.zachkirlew.applications.waxwanderer.base.OnSignOutListener
 import com.zachkirlew.applications.waxwanderer.data.local.UserPreferences
 import com.zachkirlew.applications.waxwanderer.data.model.User
 import com.zachkirlew.applications.waxwanderer.data.model.UserCard
+import com.zachkirlew.applications.waxwanderer.data.remote.notification.PushHelper
 import com.zachkirlew.applications.waxwanderer.recommendations.RecommendationsActivity
 
 
@@ -43,7 +44,7 @@ class MatchFragment : Fragment(), MatchContract.View,OnSignOutListener, OnSwipeL
 
         setHasOptionsMenu(true)
 
-        matchPresenter = MatchPresenter(this, UserPreferences())
+        matchPresenter = MatchPresenter(this, UserPreferences(), PushHelper.getInstance(activity!!))
 
         likeButton = root.findViewById<ImageButton>(R.id.acceptBtn) as ImageButton
         dislikeButton = root.findViewById<ImageButton>(R.id.rejectBtn) as ImageButton
@@ -72,7 +73,7 @@ class MatchFragment : Fragment(), MatchContract.View,OnSignOutListener, OnSwipeL
 
     override fun showMatchDialog(likedUserName: String) {
         val builder = AlertDialog.Builder(activity!!)
-        builder.setMessage("You matched with $likedUserName")
+        builder.setMessage("You became friends with $likedUserName")
                 .setPositiveButton("Okay", { dialog, id ->
                     dialog.dismiss()
                 })

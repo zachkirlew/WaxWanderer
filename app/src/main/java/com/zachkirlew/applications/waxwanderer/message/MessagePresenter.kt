@@ -6,13 +6,14 @@ import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.FirebaseDatabase
+import com.google.gson.Gson
 import com.zachkirlew.applications.waxwanderer.data.model.Message
 import com.zachkirlew.applications.waxwanderer.data.model.User
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
 import com.zachkirlew.applications.waxwanderer.data.recommendation.RecommenderImp
-import com.zachkirlew.applications.waxwanderer.data.remote.Notification
+import com.zachkirlew.applications.waxwanderer.data.model.notifications.Notification
 import com.zachkirlew.applications.waxwanderer.data.remote.notification.PushHelper
-import com.zachkirlew.applications.waxwanderer.data.remote.PushPayload
+import com.zachkirlew.applications.waxwanderer.data.model.notifications.PushPayload
 import durdinapps.rxfirebase2.RxFirebaseChildEvent
 import durdinapps.rxfirebase2.RxFirebaseDatabase
 import io.reactivex.Observer
@@ -83,30 +84,43 @@ class MessagePresenter(@NonNull private val messageView: MessageContract.View,
 
         database.reference.child("chat").child(chatId).child(key).setValue(message)
 
-        recipient.pushToken?.let { sendNotification(recipient.pushToken,messageText) }
+        recipient.pushToken?.let { sendNotification(recipient.pushToken,mFirebaseAuth.currentUser?.displayName,messageText,attachedRelease) }
     }
 
 
-    private fun sendNotification(token: String?,message : String?) {
+    private fun sendNotification(token: String?,title : String?, message: String?, attachedRelease: VinylRelease?) {
         // This registration token comes from the client FCM SDKs.
 
         val notification = Notification()
-        notification.title = mFirebaseAuth.currentUser?.displayName
+        notification.title = title
         notification.body = message
         notification.sound = "default"
         notification.priority = "high"
 
         val pushPayload = PushPayload()
         pushPayload.to = token
-        pushPayload.notification = notification
 
+
+        if(attachedRelease!=null){
+            notification.body = "Check out this record..."
+
+            val dataMap = HashMap<String, Any>()
+
+            if(attachedRelease.thumb!=null)
+                dataMap["release_image"] = attachedRelease.thumb!!
+            dataMap["release_title"] = attachedRelease.title!!
+            dataMap["release_no"] = attachedRelease.catno!!
+
+            pushPayload.data = dataMap
+        }
+
+        pushPayload.notification = notification
 
         pushHelper.sendNotification(pushPayload)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({it ->Log.i("MessagePresenter",it.string())},
                         {error -> Log.e(TAG,"errro: " + error.message)})
-
     }
 
     override fun loadFavourites() {
@@ -131,12 +145,24 @@ class MessagePresenter(@NonNull private val messageView: MessageContract.View,
         addRatingToRecommender(user?.uid!!,vinylId,rating)
 
         println("rating is $rating")
+        val name = mFirebaseAuth.currentUser?.displayName
+
+        var points = 0
 
         when(rating){
-            3.00 -> awardPointsToUser(5)
-            4.00 -> awardPointsToUser(7)
-            5.00 -> awardPointsToUser(10)
+            3.00 -> {points = 5
+                    awardPointsToUser(points) }
+            4.00 -> {points = 7
+                    awardPointsToUser(points) }
+            5.00 -> {points = 10
+                    awardPointsToUser(points) }
+            else -> points = 0
         }
+
+        recipient.pushToken?.let { sendNotification(recipient.pushToken,
+                "$name rated your suggestion as ${rating.toInt()} out of 5!",
+                " You received $points points!",
+                null) }
     }
 
     private fun addRatingToRecommender(uid: String, vinylId: Int, rating: Double) {

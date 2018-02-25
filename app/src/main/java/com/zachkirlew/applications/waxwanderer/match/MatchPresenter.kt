@@ -11,28 +11,28 @@ import com.zachkirlew.applications.waxwanderer.data.local.UserPreferences
 import com.zachkirlew.applications.waxwanderer.data.model.User
 import com.zachkirlew.applications.waxwanderer.data.model.UserCard
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
+import com.zachkirlew.applications.waxwanderer.data.model.notifications.Notification
+import com.zachkirlew.applications.waxwanderer.data.model.notifications.PushPayload
+import com.zachkirlew.applications.waxwanderer.data.remote.notification.PushHelper
 import com.zachkirlew.applications.waxwanderer.util.InternetConnectionUtil
 import durdinapps.rxfirebase2.RxFirebaseDatabase
 import io.reactivex.Observable
 import io.reactivex.Observer
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Function3
+import io.reactivex.schedulers.Schedulers
 import org.joda.time.LocalDate
 import org.joda.time.Period
 import org.joda.time.PeriodType
 import java.lang.Exception
 import java.util.*
-import com.google.firebase.messaging.FirebaseMessaging
-import com.google.firebase.messaging.RemoteMessage
 
 
-
-
-class MatchPresenter(private @NonNull var matchView: MatchContract.View,
-                     private @NonNull val preferences: UserPreferences) : MatchContract.Presenter {
-
-    private val FCM_SERVER_CONNECTION = "@gcm.googleapis.com"
+class MatchPresenter(@NonNull private var matchView: MatchContract.View,
+                     @NonNull private val preferences: UserPreferences,
+                     @NonNull private val pushHelper : PushHelper) : MatchContract.Presenter {
 
     private val TAG = MatchPresenter::class.java.simpleName
 
@@ -144,7 +144,9 @@ class MatchPresenter(private @NonNull var matchView: MatchContract.View,
         if (dataSnapshot.exists()) {
             //It's a match!
             likedUser.name?.let { matchView.showMatchDialog(it) }
-            likedUser.pushToken?.let { sendNotification(likedUser.pushToken) }
+            likedUser.pushToken?.let { sendNotification(likedUser.pushToken,
+                                    "Congratulations",
+                                    "You became friends with ${likedUser.name} ") }
 
             recordMatch(myRef, likedUser.id)
             removeOldLike(myRef, likedUser.id)
@@ -178,15 +180,24 @@ class MatchPresenter(private @NonNull var matchView: MatchContract.View,
     }
 
 
-    private fun sendNotification(token: String?) {
-        // This registration token comes from the client FCM SDKs.
+    private fun sendNotification(token: String?, title: String?, message: String?) {
 
-        val fm = FirebaseMessaging.getInstance()
-        fm.send(RemoteMessage.Builder("1087890678356@gcm.googleapis.com")
-                .setMessageId(Integer.toString(Random().nextInt()))
-                .addData("my_message", "Hello World")
-                .addData("my_action", "SAY_HELLO")
-                .build())
+        val notification = Notification()
+        notification.title = title
+        notification.body = message
+        notification.sound = "default"
+        notification.priority = "high"
+
+        val pushPayload = PushPayload()
+        pushPayload.to = token
+
+        pushPayload.notification = notification
+
+        pushHelper.sendNotification(pushPayload)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ it -> Log.i(TAG, it.string()) },
+                        { error -> Log.e(TAG, error.message) })
     }
 
     override fun dispose() {

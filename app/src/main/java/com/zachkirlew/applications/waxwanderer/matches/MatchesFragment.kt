@@ -35,7 +35,7 @@ class MatchesFragment: Fragment(), MatchesContract.View, OnMatchDeletedListener,
         //reuse explore frgment layout as similar
         val root = inflater.inflate(R.layout.fragment_matches, container, false)
 
-        activity?.title = "Matches"
+        activity?.title = "Friends"
 
         matchesPresenter = MatchesPresenter(this)
 
