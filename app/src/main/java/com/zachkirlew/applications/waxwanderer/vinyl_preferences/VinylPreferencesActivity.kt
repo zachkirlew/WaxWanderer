@@ -25,7 +25,7 @@ class VinylPreferencesActivity : AppCompatActivity(), VinylPreferencesContract.V
 
     private val selectedStylesText by lazy{findViewById<TextView>(R.id.text_selected_styles)}
 
-    private val selectedStyles : ArrayList<String> = ArrayList(0)
+    private val selectedStyles : ArrayList<Style> = ArrayList(0)
 
     private lateinit var stylesAdapter: StylesAdapter
 
@@ -86,6 +86,10 @@ class VinylPreferencesActivity : AppCompatActivity(), VinylPreferencesContract.V
     }
 
     override fun showStyles(styles: List<Style>) {
+        for (style in styles) {
+            println(style)
+
+        }
         stylesAdapter.replaceStyles(styles)
         stylesAdapter.notifyDataSetChanged()
     }
@@ -99,26 +103,28 @@ class VinylPreferencesActivity : AppCompatActivity(), VinylPreferencesContract.V
         }
     }
 
-    override fun showUsersPreferredStyles(styles: List<String>) {
+    override fun showUsersPreferredStyles(styles: List<Style>) {
         selectedStyles.addAll(styles)
         updateSelectedText()
         checkStylesList()
     }
 
-    fun addStyleToSelectedList(style : String){
+    fun addStyleToSelectedList(style : Style){
         selectedStyles.add(style)
         updateSelectedText()
         checkStylesList()
     }
 
-    fun removeStyleFromSelectedList(style : String){
-        selectedStyles.remove(style)
+    fun removeStyleFromSelectedList(style : Style){
+        val position = selectedStyles.indexOfFirst { it.style == style.style }
+        selectedStyles.removeAt(position)
         updateSelectedText()
         checkStylesList()
     }
 
     private fun updateSelectedText(){
-        val commaSeparatedStyles = android.text.TextUtils.join(", ", selectedStyles)
+        val map = selectedStyles.map { it.style }
+        val commaSeparatedStyles = android.text.TextUtils.join(", ", map)
         selectedStylesText.text = commaSeparatedStyles
     }
 
@@ -155,7 +161,9 @@ class VinylPreferencesActivity : AppCompatActivity(), VinylPreferencesContract.V
 
         override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
             val style = styles[position]
-            holder.name.text = style.styleName
+            holder.name.text = style.style
+
+            println(style.style)
 
             //in some cases, it will prevent unwanted situations
             holder.checkBox.setOnCheckedChangeListener(null)
@@ -163,17 +171,19 @@ class VinylPreferencesActivity : AppCompatActivity(), VinylPreferencesContract.V
             //if true, your checkbox will be selected, else unselected
             holder.checkBox.isChecked = styles[position].isSelected
 
-            if(selectedStyles.contains(styles[position].styleName))
-                holder.checkBox.isChecked = true
+
+            selectedStyles.filter{it.style == styles[position].style}
+                    .map { holder.checkBox.isChecked = true }
+
 
             holder.checkBox.setOnCheckedChangeListener { _, isChecked ->
 
                 styles[holder.adapterPosition].isSelected= isChecked
 
                 if(isChecked)
-                    addStyleToSelectedList(styles[holder.adapterPosition].styleName)
+                    addStyleToSelectedList(styles[holder.adapterPosition])
                 else
-                    removeStyleFromSelectedList(styles[holder.adapterPosition].styleName)
+                    removeStyleFromSelectedList(styles[holder.adapterPosition])
             }
         }
 

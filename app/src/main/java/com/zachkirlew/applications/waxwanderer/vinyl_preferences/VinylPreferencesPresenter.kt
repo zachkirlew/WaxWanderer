@@ -18,7 +18,7 @@ class VinylPreferencesPresenter(private @NonNull var stylesView: VinylPreference
     override fun loadGenres() {
 
         val database = database.reference
-        val genresRef = database.child("genres")
+        val genresRef = database.child("styles")
 
         RxFirebaseDatabase.observeValueEvent(genresRef,
                 {dataSnapshot->
@@ -30,17 +30,17 @@ class VinylPreferencesPresenter(private @NonNull var stylesView: VinylPreference
 
     override fun loadStyles(genre: String) {
 
-        val stylesRef = database.reference.child("genres").child(genre)
+        val stylesRef = database.reference.child("styles").child(genre)
 
         RxFirebaseDatabase.observeValueEvent(stylesRef,
                 {dataSnapshot->
                     val stylesMap = dataSnapshot.children.asIterable()
-                    stylesMap.map { Style(it.key) } }).toObservable()
+                    stylesMap.map { it.getValue<Style>(Style::class.java)!! } }).toObservable()
                 .doOnSubscribe { compositeDisposable.add(it) }
                 .subscribe({stylesView.showStyles(it)})
     }
 
-    override fun savePreferences(selectedStyles: List<String>) {
+    override fun savePreferences(selectedStyles: List<Style>) {
 
         val myRef = database.reference
         val user = mFirebaseAuth.currentUser
@@ -57,7 +57,7 @@ class VinylPreferencesPresenter(private @NonNull var stylesView: VinylPreference
 
         val vinylRef = myRef.child("vinylPreferences").child(user?.uid)
 
-        RxFirebaseDatabase.observeValueEvent(vinylRef,{it.children.map { it.value as String}}).toObservable()
+        RxFirebaseDatabase.observeValueEvent(vinylRef,{it.children.map { it.getValue<Style>(Style::class.java)!!}}).toObservable()
                 .doOnSubscribe { compositeDisposable.add(it) }
                 .subscribe({stylesView.showUsersPreferredStyles(it)})
     }

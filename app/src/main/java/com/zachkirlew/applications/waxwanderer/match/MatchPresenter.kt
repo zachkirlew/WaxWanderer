@@ -8,6 +8,7 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.Query
 import com.zachkirlew.applications.waxwanderer.data.local.UserPreferences
+import com.zachkirlew.applications.waxwanderer.data.model.Style
 import com.zachkirlew.applications.waxwanderer.data.model.User
 import com.zachkirlew.applications.waxwanderer.data.model.UserCard
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
@@ -97,9 +98,10 @@ class MatchPresenter(@NonNull private var matchView: MatchContract.View,
             vinyls = favouritesSnapshot.children.map { it.getValue<VinylRelease>(VinylRelease::class.java)!! }
         }
 
-        val styles = vinylPrefSnapshot.children.map { it.value as String }
+        val styles = vinylPrefSnapshot.children.map { it.getValue<Style>(Style::class.java)!! }
+        val styleNames = styles.map { it.style!! }
 
-        UserCard(user, styles, vinyls)
+        UserCard(user, styleNames, vinyls)
     }
 
     private val observer = object : Observer<UserCard> {

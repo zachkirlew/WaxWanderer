@@ -37,26 +37,10 @@ class ExplorePresenter(@NonNull private var vinylDataSource: VinylDataSource, @N
         compositeDisposable = CompositeDisposable()
     }
 
-    override fun loadVinylPreferences(){
 
-        val myRef = database.reference
+    override fun loadVinylReleases(style : String) {
 
-        val user = mFirebaseAuth.currentUser
-
-        val vinylRef = myRef.child("vinylPreferences").child(user?.uid)
-
-
-        InternetConnectionUtil.isInternetOn()
-                .flatMap { isInternetOn -> if (isInternetOn) RxFirebaseDatabase.observeValueEvent(vinylRef,{it.children.map { it.value as String }}).toObservable()   else Observable.error(Exception("No internet connection")) }
-                .doOnSubscribe { compositeDisposable?.add(it) }
-                .subscribe ({loadVinylReleases(it)},
-                            {error -> exploreView.showMessage(error.message)})
-    }
-
-    override fun loadVinylReleases(styles : List<String>) {
-
-        Observable.fromIterable(styles)
-                .flatMap { style -> vinylDataSource.getVinyls(style)}
+        vinylDataSource.getVinyls(style)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(observer)

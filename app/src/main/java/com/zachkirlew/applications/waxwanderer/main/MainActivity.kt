@@ -18,6 +18,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.squareup.picasso.Picasso
 import com.zachkirlew.applications.waxwanderer.R
+import com.zachkirlew.applications.waxwanderer.browse.BrowseFragment
 import com.zachkirlew.applications.waxwanderer.data.local.UserPreferences
 import com.zachkirlew.applications.waxwanderer.explore.ExploreFragment
 import com.zachkirlew.applications.waxwanderer.explore.OnQueryTextListener
@@ -75,12 +76,12 @@ class MainActivity : AppCompatActivity(), MainContract.View, View.OnClickListene
     }
 
     override fun startExploreFragment() {
-        var exploreFrag: Fragment? = supportFragmentManager.findFragmentById(R.id.content)
+        var browseFrag: Fragment? = supportFragmentManager.findFragmentById(R.id.content)
 
-        if (exploreFrag == null) {
-            exploreFrag = ExploreFragment()
+        if (browseFrag == null) {
+            browseFrag = BrowseFragment()
             ActivityUtils.addFragmentToActivity(
-                    supportFragmentManager, exploreFrag, R.id.content)
+                    supportFragmentManager, browseFrag, R.id.content)
         }
     }
 
@@ -175,10 +176,10 @@ class MainActivity : AppCompatActivity(), MainContract.View, View.OnClickListene
                     presenter.signOut()
                 }
 
-                R.id.explore_navigation_menu_item ->{
-                    showSearchIcon = true
+                R.id.browse_navigation_menu_item ->{
+                    showSearchIcon = false
                     ActivityUtils.changeFragment(
-                            supportFragmentManager, ExploreFragment(), R.id.content)
+                            supportFragmentManager, BrowseFragment(), R.id.content)
                 }
 
                 R.id.favourites_navigation_menu_item ->{

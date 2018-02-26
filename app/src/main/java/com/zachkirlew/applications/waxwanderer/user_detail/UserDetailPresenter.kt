@@ -2,6 +2,7 @@ package com.zachkirlew.applications.waxwanderer.user_detail
 
 import android.support.annotation.NonNull
 import com.google.firebase.database.FirebaseDatabase
+import com.zachkirlew.applications.waxwanderer.data.model.Style
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
 import durdinapps.rxfirebase2.RxFirebaseDatabase
 import io.reactivex.disposables.CompositeDisposable
@@ -41,8 +42,9 @@ class UserDetailPresenter(@NonNull private var userDetailView: UserDetailContrac
         RxFirebaseDatabase.observeValueEvent(ref).toObservable()
                 .doOnSubscribe { compositeDisposable.add(it) }
                 .subscribe{dataSnapshot->
-                    val preferredStyles = dataSnapshot.children.map { it.value as String }
-                    val commaSeparatedStyles = android.text.TextUtils.join(", ", preferredStyles)
+                    val preferredStyles = dataSnapshot.children.map { it.getValue<Style>(Style::class.java)!! }
+                    val styleNames = preferredStyles.map{it.style}
+                    val commaSeparatedStyles = android.text.TextUtils.join(", ", styleNames)
 
                     userDetailView.showUserStyles(commaSeparatedStyles)
                 }

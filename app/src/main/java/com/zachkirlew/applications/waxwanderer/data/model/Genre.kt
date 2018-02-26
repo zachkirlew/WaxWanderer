@@ -4,7 +4,7 @@ import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 
-class Style : Serializable {
+class Genre : Serializable {
 
     @SerializedName("style")
     @Expose
@@ -14,9 +14,4 @@ class Style : Serializable {
     @Expose
     var icon: String? = null
 
-    @SerializedName("backgroundImage")
-    @Expose
-    var backgroundImage: String? = null
-
-    var isSelected : Boolean = false
 }

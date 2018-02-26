@@ -66,5 +66,6 @@
     <string name="explore_action_add">Add to favourites</string>
     <string name="favourite_action_remove">Remove</string>
     <string name="favourite_toolbar_sort">Sort</string>
+    <string name="browse_title">Browse</string>
 
 </resources>

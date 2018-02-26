@@ -3,9 +3,9 @@
 
     <group>
         <item
-            android:id="@+id/explore_navigation_menu_item"
-            android:icon="@drawable/ic_menu_explore"
-            android:title="@string/explore_title" />
+            android:id="@+id/browse_navigation_menu_item"
+            android:icon="@drawable/ic_menu_browse"
+            android:title="@string/browse_title" />
         <item
             android:id="@+id/favourites_navigation_menu_item"
             android:icon="@drawable/ic_menu_heart"

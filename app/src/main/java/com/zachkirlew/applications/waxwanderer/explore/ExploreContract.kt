@@ -27,13 +27,11 @@ interface ExploreContract {
 
         fun addToFavourites(vinyl : VinylRelease)
 
-        fun loadVinylPreferences()
-
         fun loadVinylRelease(releaseId : String)
 
         fun searchVinylReleases(searchText : String?)
 
-        fun loadVinylReleases(styles: List<String>)
+        fun loadVinylReleases(style: String)
 
         fun dispose()
     }

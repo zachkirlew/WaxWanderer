@@ -44,17 +44,21 @@ class ExploreFragment: Fragment(), ExploreContract.View, OnQueryTextListener,OnS
 
     override fun onCreate(@Nullable savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
         exploreAdapter = ExploreAdapter(ArrayList(0),this,this)
     }
 
 
+    private lateinit var style: String
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val root = inflater.inflate(R.layout.fragment_explore, container, false)
 
-        activity?.title = "Explore"
+        style = activity?.intent?.getSerializableExtra("selected_style") as String
+
+        activity?.title = style
 
         explorePresenter = ExplorePresenter(VinylsRemoteSource.instance,this)
+
 
         val exploreList = root?.findViewById(R.id.explore_list) as RecyclerView
 
@@ -73,10 +77,6 @@ class ExploreFragment: Fragment(), ExploreContract.View, OnQueryTextListener,OnS
         return root
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.explore_toolbar, menu)
-        super.onCreateOptionsMenu(menu, inflater)
-    }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
@@ -196,7 +196,7 @@ class ExploreFragment: Fragment(), ExploreContract.View, OnQueryTextListener,OnS
 
         if(lastSearch==null){
             exploreAdapter.removeVinyls()
-            explorePresenter.loadVinylPreferences()
+            explorePresenter.loadVinylReleases(style)
         }
     }
 
