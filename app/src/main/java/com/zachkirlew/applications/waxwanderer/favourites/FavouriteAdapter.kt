@@ -18,6 +18,7 @@ import kotlinx.android.synthetic.main.vinyl_item.view.*
 class FavouriteAdapter(private var vinyls: ArrayList<VinylRelease>,
                        private val fragment: FavouriteFragment,
                        private val callback: OnFavouriteRemovedListener,
+                       private val filterCallback : OnFavouritesFiltered,
                        private val longPressCallback: OnLongPressListener) : RecyclerView.Adapter<FavouriteAdapter.ViewHolder>(), Filterable {
 
     private val mFilter: CustomFilter
@@ -92,7 +93,6 @@ class FavouriteAdapter(private var vinyls: ArrayList<VinylRelease>,
                 val filterPattern = constraint.toString().toLowerCase().trim { it <= ' ' }
                 vinyls.filterTo(filteredVinyls) { it.title?.toLowerCase()?.contains(filterPattern)!! }
             }
-            System.out.println("Count Number " + filteredVinyls.size)
             results.values = filteredVinyls
             results.count = filteredVinyls.size
             return results
@@ -101,6 +101,8 @@ class FavouriteAdapter(private var vinyls: ArrayList<VinylRelease>,
         override fun publishResults(constraint: CharSequence, results: Filter.FilterResults) {
             mAdapter.vinyls = (results.values as ArrayList<VinylRelease>)
             mAdapter.notifyDataSetChanged()
+
+            filterCallback.onFiltered(mAdapter.vinyls.count()== 0)
         }
     }
 

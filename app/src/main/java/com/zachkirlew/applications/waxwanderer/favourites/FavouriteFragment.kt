@@ -23,7 +23,8 @@ import com.zachkirlew.applications.waxwanderer.util.EqualSpaceItemDecoration
 import com.zachkirlew.applications.waxwanderer.vinyl_detail.VinylDetailActivity
 
 
-class FavouriteFragment : Fragment(), FavouriteContract.View, OnSignOutListener, OnFavouriteRemovedListener, OnQueryTextListener, OnLongPressListener {
+class FavouriteFragment : Fragment(), FavouriteContract.View, OnSignOutListener, OnFavouriteRemovedListener, OnQueryTextListener, OnLongPressListener, OnFavouritesFiltered {
+
 
     private lateinit var favouritePresenter: FavouriteContract.Presenter
 
@@ -39,7 +40,7 @@ class FavouriteFragment : Fragment(), FavouriteContract.View, OnSignOutListener,
         super.onCreate(savedInstanceState)
 
         setHasOptionsMenu(true)
-        favouriteAdapter = FavouriteAdapter(ArrayList(), this, this,this)
+        favouriteAdapter = FavouriteAdapter(ArrayList(), this, this,this,this)
 
         user = activity?.intent?.getSerializableExtra("selected user") as User?
     }
@@ -110,11 +111,21 @@ class FavouriteFragment : Fragment(), FavouriteContract.View, OnSignOutListener,
     }
 
     override fun onQueryTextSubmit(searchText: String?) {
-        favouriteAdapter.filter.filter(searchText)
+
     }
 
     override fun onQueryTextChange(searchText: String?) {
         favouriteAdapter.filter.filter(searchText)
+    }
+
+    override fun onFiltered(isEmpty: Boolean) {
+        if(isEmpty){
+            noFavouritesText?.text = "No favourites to display"
+            noFavouritesText?.visibility = View.VISIBLE
+        }
+        else{
+            noFavouritesText?.visibility = View.GONE
+        }
     }
 
     override fun showMessage(message: String?) {
