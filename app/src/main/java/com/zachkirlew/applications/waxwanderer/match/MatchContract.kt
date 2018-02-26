@@ -22,7 +22,7 @@ interface MatchContract {
 
     interface Presenter : BasePresenter {
 
-        fun likeUser(likedUser : User)
+        fun interactWithUser(user : User,isLike : Boolean)
 
         fun dispose()
     }

@@ -42,6 +42,8 @@ class MatchPresenter(@NonNull private var matchView: MatchContract.View,
     private val userId = FirebaseAuth.getInstance().currentUser?.uid
 
     private var matchedUserIds: List<String>? = null
+    private var likedUserIds: List<String>? = null
+    private var dislikedUserIds: List<String>? = null
 
     init {
         matchView.setPresenter(this)
@@ -60,15 +62,21 @@ class MatchPresenter(@NonNull private var matchView: MatchContract.View,
 
         val usersRef = myRef.child("users")
         val matchesRef = myRef.child("matches").child(userId)
+        val likesRef = myRef.child("likes").child(userId)
+        val dislikesRef = myRef.child("dislikes").child(userId)
 
         val userQuery = getQuery(usersRef)
 
         InternetConnectionUtil.isInternetOn()
-                .flatMap { isInternetOn -> if (isInternetOn) RxFirebaseDatabase.observeValueEvent(matchesRef).toObservable() else Observable.error(Exception("No internet connection")) }
+                .flatMap { isInternetOn -> if (isInternetOn) RxFirebaseDatabase.observeSingleValueEvent(matchesRef).toObservable() else Observable.error(Exception("No internet connection")) }
                 .doOnNext { dataSnapshot -> matchedUserIds = dataSnapshot.children.map { it.key } }
-                .flatMap { RxFirebaseDatabase.observeValueEvent(userQuery, { dataSnapshot -> dataSnapshot.children.map { it.getValue<User>(User::class.java)!! } }).toObservable() }
+                .flatMap { RxFirebaseDatabase.observeSingleValueEvent(likesRef, { dataSnapshot -> dataSnapshot.children.map { it.key } }).toObservable() }
+                .doOnNext { likedUserIds = it}
+                .flatMap { RxFirebaseDatabase.observeSingleValueEvent(dislikesRef, { dataSnapshot -> dataSnapshot.children.map { it.key } }).toObservable() }
+                .doOnNext { dislikedUserIds = it}
+                .flatMap { RxFirebaseDatabase.observeSingleValueEvent(userQuery, { dataSnapshot -> dataSnapshot.children.map { it.getValue<User>(User::class.java)!! } }).toObservable() }
                 .map { list -> list.filter { dobToAge(it.dob) in lowerAgeLimit..upperAgeLimit } } //remove anyone not in current user's match age range preference
-                .map { list -> list.filter { !matchedUserIds!!.contains(it.id) } } // filter out any already matched users
+                .map { list -> list.filter { !matchedUserIds!!.contains(it.id) && !likedUserIds!!.contains(it.id) && !dislikedUserIds!!.contains(it.id) } } // filter out any already matched, disliked or liked users
                 .map { list -> list.filter { userId != it.id } } //remove current user from list
                 .flatMap { list -> Observable.fromIterable(list) }
                 .flatMap { user ->
@@ -108,6 +116,7 @@ class MatchPresenter(@NonNull private var matchView: MatchContract.View,
         }
 
         override fun onNext(userCard: UserCard) {
+            Log.d("MatchFrag","Added cards")
             matchView.addUserCard(userCard)
         }
     }
@@ -128,14 +137,21 @@ class MatchPresenter(@NonNull private var matchView: MatchContract.View,
         }
     }
 
+    override fun interactWithUser(user: User, isLike: Boolean) {
+        if(isLike){
+            val ref = database.reference.child("likes").child(user.id).child(userId)
 
-    override fun likeUser(likedUser: User) {
+            RxFirebaseDatabase.observeSingleValueEvent(ref)
+                    .doOnSubscribe { compositeDisposable.add(it) }
+                    .subscribe({ handleLikeLogic(it, user) })
+        }
+        else
+            dislikeUser(user)
+    }
 
-        val likeRef = database.reference.child("likes").child(likedUser.id).child(userId)
-
-        RxFirebaseDatabase.observeSingleValueEvent(likeRef)
-                .doOnSubscribe { compositeDisposable.add(it) }
-                .subscribe({ handleLikeLogic(it, likedUser) })
+    private fun dislikeUser(dislikedUser: User) {
+        database.reference.child("dislikes").child(userId)
+                .child(dislikedUser.id).setValue(true)
     }
 
     private fun handleLikeLogic(dataSnapshot: DataSnapshot, likedUser: User) {

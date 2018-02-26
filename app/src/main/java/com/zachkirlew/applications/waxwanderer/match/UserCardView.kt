@@ -11,6 +11,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.mindorks.placeholderview.SwipePlaceHolderView
 import com.mindorks.placeholderview.annotations.Layout
+import com.mindorks.placeholderview.annotations.Position
 import com.mindorks.placeholderview.annotations.Resolve
 import com.mindorks.placeholderview.annotations.swipe.SwipeIn
 import com.mindorks.placeholderview.annotations.swipe.SwipeOut
@@ -26,7 +27,10 @@ import org.joda.time.PeriodType
 import java.util.*
 
 @Layout(R.layout.card_user)
-class UserCardView(private val mContext: Context, private val userCard: UserCard, private val mSwipeView: SwipePlaceHolderView,private val callback : OnSwipeLeftListener)
+class UserCardView(private val mContext: Context,
+                   private val userCard: UserCard,
+                   private val mSwipeView: SwipePlaceHolderView,
+                   private val callback : OnSwipeListener)
 {
     @com.mindorks.placeholderview.annotations.View(R.id.profile_image_view)
     private val profileImageView: ImageView? = null
@@ -49,7 +53,10 @@ class UserCardView(private val mContext: Context, private val userCard: UserCard
     @com.mindorks.placeholderview.annotations.View(R.id.text_styles)
     private val stylesText: TextView? = null
 
-    fun showVinyls(favouriteVinyls :List<VinylRelease>){
+    @Position
+    private val position : Int = 0
+
+    private fun showVinyls(favouriteVinyls :List<VinylRelease>){
 
         val mLayoutManager = LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false)
 
@@ -68,6 +75,7 @@ class UserCardView(private val mContext: Context, private val userCard: UserCard
 
     @Resolve
     private fun onResolved() {
+
 
         val user = userCard.user
 
@@ -114,12 +122,13 @@ class UserCardView(private val mContext: Context, private val userCard: UserCard
     @SwipeOut
     private fun onSwipedOut() {
         Log.d("EVENT", "onSwipedOut")
-        mSwipeView.addView(this)
+        callback.onSwipedRight(userCard.user,position)
+
     }
 
     @SwipeIn
     private fun onSwipeIn() {
         Log.d("EVENT", "onSwipedIn")
-        callback.onSwipedLeft(userCard.user)
+        callback.onSwipedLeft(userCard.user,position)
     }
 }

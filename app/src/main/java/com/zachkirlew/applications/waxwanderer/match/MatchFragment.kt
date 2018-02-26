@@ -5,11 +5,13 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.app.AlertDialog
+import android.util.Log
 import android.view.*
 import android.widget.ImageButton
 import android.widget.Toast
 import com.facebook.FacebookSdk.getApplicationContext
 import com.mindorks.placeholderview.SwipePlaceHolderView
+import com.mindorks.placeholderview.listeners.ItemRemovedListener
 import com.zachkirlew.applications.waxwanderer.R
 import com.zachkirlew.applications.waxwanderer.base.OnSignOutListener
 import com.zachkirlew.applications.waxwanderer.data.local.UserPreferences
@@ -19,7 +21,7 @@ import com.zachkirlew.applications.waxwanderer.data.remote.notification.PushHelp
 import com.zachkirlew.applications.waxwanderer.recommendations.RecommendationsActivity
 
 
-class MatchFragment : Fragment(), MatchContract.View,OnSignOutListener, OnSwipeLeftListener {
+class MatchFragment : Fragment(), MatchContract.View,OnSignOutListener, OnSwipeListener, ItemRemovedListener {
 
     private lateinit var matchPresenter: MatchContract.Presenter
 
@@ -40,14 +42,16 @@ class MatchFragment : Fragment(), MatchContract.View,OnSignOutListener, OnSwipeL
 
         SwipeViewBuilderInstance(mSwipeView)
 
+        mSwipeView.addItemRemoveListener(this)
+
         mContext = getApplicationContext()
 
         setHasOptionsMenu(true)
 
         matchPresenter = MatchPresenter(this, UserPreferences(), PushHelper.getInstance(activity!!))
 
-        likeButton = root.findViewById<ImageButton>(R.id.acceptBtn) as ImageButton
-        dislikeButton = root.findViewById<ImageButton>(R.id.rejectBtn) as ImageButton
+        likeButton = root.findViewById(R.id.acceptBtn) as ImageButton
+        dislikeButton = root.findViewById(R.id.rejectBtn) as ImageButton
 
         likeButton.setOnClickListener {
             mSwipeView.doSwipe(true)
@@ -85,21 +89,27 @@ class MatchFragment : Fragment(), MatchContract.View,OnSignOutListener, OnSwipeL
     }
 
     override fun addUserCard(userCard: UserCard) {
-
         mSwipeView.addView(UserCardView(mContext,userCard,mSwipeView,this))
     }
 
+    override fun onSwipedLeft(user: User, position: Int) {
+        matchPresenter.interactWithUser(user,true)
 
-    override fun onSwipedLeft(user: User) {
-        matchPresenter.likeUser(user)
     }
 
+    override fun onSwipedRight(user: User, position: Int) {
+        matchPresenter.interactWithUser(user,false)
+
+    }
+
+    override fun onItemRemoved(count: Int) {
+
+    }
 
     override fun startRecommendationsActivity() {
         val intent = Intent(activity, RecommendationsActivity::class.java)
         startActivity(intent)
     }
-
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
