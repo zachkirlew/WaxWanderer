@@ -13,6 +13,7 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import com.lucasurbas.listitemview.ListItemView
@@ -44,7 +45,7 @@ class UserDetailActivity : AppCompatActivity(), UserDetailContract.View  {
 
     private val preferredStylesText by lazy {findViewById<TextView>(R.id.text_styles) }
 
-    private val viewTopTracksText by lazy {findViewById<TextView>(R.id.text_top_tracks_view)}
+    private val viewFavouritesButton by lazy {findViewById<Button>(R.id.button_view_favourites)}
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -85,7 +86,7 @@ class UserDetailActivity : AppCompatActivity(), UserDetailContract.View  {
 
         user.imageurl?.let { showImageBackDrop(user.imageurl!!) }
 
-        viewTopTracksText.setOnClickListener(onViewTracksClickListener)
+        viewFavouritesButton.setOnClickListener(onViewTracksClickListener)
 
         presenter.loadUserStyles(user.id!!)
         presenter.loadUserFavourites(user.id!!)
