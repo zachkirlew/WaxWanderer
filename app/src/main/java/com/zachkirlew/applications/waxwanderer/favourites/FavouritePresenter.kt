@@ -5,6 +5,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
 import com.google.firebase.database.DataSnapshot
+import com.zachkirlew.applications.waxwanderer.data.VinylDataSource
 import com.zachkirlew.applications.waxwanderer.data.model.User
 import com.zachkirlew.applications.waxwanderer.util.InternetConnectionUtil
 import durdinapps.rxfirebase2.RxFirebaseDatabase
@@ -12,19 +13,27 @@ import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Observer
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 import java.lang.Exception
 
-class FavouritePresenter(@NonNull private var favouriteView: FavouriteContract.View) : FavouriteContract.Presenter {
+class FavouritePresenter(@NonNull private var favouriteView: FavouriteContract.View,
+                         @NonNull private var vinylDataSource: VinylDataSource) : FavouriteContract.Presenter {
 
 
     private val mFirebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private val database = FirebaseDatabase.getInstance()
 
-    private var disposable : Disposable? = null
+    private var compositeDisposable : CompositeDisposable? = null
 
     init {
         favouriteView.setPresenter(this)
+    }
+
+    override fun start() {
+        compositeDisposable = CompositeDisposable()
     }
 
     override fun loadFavouriteVinyls() {
@@ -49,7 +58,7 @@ class FavouritePresenter(@NonNull private var favouriteView: FavouriteContract.V
 
     private val observer = object : Observer<DataSnapshot>{
         override fun onSubscribe(d: Disposable) {
-            disposable = d
+            compositeDisposable?.add(d)
         }
         override fun onNext(dataSnapshot: DataSnapshot) {
             if (dataSnapshot.exists()) {
@@ -68,7 +77,17 @@ class FavouritePresenter(@NonNull private var favouriteView: FavouriteContract.V
         }
     }
 
+    override fun loadVinylRelease(releaseId: String) {
+
+        vinylDataSource.getVinyl(releaseId)
+                .doOnSubscribe{compositeDisposable?.add(it)}
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({favouriteView.showQuickViewDialog(it)},
+                        {error->favouriteView.showMessage(error.message) })
+    }
+
     override fun dispose() {
-        disposable?.dispose()
+        compositeDisposable?.dispose()
     }
 }

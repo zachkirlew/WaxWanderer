@@ -10,13 +10,15 @@ import android.widget.Filterable
 import com.squareup.picasso.Picasso
 import com.zachkirlew.applications.waxwanderer.R
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
+import com.zachkirlew.applications.waxwanderer.explore.OnLongPressListener
 import com.zachkirlew.applications.waxwanderer.vinyl_detail.VinylDetailActivity
 import kotlinx.android.synthetic.main.vinyl_item.view.*
 
 
 class FavouriteAdapter(private var vinyls: ArrayList<VinylRelease>,
                        private val fragment: FavouriteFragment,
-                       private val callback: OnFavouriteRemovedListener) : RecyclerView.Adapter<FavouriteAdapter.ViewHolder>(), Filterable {
+                       private val callback: OnFavouriteRemovedListener,
+                       private val longPressCallback: OnLongPressListener) : RecyclerView.Adapter<FavouriteAdapter.ViewHolder>(), Filterable {
 
     private val mFilter: CustomFilter
 
@@ -63,6 +65,11 @@ class FavouriteAdapter(private var vinyls: ArrayList<VinylRelease>,
             val intent = Intent(context, VinylDetailActivity::class.java)
             intent.putExtra("selected vinyl", vinyls[position])
             fragment.startActivityForResult(intent, 1)
+        }
+
+        holder.itemView.setOnLongClickListener {
+            longPressCallback.onLongPress(vinyls[position])
+            true
         }
     }
 

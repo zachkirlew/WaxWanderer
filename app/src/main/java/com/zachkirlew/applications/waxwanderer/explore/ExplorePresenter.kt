@@ -8,10 +8,12 @@ import com.google.firebase.database.FirebaseDatabase
 import com.zachkirlew.applications.waxwanderer.data.VinylDataSource
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.DiscogsResponse
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
+import com.zachkirlew.applications.waxwanderer.data.model.discogs.detail.DetailVinylRelease
 import com.zachkirlew.applications.waxwanderer.util.InternetConnectionUtil
 import durdinapps.rxfirebase2.RxFirebaseDatabase
 import io.reactivex.Observable
 import io.reactivex.Observer
+import io.reactivex.SingleObserver
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
@@ -68,6 +70,17 @@ class ExplorePresenter(@NonNull private var vinylDataSource: VinylDataSource, @N
                     .subscribe(observer)
         }
     }
+
+    override fun loadVinylRelease(releaseId: String) {
+
+        vinylDataSource.getVinyl(releaseId)
+                .doOnSubscribe{compositeDisposable?.add(it)}
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({exploreView.showQuickViewDialog(it)},
+                            {error->exploreView.showMessage(error.message) })
+    }
+
 
     override fun addToFavourites(vinyl: VinylRelease) {
 

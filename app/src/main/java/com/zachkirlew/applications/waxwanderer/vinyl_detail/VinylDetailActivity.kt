@@ -1,9 +1,5 @@
 package com.zachkirlew.applications.waxwanderer.vinyl_detail
 
-import android.app.Activity
-import android.content.Context
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.support.design.widget.*
 import android.support.v7.app.AppCompatActivity
@@ -24,6 +20,7 @@ import com.zachkirlew.applications.waxwanderer.data.remote.VinylsRemoteSource
 class VinylDetailActivity : AppCompatActivity(), VinylDetailContract.View, View.OnClickListener {
 
     private val vinyl by lazy { intent.getSerializableExtra("selected vinyl") as VinylRelease }
+
     private lateinit var presenter: VinylDetailContract.Presenter
 
     private val favouriteButton by lazy { findViewById<FloatingActionButton>(R.id.fab_favourite) }
@@ -40,6 +37,12 @@ class VinylDetailActivity : AppCompatActivity(), VinylDetailContract.View, View.
 
     private val coordinatorLayout by lazy{findViewById<CoordinatorLayout>(R.id.main_content)}
 
+    private val toolbar by lazy{findViewById<Toolbar>(R.id.toolbar)}
+
+    private val collapsingToolbarLayout by lazy{findViewById<CollapsingToolbarLayout>(R.id.collapsing_toolbar)}
+
+    private val appbar by lazy{findViewById<AppBarLayout>(R.id.appbar)}
+
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_vinyl_detail)
@@ -47,26 +50,32 @@ class VinylDetailActivity : AppCompatActivity(), VinylDetailContract.View, View.
         setPresenter(VinylDetailPresenter((VinylsRemoteSource.instance),
                 this, RecommenderImp(this)))
 
-        val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
 
         supportActionBar?.title = " "
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        val collapsingToolbarLayout = findViewById<CollapsingToolbarLayout>(R.id.collapsing_toolbar)
+        releaseText.text = vinyl.title
 
-        val appbar = findViewById<AppBarLayout>(R.id.appbar)
+        favouriteButton.setOnClickListener(this)
 
+        presenter.loadVinylRelease(vinyl.id.toString())
+        setUpAppBar(vinyl.title!!)
+        presenter.checkInFavourites(vinyl.id.toString())
+    }
+
+    private fun setUpAppBar(title : String) {
         appbar.addOnOffsetChangedListener(object : AppBarLayout.OnOffsetChangedListener {
             internal var isShow = false
             internal var scrollRange = -1
+            internal var vinylTitle = title
 
             override fun onOffsetChanged(appBarLayout: AppBarLayout, verticalOffset: Int) {
                 if (scrollRange == -1) {
                     scrollRange = appBarLayout.totalScrollRange
                 }
                 if (scrollRange + verticalOffset == 0) {
-                    collapsingToolbarLayout.title = vinyl.title
+                    collapsingToolbarLayout.title = vinylTitle
                     isShow = true
                 } else if (isShow) {
                     collapsingToolbarLayout.title = " "//there should a space between double quote otherwise it wont work
@@ -74,17 +83,22 @@ class VinylDetailActivity : AppCompatActivity(), VinylDetailContract.View, View.
                 }
             }
         })
-
-        releaseText.text = vinyl.title
-
-        favouriteButton.setOnClickListener(this)
-
-        presenter.loadVinylRelease(vinyl.id.toString())
-        presenter.checkInFavourites(vinyl.id.toString())
     }
 
-    override fun showTrackList(trackList: List<Tracklist>?) {
-        val listView = findViewById<LinearLayout>(R.id.listview) as LinearLayout
+    override fun showInfo(detailVinylRelease: DetailVinylRelease) {
+        detailVinylRelease.images?.let{showImageBackDrop(detailVinylRelease.images?.get(0)?.uri!!) }
+
+        showDetailVinylInfo(detailVinylRelease)
+
+        showTrackList(detailVinylRelease.tracklist)
+
+        detailVinylRelease.videos?.let { if(detailVinylRelease.videos?.isNotEmpty()!!) showVideos(detailVinylRelease.videos!!) }
+
+        showRating(detailVinylRelease.community?.rating?.average!!)
+    }
+
+    private fun showTrackList(trackList: List<Tracklist>?) {
+        val listView = findViewById<LinearLayout>(R.id.listview)
 
         val adapter = TrackListAdapter(this,0, trackList)
         (0 until adapter.count)
@@ -96,21 +110,13 @@ class VinylDetailActivity : AppCompatActivity(), VinylDetailContract.View, View.
         this.presenter = presenter
     }
 
-
-    override fun showVideos(videos: List<Video>) {
-        cardYouTube.visibility = View.VISIBLE
-        val listView = findViewById<LinearLayout>(R.id.list_youtube_videos)
-
-        val adapter = VideoAdapter(this,0, videos)
-        (0 until adapter.count)
-                .map { adapter.getView(it, null, listView) }
-                .forEach { listView.addView(it) }
+    override fun showRating(starRating: Double) {
+        val ratingBar = findViewById<RatingBar>(R.id.rating_bar)
+        ratingBar.rating = starRating.toFloat()
     }
 
-    override fun showImageBackDrop(imageUrl: String) {
-        val imageView = findViewById<ImageView>(R.id.backdrop) as ImageView
-
-        Picasso.with(this).load(imageUrl).into(imageView)
+    override fun onClick(p0: View?) {
+        presenter.addToFavourites(vinyl)
     }
 
     override fun showMessage(message: String?) {
@@ -122,34 +128,6 @@ class VinylDetailActivity : AppCompatActivity(), VinylDetailContract.View, View.
             favouriteButton.backgroundTintList = resources.getColorStateList(R.color.colorAccent)
         else
             favouriteButton.backgroundTintList = resources.getColorStateList(R.color.com_facebook_button_background_color_disabled)
-    }
-
-    override fun showDetailVinylInfo(detailVinylRelease: DetailVinylRelease) {
-
-        val artistNames = detailVinylRelease.artists?.map { it.name }
-
-        artistsText.text = commaSeparateList(artistNames)
-
-        labelText.text = detailVinylRelease.labels?.get(0)?.name
-        releaseDateText.text = detailVinylRelease.releasedFormatted
-        genreText.text = detailVinylRelease.genres?.get(0)
-
-        detailVinylRelease.styles?.let{
-            stylesText.text = commaSeparateList(detailVinylRelease.styles)
-        }
-    }
-
-    override fun showRating(starRating: Double) {
-        val ratingBar = findViewById<RatingBar>(R.id.rating_bar)
-        ratingBar.rating = starRating.toFloat()
-    }
-
-    override fun onClick(p0: View?) {
-        presenter.addToFavourites(vinyl)
-    }
-
-    private fun commaSeparateList(list: List<String>?): String {
-        return android.text.TextUtils.join(", ", list)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -169,5 +147,41 @@ class VinylDetailActivity : AppCompatActivity(), VinylDetailContract.View, View.
     override fun onStop() {
         super.onStop()
         presenter.dispose()
+    }
+
+    private fun showImageBackDrop(imageUrl: String) {
+        val imageView = findViewById<ImageView>(R.id.backdrop)
+
+        Picasso.with(this).load(imageUrl).into(imageView)
+    }
+
+
+    private fun showDetailVinylInfo(detailVinylRelease: DetailVinylRelease) {
+
+        val artistNames = detailVinylRelease.artists?.map { it.name }
+
+        artistsText.text = commaSeparateList(artistNames)
+
+        labelText.text = detailVinylRelease.labels?.get(0)?.name
+        releaseDateText.text = detailVinylRelease.releasedFormatted
+        genreText.text = detailVinylRelease.genres?.get(0)
+
+        detailVinylRelease.styles?.let{
+            stylesText.text = commaSeparateList(detailVinylRelease.styles)
+        }
+    }
+
+    private fun showVideos(videos: List<Video>) {
+        cardYouTube.visibility = View.VISIBLE
+        val listView = findViewById<LinearLayout>(R.id.list_youtube_videos)
+
+        val adapter = VideoAdapter(this,0, videos)
+        (0 until adapter.count)
+                .map { adapter.getView(it, null, listView) }
+                .forEach { listView.addView(it) }
+    }
+
+    private fun commaSeparateList(list: List<String>?): String {
+        return android.text.TextUtils.join(", ", list)
     }
 }

@@ -152,7 +152,6 @@ class MessageFragment : Fragment(), MessageContract.View, ShareVinylDialogFragme
     }
 
     override fun onDismiss(p0: DialogInterface?) {
-
         shareVinylButton.isClickable = true
     }
 

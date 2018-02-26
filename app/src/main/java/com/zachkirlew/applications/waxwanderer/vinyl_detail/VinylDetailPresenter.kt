@@ -54,16 +54,7 @@ class VinylDetailPresenter(@NonNull private val vinylDataSource: VinylDataSource
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(object : SingleObserver<DetailVinylRelease> {
                     override fun onSuccess(detailVinylRelease: DetailVinylRelease) {
-
-                        detailVinylRelease.images?.get(0)?.uri?.let { vinylDetailView.showImageBackDrop(detailVinylRelease.images?.get(0)?.uri!!) }
-
-                        vinylDetailView.showDetailVinylInfo(detailVinylRelease)
-
-                        detailVinylRelease.tracklist?.let { vinylDetailView.showTrackList(detailVinylRelease.tracklist) }
-
-                        detailVinylRelease.videos?.let { if(detailVinylRelease.videos?.isNotEmpty()!!) vinylDetailView.showVideos(detailVinylRelease.videos!!) }
-
-                        vinylDetailView.showRating(detailVinylRelease.community?.rating?.average!!)
+                        vinylDetailView.showInfo(detailVinylRelease)
                     }
 
                     override fun onError(e: Throwable) {

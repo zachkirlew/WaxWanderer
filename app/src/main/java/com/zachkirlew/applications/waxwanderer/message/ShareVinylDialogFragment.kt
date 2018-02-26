@@ -17,8 +17,6 @@ import kotlinx.android.synthetic.main.vinyl_item.view.*
 import com.zachkirlew.applications.waxwanderer.message.ShareVinylDialogFragment.FavouriteAdapter.OnShareClickedListener
 
 
-
-
 class ShareVinylDialogFragment : DialogFragment() {
 
     private var mRecyclerView: RecyclerView? = null

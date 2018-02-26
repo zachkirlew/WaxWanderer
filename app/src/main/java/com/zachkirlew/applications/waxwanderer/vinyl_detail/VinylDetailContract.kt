@@ -10,12 +10,7 @@ import com.zachkirlew.applications.waxwanderer.data.model.discogs.detail.Video
 interface VinylDetailContract {
     interface View : BaseView<Presenter> {
 
-        fun showImageBackDrop(imageUrl: String)
-        fun showDetailVinylInfo(detailVinylRelease : DetailVinylRelease)
-
-        fun showTrackList(trackList: List<Tracklist>?)
-        fun showVideos(videos : List<Video>)
-
+        fun showInfo(detailVinylRelease: DetailVinylRelease)
         fun showRating(starRating: Double)
 
         fun editButtonColor(vinylIsInFavourites : Boolean)

@@ -1,7 +1,6 @@
 package com.zachkirlew.applications.waxwanderer.explore
 
 import android.content.Intent
-import android.support.v7.view.menu.MenuBuilder
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -13,7 +12,8 @@ import com.zachkirlew.applications.waxwanderer.vinyl_detail.VinylDetailActivity
 import kotlinx.android.synthetic.main.vinyl_item.view.*
 
 class ExploreAdapter(private var vinyls: ArrayList<VinylRelease>,
-                     private val callback: OnAddToFavouritesListener) : RecyclerView.Adapter<ExploreAdapter.ViewHolder>() {
+                     private val callback: OnAddToFavouritesListener,
+                     private val longPressCallback: OnLongPressListener) : RecyclerView.Adapter<ExploreAdapter.ViewHolder>() {
 
     fun addVinyls(vinyls : List<VinylRelease>){
         this.vinyls.addAll(vinyls)
@@ -40,6 +40,11 @@ class ExploreAdapter(private var vinyls: ArrayList<VinylRelease>,
             val intent = Intent(context, VinylDetailActivity::class.java)
             intent.putExtra("selected vinyl", vinyls[position])
             context.startActivity(intent)
+        }
+
+        holder.itemView.setOnLongClickListener {
+            longPressCallback.onLongPress(vinyls[position])
+            true
         }
     }
 
