@@ -34,7 +34,7 @@ class SearchFragment: Fragment(),
 
     private lateinit var searchPresenter : SearchContract.Presenter
 
-    private lateinit var searchAdapter: ExploreAdapter
+    private lateinit var searchAdapter: SearchAdapter
 
     private var searchPromptText: TextView? = null
 
@@ -55,13 +55,11 @@ class SearchFragment: Fragment(),
     override fun onCreate(@Nullable savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-        searchAdapter = ExploreAdapter(ArrayList(0),this,this)
+        searchAdapter = SearchAdapter(ArrayList(0),this,this)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val root = inflater.inflate(R.layout.fragment_search, container, false)
-
-        //queryParams = activity?.intent?.getSerializableExtra("params") as HashMap<String, String>
 
         activity?.title = "Search"
 

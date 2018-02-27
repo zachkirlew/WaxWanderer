@@ -8,4 +8,16 @@
         android:title="@string/explore_action_add"
         app:showAsAction="collapseActionView" />
 
+    <item
+        android:id="@+id/action_share"
+        android:icon="@drawable/ic_menu_heart"
+        android:title="@string/explore_action_share"
+        app:showAsAction="collapseActionView" />
+
+    <item
+        android:id="@+id/action_recommend"
+        android:icon="@drawable/ic_menu_heart"
+        android:title="@string/explore_action_recommend"
+        app:showAsAction="collapseActionView" />
+
 </menu>

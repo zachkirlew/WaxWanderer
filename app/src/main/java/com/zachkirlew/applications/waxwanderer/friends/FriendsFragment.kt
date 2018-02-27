@@ -45,8 +45,6 @@ class FriendsFragment : Fragment(), FriendsContract.View, OnFriendDeletedListene
 
         val root = inflater.inflate(R.layout.fragment_friends, container, false)
 
-
-
         friendsPresenter = FriendsPresenter(this)
 
         friendsList = root?.findViewById(R.id.friends_list) as RecyclerView

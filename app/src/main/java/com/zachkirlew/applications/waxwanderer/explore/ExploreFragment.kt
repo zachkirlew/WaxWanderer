@@ -43,7 +43,6 @@ class ExploreFragment: Fragment(),
 
     private var noFavouritesText: TextView? = null
 
-
     private lateinit var selectedVinyl: VinylRelease
 
     private val coordinatorLayout : CoordinatorLayout by lazy{activity!!.findViewById<CoordinatorLayout>(R.id.coordinatorLayout)}
@@ -238,6 +237,8 @@ class ExploreFragment: Fragment(),
     override fun onResume() {
         super.onResume()
         explorePresenter.start()
+
+        explorePresenter.loadVinylReleases(queryParams)
     }
 
     override fun onPause() {

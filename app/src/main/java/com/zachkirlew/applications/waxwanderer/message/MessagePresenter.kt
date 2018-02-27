@@ -84,43 +84,20 @@ class MessagePresenter(@NonNull private val messageView: MessageContract.View,
 
         database.reference.child("chat").child(chatId).child(key).setValue(message)
 
-        recipient.pushToken?.let { sendNotification(recipient.pushToken,mFirebaseAuth.currentUser?.displayName,messageText,attachedRelease) }
+        recipient.pushToken?.let {
+
+            pushHelper.sendNotification(mFirebaseAuth.currentUser?.displayName,messageText,recipient.pushToken!!,attachedRelease)
+                    .subscribeOn(Schedulers.newThread())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe({Log.i("MessagePresenter",it.string())},
+                            {error -> Log.e(TAG,"errro: " + error.message)})
+        }
     }
 
 
     private fun sendNotification(token: String?,title : String?, message: String?, attachedRelease: VinylRelease?) {
         // This registration token comes from the client FCM SDKs.
 
-        val notification = Notification()
-        notification.title = title
-        notification.body = message
-        notification.sound = "default"
-        notification.priority = "high"
-
-        val pushPayload = PushPayload()
-        pushPayload.to = token
-
-
-        if(attachedRelease!=null){
-            notification.body = "Check out this record..."
-
-            val dataMap = HashMap<String, Any>()
-
-            if(attachedRelease.thumb!=null)
-                dataMap["release_image"] = attachedRelease.thumb!!
-            dataMap["release_title"] = attachedRelease.title!!
-            dataMap["release_no"] = attachedRelease.catno!!
-
-            pushPayload.data = dataMap
-        }
-
-        pushPayload.notification = notification
-
-        pushHelper.sendNotification(pushPayload)
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({it ->Log.i("MessagePresenter",it.string())},
-                        {error -> Log.e(TAG,"errro: " + error.message)})
     }
 
     override fun loadFavourites() {

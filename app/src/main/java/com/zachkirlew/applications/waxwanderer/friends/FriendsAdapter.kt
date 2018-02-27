@@ -59,6 +59,7 @@ class FriendsAdapter(private var friends: ArrayList<User>, private val callback 
             itemView.list_item_view.title = friend.name
             itemView.list_item_view.subtitle = friend.location
 
+            itemView.list_item_view.inflateMenu(R.menu.matches_action_menu)
 
             Picasso.with(itemView.context)
                     .load(friend.imageurl)

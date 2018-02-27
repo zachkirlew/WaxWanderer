@@ -87,7 +87,7 @@ class RequestsPresenter(@NonNull private var requestsView: RequestsContract.View
         val myRef = database.reference
 
         befriendedUser.name?.let { requestsView.showFriendDialog(it) }
-        befriendedUser.pushToken?.let { sendNotification(befriendedUser.pushToken,
+        befriendedUser.pushToken?.let { sendNotification(befriendedUser.pushToken!!,
                 "Congratulations",
                 "You became friends with ${FirebaseAuth.getInstance().currentUser?.displayName} ") }
 
@@ -114,20 +114,9 @@ class RequestsPresenter(@NonNull private var requestsView: RequestsContract.View
                 .child(matchId).setValue(null)
     }
 
-    private fun sendNotification(token: String?, title: String?, message: String?) {
+    private fun sendNotification(token: String, title: String?, message: String?) {
 
-        val notification = Notification()
-        notification.title = title
-        notification.body = message
-        notification.sound = "default"
-        notification.priority = "high"
-
-        val pushPayload = PushPayload()
-        pushPayload.to = token
-
-        pushPayload.notification = notification
-
-        pushHelper.sendNotification(pushPayload)
+        pushHelper.sendNotification(title,message,token,null)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ it -> Log.i("RequestPres", it.string()) },

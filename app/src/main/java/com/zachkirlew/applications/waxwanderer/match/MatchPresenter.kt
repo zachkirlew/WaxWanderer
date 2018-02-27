@@ -162,7 +162,7 @@ class MatchPresenter(@NonNull private var matchView: MatchContract.View,
         if (dataSnapshot.exists()) {
             //It's a match!
             likedUser.name?.let { matchView.showMatchDialog(it) }
-            likedUser.pushToken?.let { sendNotification(likedUser.pushToken,
+            likedUser.pushToken?.let { sendNotification(likedUser.pushToken!!,
                                     "Congratulations",
                                     "You became friends with ${FirebaseAuth.getInstance().currentUser?.displayName} ") }
 
@@ -198,20 +198,9 @@ class MatchPresenter(@NonNull private var matchView: MatchContract.View,
     }
 
 
-    private fun sendNotification(token: String?, title: String?, message: String?) {
+    private fun sendNotification(token: String, title: String?, message: String?) {
 
-        val notification = Notification()
-        notification.title = title
-        notification.body = message
-        notification.sound = "default"
-        notification.priority = "high"
-
-        val pushPayload = PushPayload()
-        pushPayload.to = token
-
-        pushPayload.notification = notification
-
-        pushHelper.sendNotification(pushPayload)
+        pushHelper.sendNotification(title,message,token,null)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ it -> Log.i(TAG, it.string()) },

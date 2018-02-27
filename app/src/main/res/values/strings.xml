@@ -73,5 +73,7 @@
     <string name="request_action_accept">Accept</string>
     <string name="search_vinyls_text">Search for vinyls using the toolbar above</string>
     <string name="search_advanced_search">Advanced search</string>
+    <string name="explore_action_share">Share</string>
+    <string name="explore_action_recommend">Recommend</string>
 
 </resources>

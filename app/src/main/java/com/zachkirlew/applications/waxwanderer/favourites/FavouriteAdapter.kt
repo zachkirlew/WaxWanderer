@@ -1,6 +1,9 @@
 package com.zachkirlew.applications.waxwanderer.favourites
 
+import android.content.Context
 import android.content.Intent
+import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +14,7 @@ import com.squareup.picasso.Picasso
 import com.zachkirlew.applications.waxwanderer.R
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
 import com.zachkirlew.applications.waxwanderer.explore.OnLongPressListener
+import com.zachkirlew.applications.waxwanderer.recommend.RecommendVinylDialogFragment
 import com.zachkirlew.applications.waxwanderer.vinyl_detail.VinylDetailActivity
 import kotlinx.android.synthetic.main.vinyl_item.view.*
 
@@ -128,8 +132,36 @@ class FavouriteAdapter(private var vinyls: ArrayList<VinylRelease>,
                     R.id.action_remove -> {
                         callback.onFavouriteRemoved(vinyl.id!!)
                     }
+
+                    R.id.action_share -> {
+                        startShareIntent(itemView.context,vinyl)
+                    }
+                    R.id.action_recommend -> {
+                        openRecommendDialog(itemView.context,vinyl)
+                    }
                 }
             }
+        }
+
+        private fun startShareIntent(context: Context, vinyl: VinylRelease) {
+            val shareIntent = Intent()
+            shareIntent.action = Intent.ACTION_SEND
+            shareIntent.type = "text/plain"
+            shareIntent.putExtra(Intent.EXTRA_TEXT, "Check out this record!\n" + vinyl.title)
+
+            context.startActivity(Intent.createChooser(shareIntent, "Share with"))
+        }
+
+        private fun openRecommendDialog(context: Context, vinyl: VinylRelease) {
+            val recommendVinylDialogFragment = RecommendVinylDialogFragment()
+
+            val bundle = Bundle()
+            bundle.putSerializable("selectedVinyl", vinyl)
+
+            recommendVinylDialogFragment.arguments = bundle
+
+            val activity = context as AppCompatActivity
+            recommendVinylDialogFragment.show(activity.supportFragmentManager, "now")
         }
     }
 

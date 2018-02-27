@@ -55,25 +55,14 @@ class FriendsSearchPresenter(@NonNull private var friendsView: FriendsSearchCont
     override fun sendFriendRequest(user: User) {
         database.reference.child("friendRequests").child(user.id).child(userId).setValue(true)
 
-        user.pushToken?.let { sendNotification(user.pushToken,
+        user.pushToken?.let { sendNotification(user.pushToken!!,
                 "",
                 "You received a friend request ${FirebaseAuth.getInstance().currentUser?.displayName} ") }
     }
 
-    private fun sendNotification(token: String?, title: String?, message: String?) {
+    private fun sendNotification(token: String, title: String?, message: String?) {
 
-        val notification = Notification()
-        notification.title = title
-        notification.body = message
-        notification.sound = "default"
-        notification.priority = "high"
-
-        val pushPayload = PushPayload()
-        pushPayload.to = token
-
-        pushPayload.notification = notification
-
-        pushHelper.sendNotification(pushPayload)
+        pushHelper.sendNotification(title,message,token,null)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ it -> Log.i("", it.string()) },
