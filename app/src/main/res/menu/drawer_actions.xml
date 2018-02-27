@@ -17,7 +17,7 @@
             android:title="@string/match_title" />
 
         <item
-            android:id="@+id/matches_navigation_menu_item"
+            android:id="@+id/friends_navigation_menu_item"
             android:icon="@drawable/ic_menu_matches"
             android:title="@string/matches_title" />
 

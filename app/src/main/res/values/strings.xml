@@ -67,5 +67,9 @@
     <string name="favourite_action_remove">Remove</string>
     <string name="favourite_toolbar_sort">Sort</string>
     <string name="browse_title">Browse</string>
+    <string name="friends_no_requests_text">No friend requests to show</string>
+    <string name="search_friends_text">Search for a user using the toolbar</string>
+    <string name="search_action_send_request">Send friend request</string>
+    <string name="request_action_accept">Accept</string>
 
 </resources>

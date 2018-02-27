@@ -164,7 +164,7 @@ class MatchPresenter(@NonNull private var matchView: MatchContract.View,
             likedUser.name?.let { matchView.showMatchDialog(it) }
             likedUser.pushToken?.let { sendNotification(likedUser.pushToken,
                                     "Congratulations",
-                                    "You became friends with ${likedUser.name} ") }
+                                    "You became friends with ${FirebaseAuth.getInstance().currentUser?.displayName} ") }
 
             recordMatch(myRef, likedUser.id)
             removeOldLike(myRef, likedUser.id)

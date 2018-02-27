@@ -20,12 +20,12 @@ import com.squareup.picasso.Picasso
 import com.zachkirlew.applications.waxwanderer.R
 import com.zachkirlew.applications.waxwanderer.browse.BrowseFragment
 import com.zachkirlew.applications.waxwanderer.data.local.UserPreferences
-import com.zachkirlew.applications.waxwanderer.explore.ExploreFragment
 import com.zachkirlew.applications.waxwanderer.explore.OnQueryTextListener
 import com.zachkirlew.applications.waxwanderer.favourites.FavouriteFragment
 import com.zachkirlew.applications.waxwanderer.leaderboard.LeaderBoardFragment
 import com.zachkirlew.applications.waxwanderer.login.LoginActivity
-import com.zachkirlew.applications.waxwanderer.matches.MatchesFragment
+import com.zachkirlew.applications.waxwanderer.friends.FriendsFragment
+import com.zachkirlew.applications.waxwanderer.friends.FriendsTabFragment
 import com.zachkirlew.applications.waxwanderer.settings.SettingsFragment
 import com.zachkirlew.applications.waxwanderer.match.MatchFragment
 import com.zachkirlew.applications.waxwanderer.util.ActivityUtils
@@ -194,10 +194,10 @@ class MainActivity : AppCompatActivity(), MainContract.View, View.OnClickListene
                             supportFragmentManager, MatchFragment(), R.id.content)
                 }
 
-                R.id.matches_navigation_menu_item ->{
-                    showSearchIcon = false
+                R.id.friends_navigation_menu_item ->{
+                    showSearchIcon = true
                     ActivityUtils.changeFragment(
-                            supportFragmentManager, MatchesFragment(), R.id.content)
+                            supportFragmentManager, FriendsTabFragment(), R.id.content)
                 }
 
                 R.id.leaderboard_navigation_menu_item ->{

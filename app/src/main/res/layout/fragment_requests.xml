@@ -5,17 +5,17 @@
     android:orientation="vertical">
 
     <TextView
-        android:id="@+id/text_no_matches"
+        android:id="@+id/text_no_requests"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_centerInParent="true"
         android:padding="@dimen/activity_horizontal_margin"
-        android:text="@string/matches_no_matches_text"
+        android:text="@string/friends_no_requests_text"
         android:visibility="gone" />
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/matches_list"
+        android:id="@+id/requests_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 </RelativeLayout>

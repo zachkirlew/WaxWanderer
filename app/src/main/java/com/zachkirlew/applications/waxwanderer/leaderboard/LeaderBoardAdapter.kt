@@ -10,7 +10,7 @@ import com.zachkirlew.applications.waxwanderer.R
 import com.zachkirlew.applications.waxwanderer.data.model.User
 import com.zachkirlew.applications.waxwanderer.user_detail.UserDetailActivity
 import com.zachkirlew.applications.waxwanderer.util.CircleTransform
-import kotlinx.android.synthetic.main.match_item.view.*
+import kotlinx.android.synthetic.main.leader_board_item.view.*
 
 class LeaderBoardAdapter(private var users: List<User>) : RecyclerView.Adapter<LeaderBoardAdapter.ViewHolder>() {
 

@@ -81,7 +81,6 @@ class BrowseFragment: Fragment(), BrowseContract.View, OnSignOutListener {
     }
 
     override fun showAllGenres(genres: List<Style>) {
-        genres.forEach { println(it) }
         allGenresAdapter.addStyles(genres)
     }
 
