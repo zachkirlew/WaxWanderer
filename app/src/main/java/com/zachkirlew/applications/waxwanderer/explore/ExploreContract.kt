@@ -21,6 +21,11 @@ interface ExploreContract {
         fun startVinylDetailActivity(vinyl: VinylRelease)
 
         fun startVinylPreferenceActivity()
+
+        fun setRefreshing(isRefreshing : Boolean)
+
+        fun clearVinyls()
+
     }
 
     interface Presenter : BasePresenter {
@@ -31,8 +36,12 @@ interface ExploreContract {
 
         fun searchVinylReleases(searchText : String?)
 
-        fun loadVinylReleases(style: String)
+        fun loadVinylReleases(queryParams: HashMap<String, String>, pageNumber: Int = 0)
 
         fun dispose()
+
+        fun onLoadNextPage()
+
+        fun refresh()
     }
 }

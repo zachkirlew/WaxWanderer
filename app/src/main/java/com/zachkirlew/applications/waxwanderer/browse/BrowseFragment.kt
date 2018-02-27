@@ -33,8 +33,8 @@ class BrowseFragment: Fragment(), BrowseContract.View, OnSignOutListener {
     override fun onCreate(@Nullable savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-        userStylesAdapter = StylesAdapter(ArrayList(0))
-        allGenresAdapter = StylesAdapter(ArrayList(0))
+        userStylesAdapter = StylesAdapter(ArrayList(0),"style")
+        allGenresAdapter = StylesAdapter(ArrayList(0),"genre")
     }
 
 

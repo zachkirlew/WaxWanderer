@@ -7,7 +7,7 @@ import io.reactivex.Single
 
 interface VinylDataSource {
 
-    fun getVinyls(style : String): Observable<DiscogsResponse>
+    fun getVinyls(params: HashMap<String, String>, pageNumber: Int): Observable<DiscogsResponse>
 
     fun getVinyl(releaseId: String): Single<DetailVinylRelease>
 

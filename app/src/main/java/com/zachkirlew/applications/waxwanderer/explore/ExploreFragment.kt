@@ -1,16 +1,20 @@
 package com.zachkirlew.applications.waxwanderer.explore
 
-import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.support.annotation.Nullable
 import android.support.design.widget.CoordinatorLayout
 import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
+import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.view.*
+import android.util.Log
+import android.view.LayoutInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -25,8 +29,11 @@ import com.zachkirlew.applications.waxwanderer.vinyl_detail.VinylDetailActivity
 import com.zachkirlew.applications.waxwanderer.vinyl_preferences.VinylPreferencesActivity
 
 
-class ExploreFragment: Fragment(), ExploreContract.View, OnQueryTextListener,OnSignOutListener, OnAddToFavouritesListener, OnLongPressListener {
-
+class ExploreFragment: Fragment(),
+        ExploreContract.View, OnQueryTextListener,
+        OnSignOutListener,
+        OnAddToFavouritesListener,
+        OnLongPressListener, SwipeRefreshLayout.OnRefreshListener {
 
     private lateinit var explorePresenter : ExploreContract.Presenter
 
@@ -42,31 +49,41 @@ class ExploreFragment: Fragment(), ExploreContract.View, OnQueryTextListener,OnS
 
     private val coordinatorLayout : CoordinatorLayout by lazy{activity!!.findViewById<CoordinatorLayout>(R.id.coordinatorLayout)}
 
+    private val PAGE_SIZE = 50
+    private val PAGINATION_MARGIN = 10
+    private var endOfList = false
+
+    private lateinit var swipeContainer : SwipeRefreshLayout
+
+    private val TAG = ExploreFragment::class.java.simpleName
+
     override fun onCreate(@Nullable savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         exploreAdapter = ExploreAdapter(ArrayList(0),this,this)
     }
 
-
-    private lateinit var style: String
+    private lateinit var queryParams: HashMap<String, String>
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val root = inflater.inflate(R.layout.fragment_explore, container, false)
 
-        style = activity?.intent?.getSerializableExtra("selected_style") as String
+        queryParams = activity?.intent?.getSerializableExtra("params") as HashMap<String, String>
 
-        activity?.title = style
+        activity?.title = queryParams.values.first()
 
         explorePresenter = ExplorePresenter(VinylsRemoteSource.instance,this)
-
 
         val exploreList = root?.findViewById(R.id.explore_list) as RecyclerView
 
         exploreList.layoutManager = LinearLayoutManager(activity)
         exploreList.adapter = exploreAdapter
 
+        exploreList.addOnScrollListener(scrollListener)
         val spacingInPixels = resources.getDimensionPixelSize(R.dimen.list_item_padding)
         exploreList.addItemDecoration(EqualSpaceItemDecoration(spacingInPixels))
+
+        swipeContainer = root.findViewById(R.id.swipe_container)
+        swipeContainer.setOnRefreshListener(this)
 
         noFavouritesText = root.findViewById(R.id.text_no_favourites)
 
@@ -128,6 +145,33 @@ class ExploreFragment: Fragment(), ExploreContract.View, OnQueryTextListener,OnS
         explorePresenter.loadVinylRelease(selectedVinyl.id.toString())
     }
 
+    override fun onRefresh() {
+        Log.i(TAG,"Refreshed:")
+        explorePresenter.refresh()
+    }
+
+    private val scrollListener = object : RecyclerView.OnScrollListener() {
+        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+            super.onScrolled(recyclerView, dx, dy)
+            val visibleItemCount = recyclerView.layoutManager.childCount
+            val totalItemCount = recyclerView.layoutManager.itemCount
+            val firstVisibleItemPosition = (recyclerView.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
+
+            if (!swipeContainer.isRefreshing && !endOfList) {
+                if (visibleItemCount + firstVisibleItemPosition >= totalItemCount - PAGINATION_MARGIN
+                        && firstVisibleItemPosition >= 0
+                        && totalItemCount >= PAGE_SIZE) {
+                    Log.i(TAG,"Margin reached, loading next page")
+                    explorePresenter.onLoadNextPage()
+                }
+            }
+        }
+    }
+
+    override fun clearVinyls() {
+        exploreAdapter.removeVinyls()
+    }
+
     override fun showQuickViewDialog(detailedVinylRelease: DetailVinylRelease) {
 
         val inflater = activity!!.layoutInflater
@@ -172,6 +216,11 @@ class ExploreFragment: Fragment(), ExploreContract.View, OnQueryTextListener,OnS
         aDialog.show()
     }
 
+    override fun setRefreshing(isRefreshing: Boolean) {
+        swipeContainer.isRefreshing = isRefreshing
+    }
+
+
 
     override fun showNoVinylsView() {
         progressBar.visibility = View.GONE
@@ -196,7 +245,7 @@ class ExploreFragment: Fragment(), ExploreContract.View, OnQueryTextListener,OnS
 
         if(lastSearch==null){
             exploreAdapter.removeVinyls()
-            explorePresenter.loadVinylReleases(style)
+            explorePresenter.loadVinylReleases(queryParams)
         }
     }
 

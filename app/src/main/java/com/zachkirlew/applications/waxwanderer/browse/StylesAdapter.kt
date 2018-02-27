@@ -11,7 +11,7 @@ import com.zachkirlew.applications.waxwanderer.data.model.Style
 import com.zachkirlew.applications.waxwanderer.explore.ExploreActivity
 import kotlinx.android.synthetic.main.browse_item.view.*
 
-class StylesAdapter(private var styles: List<Style>) : RecyclerView.Adapter<StylesAdapter.ViewHolder>() {
+class StylesAdapter(private var styles: List<Style>,private val type: String) : RecyclerView.Adapter<StylesAdapter.ViewHolder>() {
 
     fun addStyles(styles : List<Style>){
         this.styles = styles
@@ -29,8 +29,11 @@ class StylesAdapter(private var styles: List<Style>) : RecyclerView.Adapter<Styl
         holder.itemView.setOnClickListener {
             val context = holder.itemView.context
 
+            val params : HashMap<String,String> = HashMap()
+            params[type] = styles[position].style!!
+
             val intent = Intent(context, ExploreActivity::class.java)
-            intent.putExtra("selected_style", styles[position].style)
+            intent.putExtra("params", params)
             context.startActivity(intent)
         }
     }

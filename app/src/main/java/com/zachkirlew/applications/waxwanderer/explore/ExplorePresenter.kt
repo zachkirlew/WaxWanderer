@@ -8,17 +8,12 @@ import com.google.firebase.database.FirebaseDatabase
 import com.zachkirlew.applications.waxwanderer.data.VinylDataSource
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.DiscogsResponse
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
-import com.zachkirlew.applications.waxwanderer.data.model.discogs.detail.DetailVinylRelease
-import com.zachkirlew.applications.waxwanderer.util.InternetConnectionUtil
 import durdinapps.rxfirebase2.RxFirebaseDatabase
-import io.reactivex.Observable
 import io.reactivex.Observer
-import io.reactivex.SingleObserver
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import java.lang.Exception
 
 class ExplorePresenter(@NonNull private var vinylDataSource: VinylDataSource, @NonNull private var exploreView: ExploreContract.View) : ExploreContract.Presenter {
 
@@ -29,6 +24,10 @@ class ExplorePresenter(@NonNull private var vinylDataSource: VinylDataSource, @N
 
     private var compositeDisposable : CompositeDisposable? = null
 
+    private var currentPage: Int = 0
+
+    private lateinit var queryParams : HashMap<String, String>
+
     init {
         exploreView.setPresenter(this)
     }
@@ -38,9 +37,10 @@ class ExplorePresenter(@NonNull private var vinylDataSource: VinylDataSource, @N
     }
 
 
-    override fun loadVinylReleases(style : String) {
+    override fun loadVinylReleases(queryParams: HashMap<String, String>, pageNumber: Int) {
+        this.queryParams = queryParams
 
-        vinylDataSource.getVinyls(style)
+        vinylDataSource.getVinyls(this.queryParams,pageNumber)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(observer)
@@ -65,6 +65,21 @@ class ExplorePresenter(@NonNull private var vinylDataSource: VinylDataSource, @N
                             {error->exploreView.showMessage(error.message) })
     }
 
+    override fun onLoadNextPage() {
+        currentPage++
+        exploreView.setRefreshing(true)
+        loadVinylReleases(queryParams,currentPage)
+    }
+
+
+
+    override fun refresh() {
+        currentPage = 0
+        exploreView.setRefreshing(true)
+        exploreView.clearVinyls()
+        loadVinylReleases(queryParams)
+    }
+
 
     override fun addToFavourites(vinyl: VinylRelease) {
 
@@ -75,7 +90,6 @@ class ExplorePresenter(@NonNull private var vinylDataSource: VinylDataSource, @N
                 .doOnSubscribe { compositeDisposable?.add(it) }
                 .subscribe({ isInFavourites -> if (!isInFavourites) addToFirebase(myRef,vinyl) else exploreView.showMessage("Already in your favourites") },
                         { error -> exploreView.showMessage(error.message) })
-
     }
 
     private fun addToFirebase(myRef: DatabaseReference, vinyl: VinylRelease) {
@@ -90,10 +104,18 @@ class ExplorePresenter(@NonNull private var vinylDataSource: VinylDataSource, @N
         }
 
         override fun onNext(response: DiscogsResponse) {
-            if (response.results?.isEmpty()!!)
+
+            exploreView.setRefreshing(false)
+
+            val page = response.pagination?.page
+            val results = response.results
+
+            if (results?.isEmpty()!!)
                 exploreView.showNoVinylsView()
-            else
-                exploreView.showVinylReleases(response.results!!)
+            else {
+                exploreView.showVinylReleases(results)
+                currentPage = page!!
+            }
         }
 
         override fun onComplete() {
@@ -101,8 +123,12 @@ class ExplorePresenter(@NonNull private var vinylDataSource: VinylDataSource, @N
         }
 
         override fun onError(e: Throwable) {
-            e.printStackTrace()
+            exploreView.setRefreshing(false)
             exploreView.showMessage(e.message)
+
+            if (currentPage > 0) {
+                currentPage--
+            }
         }
     }
 

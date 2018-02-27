@@ -2,6 +2,7 @@ package com.zachkirlew.applications.waxwanderer.explore
 
 import android.content.Intent
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,14 +16,18 @@ class ExploreAdapter(private var vinyls: ArrayList<VinylRelease>,
                      private val callback: OnAddToFavouritesListener,
                      private val longPressCallback: OnLongPressListener) : RecyclerView.Adapter<ExploreAdapter.ViewHolder>() {
 
+    private val TAG = ExploreAdapter::class.java.simpleName
+
     fun addVinyls(vinyls : List<VinylRelease>){
         this.vinyls.addAll(vinyls)
         notifyDataSetChanged()
+        Log.i(TAG,"Adapter count: " + this.vinyls.size)
     }
 
     fun removeVinyls(){
         this.vinyls.clear()
         notifyDataSetChanged()
+        Log.i(TAG,"Adapter count: " + this.vinyls.size)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ExploreAdapter.ViewHolder {
