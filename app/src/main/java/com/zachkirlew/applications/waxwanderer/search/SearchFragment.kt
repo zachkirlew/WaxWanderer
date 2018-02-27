@@ -1,4 +1,4 @@
-package com.zachkirlew.applications.waxwanderer.explore
+package com.zachkirlew.applications.waxwanderer.search
 
 import android.content.Intent
 import android.os.Bundle
@@ -11,12 +11,9 @@ import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import android.widget.EditText
 import android.widget.ImageView
-import android.widget.ProgressBar
 import android.widget.TextView
 import com.squareup.picasso.Picasso
 import com.zachkirlew.applications.waxwanderer.R
@@ -24,25 +21,22 @@ import com.zachkirlew.applications.waxwanderer.base.OnSignOutListener
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.detail.DetailVinylRelease
 import com.zachkirlew.applications.waxwanderer.data.remote.VinylsRemoteSource
+import com.zachkirlew.applications.waxwanderer.explore.*
 import com.zachkirlew.applications.waxwanderer.util.EqualSpaceItemDecoration
 import com.zachkirlew.applications.waxwanderer.vinyl_detail.VinylDetailActivity
 import com.zachkirlew.applications.waxwanderer.vinyl_preferences.VinylPreferencesActivity
 
-
-class ExploreFragment: Fragment(),
-        ExploreContract.View,
+class SearchFragment: Fragment(),
+        SearchContract.View, OnQueryTextListener,
         OnSignOutListener,
         OnAddToFavouritesListener,
         OnLongPressListener, SwipeRefreshLayout.OnRefreshListener {
 
-    private lateinit var explorePresenter : ExploreContract.Presenter
+    private lateinit var searchPresenter : SearchContract.Presenter
 
-    private lateinit var exploreAdapter: ExploreAdapter
+    private lateinit var searchAdapter: ExploreAdapter
 
-    private lateinit var progressBar : ProgressBar
-
-    private var noFavouritesText: TextView? = null
-
+    private var searchPromptText: TextView? = null
 
     private lateinit var selectedVinyl: VinylRelease
 
@@ -54,28 +48,29 @@ class ExploreFragment: Fragment(),
 
     private lateinit var swipeContainer : SwipeRefreshLayout
 
-    private val TAG = ExploreFragment::class.java.simpleName
+    private val queryParams: HashMap<String, String> = HashMap()
+
+    private val TAG = SearchFragment::class.java.simpleName
 
     override fun onCreate(@Nullable savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        exploreAdapter = ExploreAdapter(ArrayList(0),this,this)
+        setHasOptionsMenu(true)
+        searchAdapter = ExploreAdapter(ArrayList(0),this,this)
     }
 
-    private lateinit var queryParams: HashMap<String, String>
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val root = inflater.inflate(R.layout.fragment_explore, container, false)
+        val root = inflater.inflate(R.layout.fragment_search, container, false)
 
-        queryParams = activity?.intent?.getSerializableExtra("params") as HashMap<String, String>
+        //queryParams = activity?.intent?.getSerializableExtra("params") as HashMap<String, String>
 
-        activity?.title = queryParams.values.first()
+        activity?.title = "Search"
 
-        explorePresenter = ExplorePresenter(VinylsRemoteSource.instance,this)
+        searchPresenter = SearchPresenter(VinylsRemoteSource.instance,this)
 
         val exploreList = root?.findViewById(R.id.explore_list) as RecyclerView
 
         exploreList.layoutManager = LinearLayoutManager(activity)
-        exploreList.adapter = exploreAdapter
+        exploreList.adapter = searchAdapter
 
         exploreList.addOnScrollListener(scrollListener)
         val spacingInPixels = resources.getDimensionPixelSize(R.dimen.list_item_padding)
@@ -84,23 +79,26 @@ class ExploreFragment: Fragment(),
         swipeContainer = root.findViewById(R.id.swipe_container)
         swipeContainer.setOnRefreshListener(this)
 
-        noFavouritesText = root.findViewById(R.id.text_no_favourites)
+        searchPromptText = root.findViewById(R.id.text_search_prompt)
 
-        progressBar = root.findViewById(R.id.progress_bar_explore)
-
-        progressBar.visibility = View.VISIBLE
 
         return root
     }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.search_fragment_menu, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
 
-            R.id.action_vinyl_settings -> startVinylPreferenceActivity()
+            R.id.action_advanced_search -> showAdvancedSearchDialog()
         }
         return false
     }
+
+
 
     override fun startVinylDetailActivity(vinyl: VinylRelease) {
 
@@ -115,34 +113,46 @@ class ExploreFragment: Fragment(),
         startActivity(intent)
     }
 
+    override fun onQueryTextSubmit(searchText: String?) {
+        refreshSearch()
 
-    override fun showMessage(message: String?) {
-        message?.let { Snackbar.make(coordinatorLayout, it, Snackbar.LENGTH_LONG).show() }
+        queryParams["q"] = searchText!!
+        searchPresenter.searchVinylReleases(queryParams)
+    }
+
+    private fun refreshSearch(){
+        queryParams.clear()
+        searchAdapter.removeVinyls()
+    }
+
+    override fun onQueryTextChange(searchText: String?) {
     }
 
     override fun setEndOfList(isEnd: Boolean) {
         endOfList = isEnd
     }
 
-    override fun setPresenter(presenter: ExploreContract.Presenter) {
-        explorePresenter = presenter
+    override fun showMessage(message: String?) {
+        message?.let { Snackbar.make(coordinatorLayout, it, Snackbar.LENGTH_LONG).show() }
+    }
+
+    override fun setPresenter(presenter: SearchContract.Presenter) {
+        searchPresenter = presenter
     }
 
     override fun showVinylReleases(vinyls: List<VinylRelease>) {
-        noFavouritesText?.visibility = View.GONE
-
-        progressBar.visibility = View.GONE
-        exploreAdapter.addVinyls(vinyls)
+        searchPromptText?.visibility = View.GONE
+        searchAdapter.addVinyls(vinyls)
     }
 
     override fun onLongPress(item: Any?) {
         selectedVinyl = item as VinylRelease
-        explorePresenter.loadVinylRelease(selectedVinyl.id.toString())
+        searchPresenter.loadVinylRelease(selectedVinyl.id.toString())
     }
 
     override fun onRefresh() {
         Log.i(TAG,"Refreshed:")
-        explorePresenter.refresh()
+        searchPresenter.refresh()
         endOfList = false
     }
 
@@ -158,14 +168,14 @@ class ExploreFragment: Fragment(),
                         && firstVisibleItemPosition >= 0
                         && totalItemCount >= PAGE_SIZE) {
                     Log.i(TAG,"Margin reached, loading next page")
-                    explorePresenter.onLoadNextPage()
+                    searchPresenter.onLoadNextPage()
                 }
             }
         }
     }
 
     override fun clearVinyls() {
-        exploreAdapter.removeVinyls()
+        searchAdapter.removeVinyls()
     }
 
     override fun showQuickViewDialog(detailedVinylRelease: DetailVinylRelease) {
@@ -212,42 +222,86 @@ class ExploreFragment: Fragment(),
         aDialog.show()
     }
 
+    private fun showAdvancedSearchDialog() {
+
+        val inflater = activity!!.layoutInflater
+        val dialogView = inflater.inflate(R.layout.dialog_advanced_search, null)
+
+        val inputArtist = dialogView.findViewById<EditText>(R.id.input_artist)
+        val inputStyle = dialogView.findViewById<EditText>(R.id.input_style)
+        val inputCountry = dialogView.findViewById<EditText>(R.id.input_country)
+        val inputYear = dialogView.findViewById<EditText>(R.id.input_year)
+        val inputLabel = dialogView.findViewById<EditText>(R.id.input_label)
+        val inputGenre = dialogView.findViewById<EditText>(R.id.input_genre)
+        val inputTrack = dialogView.findViewById<EditText>(R.id.input_track)
+
+        val aDialog =  AlertDialog.Builder(activity!!)
+                .setView(dialogView)
+                .setPositiveButton("Search",{ _, _ ->
+
+                    refreshSearch()
+
+                    if(inputArtist.text.isNotEmpty() && inputArtist.text.isNotBlank())
+                        queryParams["artist"] = inputArtist.text.toString()
+
+                    if(inputStyle.text.isNotEmpty() && inputStyle.text.isNotBlank())
+                        queryParams["style"] = inputStyle.text.toString()
+
+                    if(inputCountry.text.isNotEmpty() && inputCountry.text.isNotBlank())
+                        queryParams["country"] = inputCountry.text.toString()
+
+                    if(inputLabel.text.isNotEmpty() && inputLabel.text.isNotBlank())
+                        queryParams["label"] = inputLabel.text.toString()
+
+                    if(inputGenre.text.isNotEmpty() && inputGenre.text.isNotBlank())
+                        queryParams["genre"] = inputGenre.text.toString()
+
+                    if(inputTrack.text.isNotEmpty() && inputTrack.text.isNotBlank())
+                        queryParams["track"] = inputTrack.text.toString()
+
+                    if(inputYear.text.isNotEmpty() && inputYear.text.isNotBlank())
+                        queryParams["year"] = inputYear.text.toString()
+
+                    searchPresenter.searchVinylReleases(queryParams)
+                })
+                .setNegativeButton(android.R.string.cancel, null)
+                .create()
+        aDialog.show()
+    }
+
     override fun setRefreshing(isRefreshing: Boolean) {
         swipeContainer.isRefreshing = isRefreshing
     }
 
-
-
     override fun showNoVinylsView() {
-        progressBar.visibility = View.GONE
-        exploreAdapter.removeVinyls()
-        noFavouritesText?.text = getString(R.string.text_no_vinyls)
-        noFavouritesText?.visibility = View.VISIBLE
+        searchAdapter.removeVinyls()
+        searchPromptText?.text = getString(R.string.text_no_vinyls)
+        searchPromptText?.visibility = View.VISIBLE
     }
 
     override fun showNoInternetMessage() {
-        progressBar.visibility = View.GONE
-        noFavouritesText?.text = getString(R.string.text_no_internet)
-        noFavouritesText?.visibility = View.VISIBLE
+        searchPromptText?.text = getString(R.string.text_no_internet)
+        searchPromptText?.visibility = View.VISIBLE
     }
 
     override fun onAddedToFavourites(vinyl : VinylRelease) {
-        explorePresenter.addToFavourites(vinyl)
+        searchPresenter.addToFavourites(vinyl)
     }
 
     override fun onResume() {
         super.onResume()
-        explorePresenter.start()
+        searchPresenter.start()
     }
 
     override fun onPause() {
         super.onPause()
-        explorePresenter.dispose()
+        searchPresenter.dispose()
     }
 
     override fun onSignOut() {
-        explorePresenter.dispose()
+        searchPresenter.dispose()
     }
+
 
     private fun commaSeparateList(list: List<String>?): String {
         return android.text.TextUtils.join(", ", list)

@@ -28,6 +28,7 @@ import com.zachkirlew.applications.waxwanderer.friends.FriendsFragment
 import com.zachkirlew.applications.waxwanderer.friends.FriendsTabFragment
 import com.zachkirlew.applications.waxwanderer.settings.SettingsFragment
 import com.zachkirlew.applications.waxwanderer.match.MatchFragment
+import com.zachkirlew.applications.waxwanderer.search.SearchFragment
 import com.zachkirlew.applications.waxwanderer.util.ActivityUtils
 import com.zachkirlew.applications.waxwanderer.util.BorderedCircleTransform
 import kotlinx.android.synthetic.main.activity_main.*
@@ -38,7 +39,7 @@ class MainActivity : AppCompatActivity(), MainContract.View, View.OnClickListene
 
     private val profileImage : ImageView by lazy {nav_view.getHeaderView(0).findViewById(R.id.profile_image) as ImageView}
 
-    private var showSearchIcon = true
+    private var showSearchIcon = false
 
     private lateinit var presenter: MainPresenter
 
@@ -181,6 +182,13 @@ class MainActivity : AppCompatActivity(), MainContract.View, View.OnClickListene
                     ActivityUtils.changeFragment(
                             supportFragmentManager, BrowseFragment(), R.id.content)
                 }
+
+                R.id.search_navigation_menu_item ->{
+                    showSearchIcon = true
+                    ActivityUtils.changeFragment(
+                            supportFragmentManager, SearchFragment(), R.id.content)
+                }
+
 
                 R.id.favourites_navigation_menu_item ->{
                     showSearchIcon = true

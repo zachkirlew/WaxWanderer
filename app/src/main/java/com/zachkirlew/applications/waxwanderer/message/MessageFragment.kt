@@ -45,7 +45,6 @@ class MessageFragment : Fragment(), MessageContract.View, ShareVinylDialogFragme
 
     private var shareVinylDialogFragment: ShareVinylDialogFragment? = null
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         uid = FirebaseAuth.getInstance().currentUser?.uid!!
@@ -58,7 +57,7 @@ class MessageFragment : Fragment(), MessageContract.View, ShareVinylDialogFragme
 
         initializePresenter()
 
-        messageInput = view.findViewById<EditText>(R.id.input_message)
+        messageInput = view.findViewById(R.id.input_message)
 
         val sendFab = view.findViewById<ImageButton>(R.id.button_sent)
 

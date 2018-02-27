@@ -13,6 +13,9 @@ import com.zachkirlew.applications.waxwanderer.data.model.Message
 import com.zachkirlew.applications.waxwanderer.vinyl_detail.VinylDetailActivity
 import durdinapps.rxfirebase2.RxFirebaseRecyclerAdapter
 import java.util.*
+import com.google.firebase.internal.FirebaseAppHelper.getUid
+
+
 
 class MessageAdapter(private val messageList: ArrayList<Message>, private val mId: String, private val messageFragment: MessageFragment) : RxFirebaseRecyclerAdapter<MessageAdapter.ViewHolder,Message>(Message::class.java) {
 
@@ -28,6 +31,10 @@ class MessageAdapter(private val messageList: ArrayList<Message>, private val mI
         }
 
         return ViewHolder(view)
+    }
+
+    fun getFirstItemId(): String {
+        return messageList[0].id
     }
 
 

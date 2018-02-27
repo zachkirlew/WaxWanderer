@@ -13,12 +13,14 @@ interface MessageContract {
         fun showError(message : String?)
 
         fun addMessage(message: RxFirebaseChildEvent<DataSnapshot>)
+
         fun showChooseRecordDialog(favourites :List<VinylRelease>)
     }
 
     interface Presenter : BasePresenter {
 
         fun loadMessages(matchedUser: User)
+
         fun sendMessage(messageText : String, authorId : String,attachedRelease : VinylRelease?)
 
         fun loadFavourites()

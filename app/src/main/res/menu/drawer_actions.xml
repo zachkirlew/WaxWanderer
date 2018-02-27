@@ -7,6 +7,10 @@
             android:icon="@drawable/ic_menu_browse"
             android:title="@string/browse_title" />
         <item
+            android:id="@+id/search_navigation_menu_item"
+            android:icon="@drawable/ic_menu_search"
+            android:title="@string/search_title" />
+        <item
             android:id="@+id/favourites_navigation_menu_item"
             android:icon="@drawable/ic_menu_heart"
             android:title="@string/favourites_title" />
@@ -23,7 +27,7 @@
 
         <item
             android:id="@+id/leaderboard_navigation_menu_item"
-            android:icon="@drawable/ic_action_format_list_numbered"
+            android:icon="@drawable/ic_menu_leaderboard"
             android:title="@string/leaderboard_title" />
     </group>
 

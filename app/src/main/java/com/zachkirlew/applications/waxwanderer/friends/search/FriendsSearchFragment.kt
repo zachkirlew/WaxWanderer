@@ -14,14 +14,13 @@ import com.zachkirlew.applications.waxwanderer.base.OnSignOutListener
 import com.zachkirlew.applications.waxwanderer.data.model.User
 import com.zachkirlew.applications.waxwanderer.data.remote.notification.PushHelper
 import com.zachkirlew.applications.waxwanderer.util.EqualSpaceItemDecoration
-import java.util.regex.Pattern
 
 
-class SearchFragment : Fragment(), SearchContract.View, OnSignOutListener, OnRequestSentListener {
+class FriendsSearchFragment : Fragment(), FriendsSearchContract.View, OnSignOutListener, OnRequestSentListener {
 
-    private lateinit var friendsPresenter : SearchContract.Presenter
+    private lateinit var friendsPresenter : FriendsSearchContract.Presenter
 
-    private lateinit var friendsAdapter: SearchAdapter
+    private lateinit var friendsAdapter: FriendsSearchAdapter
 
     private lateinit var friendsList : RecyclerView
 
@@ -33,14 +32,14 @@ class SearchFragment : Fragment(), SearchContract.View, OnSignOutListener, OnReq
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
         retainInstance = true
-        friendsAdapter = SearchAdapter(ArrayList(0),this)
+        friendsAdapter = FriendsSearchAdapter(ArrayList(0),this)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
         val root = inflater.inflate(R.layout.fragment_search_friends, container, false)
 
-        friendsPresenter = SearchPresenter(this, PushHelper.getInstance(activity!!))
+        friendsPresenter = FriendsSearchPresenter(this, PushHelper.getInstance(activity!!))
 
         friendsList = root?.findViewById(R.id.friends_list) as RecyclerView
         searchPromptText = root.findViewById(R.id.text_search_prompt) as TextView
@@ -64,7 +63,7 @@ class SearchFragment : Fragment(), SearchContract.View, OnSignOutListener, OnReq
         this.isSearching = isSearching
     }
 
-    override fun setPresenter(presenter: SearchContract.Presenter) {
+    override fun setPresenter(presenter: FriendsSearchContract.Presenter) {
         friendsPresenter = presenter
     }
 

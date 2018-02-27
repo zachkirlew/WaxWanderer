@@ -3,7 +3,7 @@ package com.zachkirlew.applications.waxwanderer.friends.search
 import com.zachkirlew.applications.waxwanderer.base.BaseView
 import com.zachkirlew.applications.waxwanderer.data.model.User
 
-interface SearchContract {
+interface FriendsSearchContract {
 
     interface View: BaseView<Presenter> {
 

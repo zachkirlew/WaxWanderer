@@ -1,12 +1,11 @@
-package com.zachkirlew.applications.waxwanderer.explore
+package com.zachkirlew.applications.waxwanderer.search
 
 import com.zachkirlew.applications.waxwanderer.base.BasePresenter
 import com.zachkirlew.applications.waxwanderer.base.BaseView
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.detail.DetailVinylRelease
 
-
-interface ExploreContract {
+interface SearchContract {
 
     interface View: BaseView<Presenter> {
 
@@ -36,7 +35,7 @@ interface ExploreContract {
 
         fun loadVinylRelease(releaseId : String)
 
-        fun loadVinylReleases(queryParams: HashMap<String, String>, pageNumber: Int = 0)
+        fun searchVinylReleases(queryParams: HashMap<String, String>, pageNumber: Int = 0)
 
         fun dispose()
 

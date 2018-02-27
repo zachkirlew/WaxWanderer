@@ -36,9 +36,9 @@ class FriendsFragment : Fragment(), FriendsContract.View, OnFriendDeletedListene
     }
 
     @Override
-    override fun onPrepareOptionsMenu(menu: Menu) {
-        val item = menu.findItem(R.id.action_search)
-        item.isVisible = false
+    override fun onPrepareOptionsMenu(menu: Menu?) {
+        val item = menu?.findItem(R.id.action_search)
+        item?.isVisible = false
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

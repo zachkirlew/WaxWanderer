@@ -12,7 +12,7 @@ import android.view.View
 import com.zachkirlew.applications.waxwanderer.R
 import com.zachkirlew.applications.waxwanderer.explore.OnQueryTextListener
 import com.zachkirlew.applications.waxwanderer.friends.requests.RequestsFragment
-import com.zachkirlew.applications.waxwanderer.friends.search.SearchFragment
+import com.zachkirlew.applications.waxwanderer.friends.search.FriendsSearchFragment
 
 
 class FriendsTabFragment : Fragment(), OnQueryTextListener {
@@ -44,7 +44,7 @@ class FriendsTabFragment : Fragment(), OnQueryTextListener {
         val adapter = Adapter(childFragmentManager)
         adapter.addFragment(FriendsFragment(), "All")
         adapter.addFragment(RequestsFragment(), "Requests")
-        adapter.addFragment(SearchFragment(), "Search")
+        adapter.addFragment(FriendsSearchFragment(), "Search")
 
         viewPager.adapter = adapter
         viewPager.offscreenPageLimit = 2
@@ -52,7 +52,7 @@ class FriendsTabFragment : Fragment(), OnQueryTextListener {
 
     override fun onQueryTextSubmit(searchText: String?) {
         val frag = childFragmentManager.findFragmentByTag("android:switcher:" + R.id.viewpager + ":" + viewPager.currentItem)
-        if(frag is SearchFragment){
+        if(frag is FriendsSearchFragment){
             if(searchText?.isNotEmpty()!!)
                 frag.handleSearch(searchText)
         }

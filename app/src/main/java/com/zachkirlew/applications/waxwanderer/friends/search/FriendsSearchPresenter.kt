@@ -17,8 +17,8 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import java.util.regex.Pattern
 
-class SearchPresenter(@NonNull private var friendsView: SearchContract.View,
-                      @NonNull private val pushHelper : PushHelper) : SearchContract.Presenter {
+class FriendsSearchPresenter(@NonNull private var friendsView: FriendsSearchContract.View,
+                             @NonNull private val pushHelper : PushHelper) : FriendsSearchContract.Presenter {
 
     private val userId  = FirebaseAuth.getInstance().currentUser?.uid
     private val database = FirebaseDatabase.getInstance()

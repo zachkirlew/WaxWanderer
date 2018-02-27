@@ -38,7 +38,6 @@ class FavouriteFragment : Fragment(), FavouriteContract.View, OnSignOutListener,
 
     override fun onCreate(@Nullable savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         setHasOptionsMenu(true)
         favouriteAdapter = FavouriteAdapter(ArrayList(), this, this,this,this)
 
@@ -93,7 +92,7 @@ class FavouriteFragment : Fragment(), FavouriteContract.View, OnSignOutListener,
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.favourite, menu)
+        inflater.inflate(R.menu.favourite_fragment_menu, menu)
         super.onCreateOptionsMenu(menu, inflater)
     }
 

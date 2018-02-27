@@ -12,7 +12,7 @@ import com.zachkirlew.applications.waxwanderer.user_detail.UserDetailActivity
 import com.zachkirlew.applications.waxwanderer.util.CircleTransform
 import kotlinx.android.synthetic.main.friend_item.view.*
 
-class SearchAdapter(private var users: ArrayList<User>, private val callback : OnRequestSentListener) : RecyclerView.Adapter<SearchAdapter.ViewHolder>() {
+class FriendsSearchAdapter(private var users: ArrayList<User>, private val callback : OnRequestSentListener) : RecyclerView.Adapter<FriendsSearchAdapter.ViewHolder>() {
 
     fun addUser(user : User?){
         if (user != null) {
@@ -26,12 +26,12 @@ class SearchAdapter(private var users: ArrayList<User>, private val callback : O
         notifyDataSetChanged()
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchAdapter.ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FriendsSearchAdapter.ViewHolder {
         val v = LayoutInflater.from(parent.context).inflate(R.layout.friend_item, parent, false) as ListItemView
         return ViewHolder(v,callback)
     }
 
-    override fun onBindViewHolder(holder: SearchAdapter.ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: FriendsSearchAdapter.ViewHolder, position: Int) {
         holder.bindItems(users[position])
 
         holder.itemView.setOnClickListener {

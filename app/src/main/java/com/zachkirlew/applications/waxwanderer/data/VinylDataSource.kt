@@ -10,6 +10,4 @@ interface VinylDataSource {
     fun getVinyls(params: HashMap<String, String>, pageNumber: Int): Observable<DiscogsResponse>
 
     fun getVinyl(releaseId: String): Single<DetailVinylRelease>
-
-    fun searchVinyl(searchText: String): Observable<DiscogsResponse>
 }

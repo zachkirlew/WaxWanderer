@@ -1,4 +1,4 @@
-package com.zachkirlew.applications.waxwanderer.explore
+package com.zachkirlew.applications.waxwanderer.search
 
 import android.support.annotation.NonNull
 import android.util.Log
@@ -15,12 +15,12 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 
-class ExplorePresenter(@NonNull private var vinylDataSource: VinylDataSource, @NonNull private var exploreView: ExploreContract.View) : ExploreContract.Presenter {
+class SearchPresenter(@NonNull private var vinylDataSource: VinylDataSource, @NonNull private var searchView: SearchContract.View) : SearchContract.Presenter {
 
     private val mFirebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private val database = FirebaseDatabase.getInstance()
 
-    private val TAG = ExplorePresenter::class.java.simpleName
+    private val TAG = SearchPresenter::class.java.simpleName
 
     private var compositeDisposable : CompositeDisposable? = null
 
@@ -29,7 +29,7 @@ class ExplorePresenter(@NonNull private var vinylDataSource: VinylDataSource, @N
     private lateinit var queryParams : HashMap<String, String>
 
     init {
-        exploreView.setPresenter(this)
+        searchView.setPresenter(this)
     }
 
     override fun start() {
@@ -37,15 +37,16 @@ class ExplorePresenter(@NonNull private var vinylDataSource: VinylDataSource, @N
     }
 
 
-    override fun loadVinylReleases(queryParams: HashMap<String, String>, pageNumber: Int) {
+    override fun searchVinylReleases(queryParams: HashMap<String, String>, pageNumber: Int) {
+
         this.queryParams = queryParams
 
         vinylDataSource.getVinyls(this.queryParams,pageNumber)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(observer)
-    }
 
+    }
 
     override fun loadVinylRelease(releaseId: String) {
 
@@ -53,23 +54,23 @@ class ExplorePresenter(@NonNull private var vinylDataSource: VinylDataSource, @N
                 .doOnSubscribe{compositeDisposable?.add(it)}
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({exploreView.showQuickViewDialog(it)},
-                            {error->exploreView.showMessage(error.message) })
+                .subscribe({searchView.showQuickViewDialog(it)},
+                        {error->searchView.showMessage(error.message) })
     }
 
     override fun onLoadNextPage() {
         currentPage++
-        exploreView.setRefreshing(true)
-        loadVinylReleases(queryParams,currentPage)
+        searchView.setRefreshing(true)
+        searchVinylReleases(queryParams,currentPage)
     }
 
 
 
     override fun refresh() {
         currentPage = 0
-        exploreView.setRefreshing(true)
-        exploreView.clearVinyls()
-        loadVinylReleases(queryParams)
+        searchView.setRefreshing(true)
+        searchView.clearVinyls()
+        searchVinylReleases(queryParams)
     }
 
 
@@ -80,36 +81,38 @@ class ExplorePresenter(@NonNull private var vinylDataSource: VinylDataSource, @N
         RxFirebaseDatabase.observeSingleValueEvent(myRef).toObservable()
                 .map { dataSnapshot -> dataSnapshot.exists() }
                 .doOnSubscribe { compositeDisposable?.add(it) }
-                .subscribe({ isInFavourites -> if (!isInFavourites) addToFirebase(myRef,vinyl) else exploreView.showMessage("Already in your favourites") },
-                        { error -> exploreView.showMessage(error.message) })
+                .subscribe({ isInFavourites -> if (!isInFavourites) addToFirebase(myRef,vinyl) else searchView.showMessage("Already in your favourites") },
+                        { error -> searchView.showMessage(error.message) })
     }
 
     private fun addToFirebase(myRef: DatabaseReference, vinyl: VinylRelease) {
         myRef.setValue(vinyl)
-        exploreView.showMessage("Added to favourites")
+        searchView.showMessage("Added to favourites")
     }
 
 
-    private val observer = object : Observer<DiscogsResponse>{
+    private val observer = object : Observer<DiscogsResponse> {
         override fun onSubscribe(d: Disposable) {
             compositeDisposable?.add(d)
         }
 
         override fun onNext(response: DiscogsResponse) {
 
-            exploreView.setRefreshing(false)
+            searchView.setRefreshing(false)
 
             val page = response.pagination?.page
             val totalPages = response.pagination?.pages
+            Log.i(TAG,"Page number: " + page)
+            Log.i(TAG,"Total pages: " + totalPages)
             val results = response.results
 
             if(page == totalPages)
-                exploreView.setEndOfList(true)
+                searchView.setEndOfList(true)
 
             if (results?.isEmpty()!!)
-                exploreView.showNoVinylsView()
+                searchView.showNoVinylsView()
             else {
-                exploreView.showVinylReleases(results)
+                searchView.showVinylReleases(results)
                 currentPage = page!!
             }
         }
@@ -119,8 +122,8 @@ class ExplorePresenter(@NonNull private var vinylDataSource: VinylDataSource, @N
         }
 
         override fun onError(e: Throwable) {
-            exploreView.setRefreshing(false)
-            exploreView.showMessage(e.message)
+            searchView.setRefreshing(false)
+            searchView.showMessage(e.message)
 
             if (currentPage > 0) {
                 currentPage--
