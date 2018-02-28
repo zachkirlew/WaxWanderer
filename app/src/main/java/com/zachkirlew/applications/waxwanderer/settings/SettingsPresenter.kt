@@ -1,14 +1,19 @@
 package com.zachkirlew.applications.waxwanderer.settings
 
 import android.net.Uri
+import android.provider.MediaStore
 import android.support.annotation.NonNull
+import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
 import com.zachkirlew.applications.waxwanderer.data.local.UserPreferences
 import com.zachkirlew.applications.waxwanderer.data.model.User
 import durdinapps.rxfirebase2.RxFirebaseDatabase
+import durdinapps.rxfirebase2.RxFirebaseStorage
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
+import java.io.IOException
 import java.text.DateFormat
 import java.util.*
 
@@ -18,7 +23,7 @@ class SettingsPresenter(@NonNull private var settingsView: SettingsContract.View
     private val mFirebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private val database = FirebaseDatabase.getInstance()
 
-    private var disposable : Disposable? = null
+    private var disposable: Disposable? = null
 
     private var dob: Date? = null
 
@@ -90,6 +95,7 @@ class SettingsPresenter(@NonNull private var settingsView: SettingsContract.View
             mChildStorage.putFile(imageHoldUri)
                     .addOnSuccessListener({ taskSnapshot ->
                         val imageUrl = taskSnapshot.downloadUrl
+
 
                         userRef.child("imageurl").setValue(imageUrl?.toString())
 

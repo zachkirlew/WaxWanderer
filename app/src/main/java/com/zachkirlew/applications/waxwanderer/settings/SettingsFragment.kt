@@ -256,20 +256,8 @@ class SettingsFragment : Fragment(), SettingsContract.View, DatePickerDialog.OnD
         favouritePresenter.getFormattedDate(year, month, day)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        //inflater.inflate(R.menu.tasks_fragment_menu, menu)
-    }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-//            R.id.menu_clear -> mPresenter.clearCompletedTasks()
-//            R.id.menu_filter -> showFilteringPopUpMenu()
-//            R.id.menu_refresh -> mPresenter.loadTasks(true)
-        }
-        return true
-    }
-
-    fun getDetails(){
+    private fun getDetails(){
 
         val name = nameText.text.toString()
 
@@ -290,6 +278,7 @@ class SettingsFragment : Fragment(), SettingsContract.View, DatePickerDialog.OnD
         //SAVE URI FROM GALLERY
         if (requestCode == SELECT_FILE && resultCode == RESULT_OK) {
             val imageUri = data?.data
+
             uploadImage.setImageURI(imageUri)
 
             favouritePresenter.saveProfileImage(imageUri)
