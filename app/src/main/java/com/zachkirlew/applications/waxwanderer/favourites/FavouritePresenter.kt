@@ -1,5 +1,6 @@
 package com.zachkirlew.applications.waxwanderer.favourites
 
+import android.net.Uri
 import android.support.annotation.NonNull
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
@@ -18,6 +19,10 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import java.lang.Exception
+import com.google.firebase.dynamiclinks.DynamicLink
+import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
+
+
 
 class FavouritePresenter(@NonNull private var favouriteView: FavouriteContract.View,
                          @NonNull private var vinylDataSource: VinylDataSource) : FavouriteContract.Presenter {
@@ -86,6 +91,9 @@ class FavouritePresenter(@NonNull private var favouriteView: FavouriteContract.V
                 .subscribe({favouriteView.showQuickViewDialog(it)},
                         {error->favouriteView.showMessage(error.message) })
     }
+
+
+
 
     override fun dispose() {
         compositeDisposable?.dispose()

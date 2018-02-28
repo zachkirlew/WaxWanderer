@@ -88,6 +88,10 @@ class RecommendVinylDialogFragment : DialogFragment(), RecommendVinylDialogContr
     override fun showMessage(message: String?) {
     }
 
+    override fun onDismiss(dialog: DialogInterface?) {
+        super.onDismiss(dialog)
+        recommendDialogPresenter.dispose()
+    }
 
     inner class UserAdapter(private var friends: ArrayList<User>) : RecyclerView.Adapter<UserAdapter.ViewHolder>() {
 
