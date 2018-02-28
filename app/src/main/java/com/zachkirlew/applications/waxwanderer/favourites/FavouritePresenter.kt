@@ -92,9 +92,6 @@ class FavouritePresenter(@NonNull private var favouriteView: FavouriteContract.V
                         {error->favouriteView.showMessage(error.message) })
     }
 
-
-
-
     override fun dispose() {
         compositeDisposable?.dispose()
     }

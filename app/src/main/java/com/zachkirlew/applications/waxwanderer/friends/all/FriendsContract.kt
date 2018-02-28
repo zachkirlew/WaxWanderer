@@ -1,4 +1,4 @@
-package com.zachkirlew.applications.waxwanderer.friends
+package com.zachkirlew.applications.waxwanderer.friends.all
 
 import com.zachkirlew.applications.waxwanderer.base.BaseView
 import com.zachkirlew.applications.waxwanderer.data.model.User

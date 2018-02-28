@@ -33,7 +33,7 @@ import java.util.*
 class UserDetailActivity : AppCompatActivity(), UserDetailContract.View  {
 
 
-    private val coordinatorLayout by lazy{findViewById<CoordinatorLayout>(R.id.main_content)}
+    private val coordinatorLayout by lazy{findViewById<CoordinatorLayout>(R.id.coordinator_layout)}
 
     private val user by lazy { intent.getSerializableExtra("selected user") as User }
 

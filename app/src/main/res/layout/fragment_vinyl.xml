@@ -24,14 +24,14 @@
 
 
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/explore_list"
+            android:id="@+id/vinyl_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
     </android.support.v4.widget.SwipeRefreshLayout>
 
 
     <ProgressBar
-        android:id="@+id/progress_bar_explore"
+        android:id="@+id/progress_bar_vinyl"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_centerInParent="true"

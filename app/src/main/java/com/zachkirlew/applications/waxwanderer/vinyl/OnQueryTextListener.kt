@@ -1,4 +1,4 @@
-package com.zachkirlew.applications.waxwanderer.explore
+package com.zachkirlew.applications.waxwanderer.vinyl
 
 
 interface OnQueryTextListener {

@@ -3,8 +3,6 @@ package com.zachkirlew.applications.waxwanderer.recommend
 import android.app.Dialog
 import android.content.DialogInterface
 import android.os.Bundle
-import android.support.design.widget.CoordinatorLayout
-import android.support.design.widget.Snackbar
 import android.support.v4.app.DialogFragment
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
@@ -23,12 +21,9 @@ import kotlinx.android.synthetic.main.friend_item.view.*
 
 class RecommendVinylDialogFragment : DialogFragment(), RecommendVinylDialogContract.View {
 
-    private val coordinatorLayout : CoordinatorLayout by lazy{activity!!.findViewById<CoordinatorLayout>(R.id.coordinatorLayout)}
-
     private var mRecyclerView: RecyclerView? = null
-    private lateinit var favouriteAdapter : UserAdapter
 
-    private var dismissCallback: DialogInterface.OnDismissListener? = null
+    private lateinit var userAdapter: UserAdapter
 
     private var noFriendsText: TextView? = null
 
@@ -36,7 +31,7 @@ class RecommendVinylDialogFragment : DialogFragment(), RecommendVinylDialogContr
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        favouriteAdapter = UserAdapter(ArrayList(0))
+        userAdapter = UserAdapter(ArrayList(0))
     }
 
     private lateinit var vinyl: VinylRelease
@@ -46,9 +41,8 @@ class RecommendVinylDialogFragment : DialogFragment(), RecommendVinylDialogContr
 
         val dialog = AlertDialog.Builder(activity!!)
                 .setTitle("Recommend with...")
-                .setNegativeButton("Cancel",{dialogInterface: DialogInterface?, i: Int ->
-                    dismissCallback?.onDismiss(dialogInterface)
-                    dialogInterface?.dismiss()
+                .setNegativeButton("Cancel",{ _: DialogInterface?, _: Int ->
+                    this.dismiss()
                 })
 
         vinyl = arguments?.getSerializable("selectedVinyl") as VinylRelease
@@ -63,7 +57,7 @@ class RecommendVinylDialogFragment : DialogFragment(), RecommendVinylDialogContr
         mRecyclerView?.layoutManager = LinearLayoutManager(context)
 
 
-        mRecyclerView?.adapter = favouriteAdapter
+        mRecyclerView?.adapter = userAdapter
 
         recommendDialogPresenter.loadFriends()
 
@@ -72,12 +66,13 @@ class RecommendVinylDialogFragment : DialogFragment(), RecommendVinylDialogContr
         return dialog.create()
     }
 
+
     override fun setPresenter(presenter: RecommendVinylDialogContract.Presenter) {
         recommendDialogPresenter = presenter
     }
 
     override fun showFriend(user: User?) {
-        favouriteAdapter.addFriend(user)
+        userAdapter.addFriend(user)
     }
 
     override fun showNoFriendsView(show: Boolean) {
@@ -124,7 +119,6 @@ class RecommendVinylDialogFragment : DialogFragment(), RecommendVinylDialogContr
             fun bindItems(friend: User) {
                 itemView.list_item_view.title = friend.name
                 itemView.list_item_view.subtitle = friend.location
-
 
                 Picasso.with(itemView.context)
                         .load(friend.imageurl)

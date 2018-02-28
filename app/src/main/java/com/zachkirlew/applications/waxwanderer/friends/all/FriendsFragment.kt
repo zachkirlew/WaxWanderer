@@ -1,4 +1,4 @@
-package com.zachkirlew.applications.waxwanderer.friends
+package com.zachkirlew.applications.waxwanderer.friends.all
 
 import android.content.Intent
 import android.os.Bundle
@@ -32,7 +32,7 @@ class FriendsFragment : Fragment(), FriendsContract.View, OnFriendDeletedListene
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
         retainInstance = true
-        friendsAdapter = FriendsAdapter(ArrayList(0),this)
+        friendsAdapter = FriendsAdapter(ArrayList(0), this)
     }
 
     @Override

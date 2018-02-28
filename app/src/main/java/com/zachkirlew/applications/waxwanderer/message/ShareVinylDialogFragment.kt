@@ -38,7 +38,7 @@ class ShareVinylDialogFragment : DialogFragment() {
 
         val  rootView = activity?.layoutInflater?.inflate(R.layout.fragment_favourites, null)
 
-        mRecyclerView = rootView?.findViewById(R.id.explore_list) as RecyclerView
+        mRecyclerView = rootView?.findViewById(R.id.vinyl_list) as RecyclerView
         mRecyclerView?.layoutManager = LinearLayoutManager(context)
 
 

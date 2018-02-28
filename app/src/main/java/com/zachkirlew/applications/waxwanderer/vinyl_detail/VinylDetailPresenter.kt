@@ -21,12 +21,13 @@ import io.reactivex.schedulers.Schedulers
 
 class VinylDetailPresenter(@NonNull private val vinylDataSource: VinylDataSource,
                            @NonNull private val vinylDetailView: VinylDetailContract.View,
-                           private @NonNull val recommender: RecommenderImp) : VinylDetailContract.Presenter {
+                           @NonNull private val recommender: RecommenderImp) : VinylDetailContract.Presenter {
 
     private val user = FirebaseAuth.getInstance().currentUser
     private val database = FirebaseDatabase.getInstance()
 
     private val compositeDisposable : CompositeDisposable? = null
+
 
     override fun checkInFavourites(releaseId: String) {
 

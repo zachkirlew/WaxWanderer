@@ -10,7 +10,8 @@ import android.view.ViewGroup
 import android.view.LayoutInflater
 import android.view.View
 import com.zachkirlew.applications.waxwanderer.R
-import com.zachkirlew.applications.waxwanderer.explore.OnQueryTextListener
+import com.zachkirlew.applications.waxwanderer.friends.all.FriendsFragment
+import com.zachkirlew.applications.waxwanderer.vinyl.OnQueryTextListener
 import com.zachkirlew.applications.waxwanderer.friends.requests.RequestsFragment
 import com.zachkirlew.applications.waxwanderer.friends.search.FriendsSearchFragment
 

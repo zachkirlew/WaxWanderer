@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import com.squareup.picasso.Picasso
 import com.zachkirlew.applications.waxwanderer.R
 import com.zachkirlew.applications.waxwanderer.data.model.Style
-import com.zachkirlew.applications.waxwanderer.explore.ExploreActivity
+import com.zachkirlew.applications.waxwanderer.vinyl.VinylActivity
 import kotlinx.android.synthetic.main.browse_item.view.*
 
 class StylesAdapter(private var styles: List<Style>,private val type: String) : RecyclerView.Adapter<StylesAdapter.ViewHolder>() {
@@ -32,7 +32,7 @@ class StylesAdapter(private var styles: List<Style>,private val type: String) : 
             val params : HashMap<String,String> = HashMap()
             params[type] = styles[position].style!!
 
-            val intent = Intent(context, ExploreActivity::class.java)
+            val intent = Intent(context, VinylActivity::class.java)
             intent.putExtra("params", params)
             context.startActivity(intent)
         }

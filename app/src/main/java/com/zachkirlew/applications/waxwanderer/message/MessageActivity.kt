@@ -6,12 +6,11 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.view.MenuItem
 import com.zachkirlew.applications.waxwanderer.R
-import com.zachkirlew.applications.waxwanderer.data.model.User
 
 
 class MessageActivity : AppCompatActivity() {
 
-    private val coordinatorLayout by lazy{findViewById<CoordinatorLayout>(R.id.main_content)}
+    private val coordinatorLayout by lazy{findViewById<CoordinatorLayout>(R.id.coordinator_layout)}
 
 
     public override fun onCreate(savedInstanceState: Bundle?) {

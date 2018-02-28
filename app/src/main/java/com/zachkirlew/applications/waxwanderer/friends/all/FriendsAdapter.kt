@@ -1,4 +1,4 @@
-package com.zachkirlew.applications.waxwanderer.friends
+package com.zachkirlew.applications.waxwanderer.friends.all
 
 import android.content.Intent
 import android.support.v7.widget.RecyclerView
@@ -29,12 +29,12 @@ class FriendsAdapter(private var friends: ArrayList<User>, private val callback 
         notifyItemRemoved(position)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FriendsAdapter.ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val v = LayoutInflater.from(parent.context).inflate(R.layout.friend_item, parent, false) as ListItemView
         return ViewHolder(v, callback)
     }
 
-    override fun onBindViewHolder(holder: FriendsAdapter.ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bindItems(friends[position])
 
         holder.itemView.setOnClickListener {

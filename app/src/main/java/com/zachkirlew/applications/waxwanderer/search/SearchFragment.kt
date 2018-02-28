@@ -21,20 +21,22 @@ import com.zachkirlew.applications.waxwanderer.base.OnSignOutListener
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.detail.DetailVinylRelease
 import com.zachkirlew.applications.waxwanderer.data.remote.VinylsRemoteSource
-import com.zachkirlew.applications.waxwanderer.explore.*
 import com.zachkirlew.applications.waxwanderer.util.EqualSpaceItemDecoration
+import com.zachkirlew.applications.waxwanderer.vinyl.OnLongPressListener
+import com.zachkirlew.applications.waxwanderer.vinyl.OnQueryTextListener
+import com.zachkirlew.applications.waxwanderer.vinyl.OnVinylsChangedListener
+import com.zachkirlew.applications.waxwanderer.vinyl.VinylAdapter
 import com.zachkirlew.applications.waxwanderer.vinyl_detail.VinylDetailActivity
 import com.zachkirlew.applications.waxwanderer.vinyl_preferences.VinylPreferencesActivity
 
 class SearchFragment: Fragment(),
         SearchContract.View, OnQueryTextListener,
-        OnSignOutListener,
-        OnAddToFavouritesListener,
-        OnLongPressListener, SwipeRefreshLayout.OnRefreshListener {
+        OnSignOutListener, SwipeRefreshLayout.OnRefreshListener, OnVinylsChangedListener, OnLongPressListener {
+
 
     private lateinit var searchPresenter : SearchContract.Presenter
 
-    private lateinit var searchAdapter: SearchAdapter
+    private lateinit var searchAdapter: VinylAdapter
 
     private var searchPromptText: TextView? = null
 
@@ -55,7 +57,7 @@ class SearchFragment: Fragment(),
     override fun onCreate(@Nullable savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-        searchAdapter = SearchAdapter(ArrayList(0),this,this)
+        searchAdapter = VinylAdapter(ArrayList(0),this,this,false)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -65,7 +67,7 @@ class SearchFragment: Fragment(),
 
         searchPresenter = SearchPresenter(VinylsRemoteSource.instance,this)
 
-        val exploreList = root?.findViewById(R.id.explore_list) as RecyclerView
+        val exploreList = root?.findViewById(R.id.vinyl_list) as RecyclerView
 
         exploreList.layoutManager = LinearLayoutManager(activity)
         exploreList.adapter = searchAdapter
@@ -170,6 +172,12 @@ class SearchFragment: Fragment(),
                 }
             }
         }
+    }
+
+    override fun onFiltered(isEmpty: Boolean) {
+    }
+
+    override fun onRemovedFromFavourites(vinylId: Int) {
     }
 
     override fun clearVinyls() {

@@ -50,7 +50,7 @@
         android:padding="8dp" />
 
     <ProgressBar
-        android:id="@+id/progress_bar_explore"
+        android:id="@+id/progress_bar_vinyl"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_centerInParent="true"

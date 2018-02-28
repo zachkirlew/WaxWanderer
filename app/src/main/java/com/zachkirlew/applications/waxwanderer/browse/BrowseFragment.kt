@@ -1,7 +1,6 @@
 package com.zachkirlew.applications.waxwanderer.browse
 
 import android.content.Intent
-import android.content.res.Configuration
 import android.os.Bundle
 import android.support.annotation.Nullable
 import android.support.design.widget.CoordinatorLayout
@@ -55,7 +54,7 @@ class BrowseFragment: Fragment(), BrowseContract.View, OnSignOutListener {
         browseList.adapter = userStylesAdapter
         allGenresList.adapter = allGenresAdapter
 
-        progressBar = root.findViewById(R.id.progress_bar_explore)
+        progressBar = root.findViewById(R.id.progress_bar_vinyl)
 
         progressBar.visibility = View.VISIBLE
 

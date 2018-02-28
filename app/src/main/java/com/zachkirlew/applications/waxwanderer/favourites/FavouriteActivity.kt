@@ -12,7 +12,7 @@ import com.zachkirlew.applications.waxwanderer.util.StringUtils
 
 class FavouriteActivity : AppCompatActivity() {
 
-    private val coordinatorLayout by lazy{findViewById<CoordinatorLayout>(R.id.main_content)}
+    private val coordinatorLayout by lazy{findViewById<CoordinatorLayout>(R.id.coordinator_layout)}
 
     private val user by lazy { intent.getSerializableExtra("selected user") as User }
 

@@ -15,22 +15,6 @@ class VinylRelease : Serializable {
     @Expose
     var title: String? = null
 
-    @SerializedName("uri")
-    @Expose
-    var uri: String? = null
-
-    @SerializedName("community")
-    @Expose
-    var community: Community? = null
-
-    @SerializedName("resource_url")
-    @Expose
-    var resourceUrl: String? = null
-
-    @SerializedName("type")
-    @Expose
-    var type: String? = null
-
     @SerializedName("id")
     @Expose
     var id: Int? = null
@@ -39,32 +23,19 @@ class VinylRelease : Serializable {
     @Expose
     var style: List<String>? = null
 
-    @SerializedName("format")
+    @SerializedName("genre")
     @Expose
-    var format: List<String>? = null
-
-    @SerializedName("country")
-    @Expose
-    var country: String? = null
-
-    @SerializedName("barcode")
-    @Expose
-    var barcode: List<String>? = null
-
-
-    @SerializedName("label")
-    @Expose
-    var label: List<String>? = null
-
-    @SerializedName("catno")
-    @Expose
-    var catno: String? = null
+    var genre: List<String>? = null
 
     @SerializedName("year")
     @Expose
     var year: String? = null
 
-    @SerializedName("genre")
+    @SerializedName("catno")
     @Expose
-    var genre: List<String>? = null
+    var catno: String? = null
+
+    @SerializedName("label")
+    @Expose
+    var label: List<String>? = null
 }

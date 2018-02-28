@@ -13,7 +13,6 @@ interface RecommendVinylDialogContract {
         fun showNoFriendsView(show : Boolean)
 
         fun dismiss()
-
     }
 
     interface Presenter{

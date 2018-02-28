@@ -1,29 +1,30 @@
-package com.zachkirlew.applications.waxwanderer.favourites
+package com.zachkirlew.applications.waxwanderer.vinyl
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
+import com.google.firebase.dynamiclinks.DynamicLink
+import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
 import com.squareup.picasso.Picasso
 import com.zachkirlew.applications.waxwanderer.R
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
-import com.zachkirlew.applications.waxwanderer.explore.OnLongPressListener
 import com.zachkirlew.applications.waxwanderer.recommend.RecommendVinylDialogFragment
 import com.zachkirlew.applications.waxwanderer.vinyl_detail.VinylDetailActivity
 import kotlinx.android.synthetic.main.vinyl_item.view.*
 
-
-class FavouriteAdapter(private var vinyls: ArrayList<VinylRelease>,
-                       private val fragment: FavouriteFragment,
-                       private val callback: OnFavouriteRemovedListener,
-                       private val filterCallback : OnFavouritesFiltered,
-                       private val longPressCallback: OnLongPressListener) : RecyclerView.Adapter<FavouriteAdapter.ViewHolder>(), Filterable {
+class VinylAdapter(private var vinyls: ArrayList<VinylRelease>,
+                   private val callback : OnVinylsChangedListener,
+                   private val longPressCallback: OnLongPressListener,
+                   private val isFavouriteAdapter : Boolean) : RecyclerView.Adapter<VinylAdapter.ViewHolder>(), Filterable {
 
     private val mFilter: CustomFilter
 
@@ -55,12 +56,16 @@ class FavouriteAdapter(private var vinyls: ArrayList<VinylRelease>,
         notifyItemChanged(position)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FavouriteAdapter.ViewHolder {
+    fun removeVinyls(){
+        this.vinyls.clear()
+        notifyDataSetChanged()
+    }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VinylAdapter.ViewHolder {
         val v = LayoutInflater.from(parent.context).inflate(R.layout.vinyl_item, parent, false)
         return ViewHolder(v, callback)
     }
 
-    override fun onBindViewHolder(holder: FavouriteAdapter.ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: VinylAdapter.ViewHolder, position: Int) {
         holder.bindItems(vinyls[position])
 
         holder.itemView.setOnClickListener {
@@ -69,7 +74,7 @@ class FavouriteAdapter(private var vinyls: ArrayList<VinylRelease>,
 
             val intent = Intent(context, VinylDetailActivity::class.java)
             intent.putExtra("selected vinyl", vinyls[position])
-            fragment.startActivityForResult(intent, 1)
+            (context as AppCompatActivity).startActivityForResult(intent, 1)
         }
 
         holder.itemView.setOnLongClickListener {
@@ -82,7 +87,7 @@ class FavouriteAdapter(private var vinyls: ArrayList<VinylRelease>,
         return vinyls.size
     }
 
-    inner class CustomFilter constructor(private val mAdapter: FavouriteAdapter) : Filter() {
+    inner class CustomFilter constructor(private val mAdapter: VinylAdapter) : Filter() {
 
         override fun performFiltering(constraint: CharSequence): Filter.FilterResults {
 
@@ -106,11 +111,11 @@ class FavouriteAdapter(private var vinyls: ArrayList<VinylRelease>,
             mAdapter.vinyls = (results.values as ArrayList<VinylRelease>)
             mAdapter.notifyDataSetChanged()
 
-            filterCallback.onFiltered(mAdapter.vinyls.count()== 0)
+            callback.onFiltered(mAdapter.vinyls.count()== 0)
         }
     }
 
-    class ViewHolder(itemView: View, private val callback: OnFavouriteRemovedListener) : RecyclerView.ViewHolder(itemView) {
+    inner class ViewHolder(itemView: View, private val callback: OnVinylsChangedListener) : RecyclerView.ViewHolder(itemView) {
 
         fun bindItems(vinyl: VinylRelease) {
             itemView.list_item_view.title = vinyl.title
@@ -124,17 +129,27 @@ class FavouriteAdapter(private var vinyls: ArrayList<VinylRelease>,
                         .into(itemView.list_item_view.avatarView)
             }
 
-            itemView.list_item_view.inflateMenu(R.menu.favourite_action_menu)
+            if(isFavouriteAdapter)
+                itemView.list_item_view.inflateMenu(R.menu.favourite_action_menu)
+            else{
+                itemView.list_item_view.inflateMenu(R.menu.vinyl_action_menu)
+            }
+
+
 
             itemView.list_item_view.setOnMenuItemClickListener { item ->
                 when (item.itemId) {
 
+                    R.id.action_add -> {
+                        callback.onAddedToFavourites(vinyl)
+                    }
+
                     R.id.action_remove -> {
-                        callback.onFavouriteRemoved(vinyl.id!!)
+                        callback.onRemovedFromFavourites(vinyl.id!!)
                     }
 
                     R.id.action_share -> {
-                        startShareIntent(itemView.context,vinyl)
+                        createDynamicLink(itemView.context,vinyl)
                     }
                     R.id.action_recommend -> {
                         openRecommendDialog(itemView.context,vinyl)
@@ -143,13 +158,43 @@ class FavouriteAdapter(private var vinyls: ArrayList<VinylRelease>,
             }
         }
 
-        private fun startShareIntent(context: Context, vinyl: VinylRelease) {
+        private fun startShareIntent(context: Context, link: String, vinyl: VinylRelease) {
+
             val shareIntent = Intent()
             shareIntent.action = Intent.ACTION_SEND
             shareIntent.type = "text/plain"
-            shareIntent.putExtra(Intent.EXTRA_TEXT, "Check out this record!\n" + vinyl.title)
+            shareIntent.putExtra(Intent.EXTRA_TEXT, "Check out this record!\n\n" + vinyl.title + "\n\n$link")
 
             context.startActivity(Intent.createChooser(shareIntent, "Share with"))
+        }
+
+        private fun createDynamicLink(context: Context, vinyl: VinylRelease) {
+            val dynamicLinkDomain = context.getString(R.string.dynamic_link_domain)
+            val deepLinkUrl = context.getString(R.string.deep_link_url)
+
+            val dynamicLink = FirebaseDynamicLinks.getInstance().createDynamicLink()
+                    .setLink(Uri.parse("$deepLinkUrl/track?id=${vinyl.id}"))
+                    .setDynamicLinkDomain(dynamicLinkDomain)
+                    .setAndroidParameters(DynamicLink.AndroidParameters.Builder().build())
+                    .buildDynamicLink()
+
+            shortenLink(context,dynamicLink.uri.toString(),vinyl)
+        }
+
+        private fun shortenLink(context : Context,longLink: String, vinyl: VinylRelease) {
+            FirebaseDynamicLinks.getInstance().createDynamicLink()
+                    .setLongLink(Uri.parse(longLink))
+                    .buildShortDynamicLink()
+                    .addOnCompleteListener((context as AppCompatActivity), {
+                        if (it.isSuccessful) {
+                            val shortLink = it.result.shortLink.toString()
+
+                            startShareIntent(itemView.context,shortLink,vinyl)
+                        }
+                        else {
+                            Log.e("FavAdapter",it.exception?.message)
+                        }
+                    })
         }
 
         private fun openRecommendDialog(context: Context, vinyl: VinylRelease) {

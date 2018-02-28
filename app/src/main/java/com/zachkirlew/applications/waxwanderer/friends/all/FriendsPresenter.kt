@@ -1,4 +1,4 @@
-package com.zachkirlew.applications.waxwanderer.friends
+package com.zachkirlew.applications.waxwanderer.friends.all
 
 import android.support.annotation.NonNull
 import com.google.firebase.auth.FirebaseAuth

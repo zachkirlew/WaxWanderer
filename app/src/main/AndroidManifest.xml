@@ -44,7 +44,7 @@
             android:screenOrientation="portrait" />
 
         <activity
-            android:name=".explore.ExploreActivity"
+            android:name=".vinyl.VinylActivity"
             android:screenOrientation="portrait" />
 
         <meta-data
@@ -100,7 +100,8 @@
                 <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.BROWSABLE"/>
                 <data
-                    android:host="example.com"
+                    android:host="open.waxwanderer.com"
+                    android:pathPattern="/track.*"
                     android:scheme="https"/>
             </intent-filter>
 

@@ -17,18 +17,20 @@ import com.zachkirlew.applications.waxwanderer.data.model.User
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.VinylRelease
 import com.zachkirlew.applications.waxwanderer.data.model.discogs.detail.DetailVinylRelease
 import com.zachkirlew.applications.waxwanderer.data.remote.VinylsRemoteSource
-import com.zachkirlew.applications.waxwanderer.explore.OnLongPressListener
-import com.zachkirlew.applications.waxwanderer.explore.OnQueryTextListener
+import com.zachkirlew.applications.waxwanderer.vinyl.OnLongPressListener
+import com.zachkirlew.applications.waxwanderer.vinyl.OnQueryTextListener
 import com.zachkirlew.applications.waxwanderer.util.EqualSpaceItemDecoration
+import com.zachkirlew.applications.waxwanderer.vinyl.OnVinylsChangedListener
+import com.zachkirlew.applications.waxwanderer.vinyl.VinylAdapter
 import com.zachkirlew.applications.waxwanderer.vinyl_detail.VinylDetailActivity
 
 
-class FavouriteFragment : Fragment(), FavouriteContract.View, OnSignOutListener, OnFavouriteRemovedListener, OnQueryTextListener, OnLongPressListener, OnFavouritesFiltered {
+class FavouriteFragment : Fragment(), FavouriteContract.View, OnSignOutListener, OnQueryTextListener, OnLongPressListener, OnVinylsChangedListener {
 
 
     private lateinit var favouritePresenter: FavouriteContract.Presenter
 
-    private lateinit var favouriteAdapter: FavouriteAdapter
+    private lateinit var vinylAdapter: VinylAdapter
 
     private var noFavouritesText: TextView? = null
 
@@ -39,7 +41,7 @@ class FavouriteFragment : Fragment(), FavouriteContract.View, OnSignOutListener,
     override fun onCreate(@Nullable savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-        favouriteAdapter = FavouriteAdapter(ArrayList(), this, this,this,this)
+        vinylAdapter = VinylAdapter(ArrayList(), this, this,true)
 
         user = activity?.intent?.getSerializableExtra("selected user") as User?
     }
@@ -53,12 +55,12 @@ class FavouriteFragment : Fragment(), FavouriteContract.View, OnSignOutListener,
 
         favouritePresenter = FavouritePresenter(this, VinylsRemoteSource.instance)
 
-        val exploreList = root?.findViewById(R.id.explore_list) as RecyclerView
+        val exploreList = root?.findViewById(R.id.vinyl_list) as RecyclerView
 
         val mLayoutManager = LinearLayoutManager(activity)
 
         exploreList.layoutManager = mLayoutManager
-        exploreList.adapter = favouriteAdapter
+        exploreList.adapter = vinylAdapter
 
         val spacingInPixels = resources.getDimensionPixelSize(R.dimen.list_item_padding)
         exploreList.addItemDecoration(EqualSpaceItemDecoration(spacingInPixels))
@@ -114,7 +116,7 @@ class FavouriteFragment : Fragment(), FavouriteContract.View, OnSignOutListener,
     }
 
     override fun onQueryTextChange(searchText: String?) {
-        favouriteAdapter.filter.filter(searchText)
+        vinylAdapter.filter.filter(searchText)
     }
 
     override fun onFiltered(isEmpty: Boolean) {
@@ -133,24 +135,28 @@ class FavouriteFragment : Fragment(), FavouriteContract.View, OnSignOutListener,
     }
 
     override fun showFavouriteVinyls(vinyls: List<VinylRelease>) {
-        favouriteAdapter.addVinyls(vinyls)
+        vinylAdapter.addVinyls(vinyls)
     }
 
 
     override fun showVinylRemoved(vinylId: Int) {
-        favouriteAdapter.removeVinyl(vinylId)
+        vinylAdapter.removeVinyl(vinylId)
     }
 
-    override fun onFavouriteRemoved(vinylId: Int) {
+    override fun onAddedToFavourites(vinyl: VinylRelease) {
+    }
+
+    override fun onRemovedFromFavourites(vinylId: Int) {
         favouritePresenter.removeVinylFromFavourites(vinylId)
     }
+
 
 
     override fun onSignOut() {
         favouritePresenter.dispose()
     }
 
-    override fun showQuickViewDialog(detailedVinylRelease: DetailVinylRelease) {
+    override fun showQuickViewDialog(detailVinylRelease: DetailVinylRelease) {
 
         val inflater = activity!!.layoutInflater
         val dialogView = inflater.inflate(R.layout.dialog_quickview, null)
@@ -163,26 +169,26 @@ class FavouriteFragment : Fragment(), FavouriteContract.View, OnSignOutListener,
         val genreText = dialogView.findViewById<TextView>(R.id.text_genre)
         val stylesText = dialogView.findViewById<TextView>(R.id.text_styles)
 
-        if(detailedVinylRelease.images!=null)
+        if(detailVinylRelease.images!=null)
             Picasso.with(activity)
-                    .load(detailedVinylRelease.images!![0].uri)
+                    .load(detailVinylRelease.images!![0].uri)
                     .into(headerImage)
 
         else
             headerImage.visibility = View.GONE
 
-        val artistNames = detailedVinylRelease.artists?.map { it.name }
+        val artistNames = detailVinylRelease.artists?.map { it.name }
 
-        titleText.text = detailedVinylRelease.title
+        titleText.text = detailVinylRelease.title
 
         artistsText.text = commaSeparateList(artistNames)
 
-        labelText.text = detailedVinylRelease.labels?.get(0)?.name
-        releaseDateText.text = detailedVinylRelease.releasedFormatted
-        genreText.text = detailedVinylRelease.genres?.get(0)
+        labelText.text = detailVinylRelease.labels?.get(0)?.name
+        releaseDateText.text = detailVinylRelease.releasedFormatted
+        genreText.text = detailVinylRelease.genres?.get(0)
 
-        detailedVinylRelease.styles?.let{
-            stylesText.text = commaSeparateList(detailedVinylRelease.styles)
+        detailVinylRelease.styles?.let{
+            stylesText.text = commaSeparateList(detailVinylRelease.styles)
         }
 
 
@@ -207,7 +213,7 @@ class FavouriteFragment : Fragment(), FavouriteContract.View, OnSignOutListener,
         AlertDialog.Builder(activity!!)
                 .setTitle("Sort releases by:")
                 .setSingleChoiceItems(singleChoiceItems, itemSelected, { _, selectedIndex -> itemSelected = selectedIndex})
-                .setPositiveButton("OK", {d,i ->favouriteAdapter.sortVinyls(singleChoiceItems[itemSelected])})
+                .setPositiveButton("OK", {d,i -> vinylAdapter.sortVinyls(singleChoiceItems[itemSelected])})
                 .setNegativeButton("Cancel", null)
                 .show()
     }

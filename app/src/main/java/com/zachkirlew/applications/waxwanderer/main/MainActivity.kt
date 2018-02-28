@@ -20,11 +20,10 @@ import com.squareup.picasso.Picasso
 import com.zachkirlew.applications.waxwanderer.R
 import com.zachkirlew.applications.waxwanderer.browse.BrowseFragment
 import com.zachkirlew.applications.waxwanderer.data.local.UserPreferences
-import com.zachkirlew.applications.waxwanderer.explore.OnQueryTextListener
+import com.zachkirlew.applications.waxwanderer.vinyl.OnQueryTextListener
 import com.zachkirlew.applications.waxwanderer.favourites.FavouriteFragment
 import com.zachkirlew.applications.waxwanderer.leaderboard.LeaderBoardFragment
 import com.zachkirlew.applications.waxwanderer.login.LoginActivity
-import com.zachkirlew.applications.waxwanderer.friends.FriendsFragment
 import com.zachkirlew.applications.waxwanderer.friends.FriendsTabFragment
 import com.zachkirlew.applications.waxwanderer.settings.SettingsFragment
 import com.zachkirlew.applications.waxwanderer.match.MatchFragment
