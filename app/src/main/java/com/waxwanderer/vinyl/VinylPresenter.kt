@@ -109,7 +109,9 @@ class VinylPresenter(@NonNull private var vinylDataSource: VinylDataSource, @Non
             if (results?.isEmpty()!!)
                 vinylView.showNoVinylsView()
             else {
-                vinylView.showVinylReleases(results)
+                val mutableVinyList = results.toMutableList()
+                mutableVinyList.shuffle()
+                vinylView.showVinylReleases(mutableVinyList)
                 currentPage = page!!
             }
         }
