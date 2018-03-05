@@ -32,7 +32,7 @@
 
         <fragment
             android:id="@+id/fragment"
-            android:name="com.zachkirlew.applications.waxwanderer.recommendations.RecommendationsFragment"
+            android:name="com.waxwanderer.recommendations.RecommendationsFragment"
             tools:layout="@layout/fragment_recommendations"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />

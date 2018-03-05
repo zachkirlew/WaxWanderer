@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.zachkirlew.applications.waxwanderer">
+    package="com.waxwanderer">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -100,7 +100,7 @@
                 <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.BROWSABLE"/>
                 <data
-                    android:host="open.waxwanderer.com"
+                    android:host="waxwanderer.com"
                     android:pathPattern="/track.*"
                     android:scheme="https"/>
             </intent-filter>

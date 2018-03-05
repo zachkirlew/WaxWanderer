@@ -32,7 +32,7 @@
 
         <fragment
             android:id="@+id/fragment"
-            android:name="com.zachkirlew.applications.waxwanderer.message.MessageFragment"
+            android:name="com.waxwanderer.message.MessageFragment"
             tools:layout="@layout/fragment_message"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
