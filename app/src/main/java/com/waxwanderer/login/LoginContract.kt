@@ -14,6 +14,10 @@ interface LoginContract {
 
         fun startMatchDetailsActivity()
 
+        fun showPasswordErrorMessage(message : String)
+
+        fun showEmailErrorMessage(message : String)
+
         fun showMessage(message: String)
     }
 

@@ -3,6 +3,7 @@ package com.waxwanderer.login
 import android.content.Intent
 import android.os.Bundle
 import android.support.annotation.NonNull
+import android.support.design.widget.TextInputLayout
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View
@@ -47,6 +48,10 @@ class LoginActivity : AppCompatActivity(), LoginContract.View, GoogleApiClient.O
     private val editTextPassword by lazy {findViewById<EditText>(R.id.input_sign_in_password)}
 
 
+    private val inputLayoutEmail by lazy { findViewById<TextInputLayout>(R.id.text_input_layout_email) }
+    private val inputLayoutPassword by lazy { findViewById<TextInputLayout>(R.id.text_input_layout_password) }
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
@@ -88,6 +93,9 @@ class LoginActivity : AppCompatActivity(), LoginContract.View, GoogleApiClient.O
     }
 
     private fun getLogInCreds() {
+
+        inputLayoutEmail.isErrorEnabled = false
+        inputLayoutPassword.isErrorEnabled = false
 
         val email = editTextEmail.text.toString()
         val password = editTextPassword.text.toString()
@@ -138,6 +146,14 @@ class LoginActivity : AppCompatActivity(), LoginContract.View, GoogleApiClient.O
         else if (requestCode == CallbackManagerImpl.RequestCodeOffset.Login.toRequestCode()) {
             callbackManager.onActivityResult(requestCode, resultCode, data);
         }
+    }
+
+    override fun showEmailErrorMessage(message: String) {
+        inputLayoutEmail.error = message
+    }
+
+    override fun showPasswordErrorMessage(message: String) {
+        inputLayoutPassword.error = message
     }
 
     override fun startMatchDetailsActivity() {

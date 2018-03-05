@@ -44,21 +44,29 @@ class LoginPresenter(private @NonNull val loginView: LoginContract.View) : Login
 
     override fun logInWithEmail(email : String, password : String) {
 
-        Log.d(TAG, "firebaseAuthWithEmail:" + email)
-        mFirebaseAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(loginView as Activity) { task ->
-                    if (task.isSuccessful) {
+        if(email.isEmpty())
+            loginView.showEmailErrorMessage("Please enter your email")
+        else if (password.isEmpty()) {
+            loginView.showPasswordErrorMessage("Please enter your password")
+        }
 
-                        // Sign in success, update UI with the signed-in user's information
-                        Log.d(TAG, "signInWithEmail:success")
+        else{
+            Log.d(TAG, "firebaseAuthWithEmail:" + email)
+            mFirebaseAuth.signInWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(loginView as Activity) { task ->
+                        if (task.isSuccessful) {
 
-                        checkUserPreviousSignIn()
-                    } else {
-                        // If sign in fails, display a message to the user.
-                        Log.w(TAG, "signInWithEmail:failure", task.exception)
-                        loginView.showMessage("Email authentication failed: ${task.exception?.message}")
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d(TAG, "signInWithEmail:success")
+
+                            checkUserPreviousSignIn()
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.w(TAG, "signInWithEmail:failure", task.exception)
+                            loginView.showMessage("Email authentication failed: ${task.exception?.message}")
+                        }
                     }
-                }
+        }
     }
 
     override fun logInWithFirebase(account: GoogleSignInAccount) {
