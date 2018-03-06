@@ -30,14 +30,16 @@ class VinylAdapter(private var vinyls: ArrayList<VinylRelease>,
 
     private val copy = vinyls
 
+    private val TAG = VinylAdapter::class.java.simpleName
+
     init {
         mFilter = CustomFilter(this)
     }
 
     fun addVinyls(vinyls: List<VinylRelease>) {
-        this.vinyls.clear()
         this.vinyls.addAll(vinyls)
         notifyDataSetChanged()
+        Log.i(TAG,"Adapter count: " + this.vinyls.size)
     }
 
     fun sortVinyls(sortBy : String){

@@ -15,7 +15,8 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 
-class VinylPresenter(@NonNull private var vinylDataSource: VinylDataSource, @NonNull private var vinylView: VinylContract.View) : VinylContract.Presenter {
+class VinylPresenter(@NonNull private var vinylDataSource: VinylDataSource,
+                     @NonNull private var vinylView: VinylContract.View) : VinylContract.Presenter {
 
     private val mFirebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private val database = FirebaseDatabase.getInstance()
@@ -58,6 +59,7 @@ class VinylPresenter(@NonNull private var vinylDataSource: VinylDataSource, @Non
     }
 
     override fun onLoadNextPage() {
+        Log.i(TAG,"Loading next page: ")
         currentPage++
         vinylView.setRefreshing(true)
         loadVinylReleases(queryParams,currentPage)
@@ -100,6 +102,9 @@ class VinylPresenter(@NonNull private var vinylDataSource: VinylDataSource, @Non
             vinylView.setRefreshing(false)
 
             val page = response.pagination?.page
+
+            Log.i(TAG,"current page: " + page)
+            Log.i(TAG,"totalPages: " + response.pagination?.pages)
             val totalPages = response.pagination?.pages
             val results = response.results
 
@@ -109,9 +114,9 @@ class VinylPresenter(@NonNull private var vinylDataSource: VinylDataSource, @Non
             if (results?.isEmpty()!!)
                 vinylView.showNoVinylsView()
             else {
-                val mutableVinyList = results.toMutableList()
-                mutableVinyList.shuffle()
-                vinylView.showVinylReleases(mutableVinyList)
+//                val mutableVinyList = results.toMutableList()
+//                mutableVinyList.shuffle()
+                vinylView.showVinylReleases(results)
                 currentPage = page!!
             }
         }
