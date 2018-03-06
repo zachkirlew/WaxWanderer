@@ -92,7 +92,12 @@ class RecommendVinylDialogPresenter(@NonNull private var dialogView: RecommendVi
 
         recipient.pushToken?.let {
 
-            pushHelper.sendNotification(FirebaseAuth.getInstance().currentUser?.displayName,messageText,recipient.pushToken!!,attachedRelease)
+            pushHelper.sendNotification(FirebaseAuth.getInstance().currentUser?.displayName!!,
+                    messageText,
+                    recipient.pushToken!!,
+                    "message",
+                    userId!!,
+                    attachedRelease)
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe({ Log.i("",it.string())},

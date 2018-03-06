@@ -198,7 +198,12 @@ class MatchPresenter(@NonNull private var matchView: MatchContract.View,
 
     private fun sendNotification(token: String, title: String?, message: String?) {
 
-        pushHelper.sendNotification(title,message,token,null)
+        pushHelper.sendNotification(title!!,
+                message!!,
+                token,
+                "friend_added",
+                userId!!,
+                null)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ it -> Log.i(TAG, it.string()) },

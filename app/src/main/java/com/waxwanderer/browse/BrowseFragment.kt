@@ -84,6 +84,9 @@ class BrowseFragment: Fragment(), BrowseContract.View, OnSignOutListener {
         allGenresAdapter.addStyles(genres)
     }
 
+    override fun changeProgressBarVisibility(show: Boolean) {
+        if(show) progressBar.visibility = View.VISIBLE else progressBar.visibility = View.GONE
+    }
     override fun startVinylPreferenceActivity() {
         val intent = Intent(activity, VinylPreferencesActivity::class.java)
         intent.putExtra("fromMain",true)

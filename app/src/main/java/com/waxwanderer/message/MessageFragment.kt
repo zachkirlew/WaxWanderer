@@ -2,6 +2,7 @@ package com.waxwanderer.message
 
 
 import android.content.DialogInterface
+import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
@@ -21,6 +22,7 @@ import com.waxwanderer.data.model.discogs.VinylRelease
 import com.waxwanderer.data.recommendation.RecommenderImp
 import com.waxwanderer.data.remote.notification.PushHelper
 import com.waxwanderer.R
+import com.waxwanderer.login.LoginActivity
 import durdinapps.rxfirebase2.RxFirebaseChildEvent
 import java.io.Serializable
 import java.util.*
@@ -43,43 +45,51 @@ class MessageFragment : Fragment(), MessageContract.View, ShareVinylDialogFragme
 
     private var shareVinylDialogFragment: ShareVinylDialogFragment? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        uid = FirebaseAuth.getInstance().currentUser?.uid!!
-    }
+    private lateinit var sendButton: ImageButton
+
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(R.layout.fragment_message, container, false)
+        var view = inflater.inflate(R.layout.fragment_message, container, false)
 
-        chatList = view.findViewById(R.id.list_chat)
+        if(FirebaseAuth.getInstance().currentUser==null){
+            showLoginActivity()
+        }
+        else{
+            uid = FirebaseAuth.getInstance().currentUser?.uid!!
 
-        initializePresenter()
+            view = init(view)
 
-        messageInput = view.findViewById(R.id.input_message)
+            initializePresenter()
 
-        val sendFab = view.findViewById<ImageButton>(R.id.button_sent)
+            setupAdapter()
+            setupList()
 
-        sendFab.setOnClickListener {
-            sendMessage()
+            val matchedUser = activity?.intent?.extras?.get("matchedUserId") as String
+
+            presenter?.loadRecipient(matchedUser)
         }
 
-        setupAdapter()
-        setupList()
+        return view
+    }
 
-        val matchedUser = activity?.intent?.getSerializableExtra("matchedUserId") as User
+    private fun init(rootView : View) : View{
+        chatList = rootView.findViewById(R.id.list_chat)
+        messageInput = rootView.findViewById(R.id.input_message)
+        sendButton = rootView.findViewById(R.id.button_sent)
+        shareVinylButton = rootView.findViewById(R.id.button_vinyl_share)
 
-        println(matchedUser.name)
-        activity?.title = matchedUser.name
+        sendButton.setOnClickListener { sendMessage() }
 
-        shareVinylButton = view.findViewById(R.id.button_vinyl_share)
         shareVinylButton.setOnClickListener {
             it.isClickable = false
             presenter?.loadFavourites()
         }
 
-        presenter?.loadMessages(matchedUser)
+        return rootView
+    }
 
-        return view
+    override fun showUserDetails(user: User) {
+        activity?.title = user.name
     }
 
     override fun addMessage(message: RxFirebaseChildEvent<DataSnapshot>) {
@@ -102,6 +112,13 @@ class MessageFragment : Fragment(), MessageContract.View, ShareVinylDialogFragme
     override fun showError(message: String?) {
         Toast.makeText(activity, message,
                 Toast.LENGTH_SHORT).show()
+    }
+
+    private fun showLoginActivity(){
+        val intent = Intent(activity, LoginActivity::class.java)
+        startActivity(intent)
+        activity?.finish()
+
     }
 
     fun showRatingDialog(chatId: String, vinylId: Int?, position: Int) {

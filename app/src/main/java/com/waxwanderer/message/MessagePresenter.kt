@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.support.annotation.NonNull
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.FirebaseDatabase
 import com.waxwanderer.data.model.Message
@@ -27,24 +28,38 @@ class MessagePresenter(@NonNull private val messageView: MessageContract.View,
     private val TAG = MessagePresenter::class.java.simpleName
 
     private val database : FirebaseDatabase = FirebaseDatabase.getInstance()
-    private val mFirebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
+    private val currentUser: FirebaseUser? = FirebaseAuth.getInstance().currentUser
 
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
 
     private lateinit var chatId : String
 
     private lateinit var recipient : User
-    
+
+    override fun start() {
+
+
+
+    }
+
+    override fun loadRecipient(userId: String) {
+
+        val userRef = database.reference.child("users").child(userId)
+
+        RxFirebaseDatabase.observeSingleValueEvent(userRef,{it.getValue(User::class.java)!!})
+                .doOnSubscribe { compositeDisposable.add(it) }
+                .doOnSuccess { recipient = it }
+                .subscribe({user -> messageView.showUserDetails(user)
+                                    loadMessages(user)
+                            },
+                        {error -> messageView.showError(error.message)})
+    }
 
     override fun loadMessages(matchedUser: User) {
 
-        recipient = matchedUser
-
-        val user = mFirebaseAuth.currentUser
-
         val myRef = database.reference
 
-        val matchesRef = myRef.child("matches").child(user?.uid).child(recipient.id)
+        val matchesRef = myRef.child("matches").child(currentUser?.uid).child(recipient.id)
 
         RxFirebaseDatabase.observeSingleValueEvent(matchesRef,{it.value as String})
                 .doOnSubscribe { compositeDisposable.add(it) }
@@ -83,7 +98,12 @@ class MessagePresenter(@NonNull private val messageView: MessageContract.View,
 
         recipient.pushToken?.let {
 
-            pushHelper.sendNotification(mFirebaseAuth.currentUser?.displayName,messageText,recipient.pushToken!!,attachedRelease)
+            pushHelper.sendNotification(title = currentUser?.displayName!!,
+                    message = messageText,
+                    token = recipient.pushToken!!,
+                    type = "message",
+                    from = currentUser.uid,
+                    attachedRelease = attachedRelease)
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe({Log.i("MessagePresenter",it.string())},
@@ -92,17 +112,12 @@ class MessagePresenter(@NonNull private val messageView: MessageContract.View,
     }
 
 
-    private fun sendNotification(token: String?,title : String?, message: String?, attachedRelease: VinylRelease?) {
-        // This registration token comes from the client FCM SDKs.
-
-    }
 
     override fun loadFavourites() {
 
         val myRef = database.reference
-        val user = mFirebaseAuth.currentUser
 
-        val ref = myRef.child("favourites").child(user?.uid)
+        val ref = myRef.child("favourites").child(currentUser?.uid)
 
         RxFirebaseDatabase.observeSingleValueEvent(ref,{it.children.map { it.getValue<VinylRelease>(VinylRelease::class.java)!! }})
                 .doOnSubscribe { compositeDisposable.add(it)}
@@ -110,16 +125,15 @@ class MessagePresenter(@NonNull private val messageView: MessageContract.View,
     }
 
     override fun addRating(vinylId: Int, rating: Double, messageId: String) {
-        val user = mFirebaseAuth.currentUser
         val myRef = database.reference.child("chat").child(chatId).child(messageId)
 
         myRef.child("rating").setValue(rating)
         myRef.child("rated").setValue(true)
 
-        addRatingToRecommender(user?.uid!!,vinylId,rating)
+        addRatingToRecommender(currentUser?.uid!!,vinylId,rating)
 
         println("rating is $rating")
-        val name = mFirebaseAuth.currentUser?.displayName
+        val name = currentUser.displayName
 
         var points = 0
 
@@ -133,10 +147,19 @@ class MessagePresenter(@NonNull private val messageView: MessageContract.View,
             else -> points = 0
         }
 
-        recipient.pushToken?.let { sendNotification(recipient.pushToken,
-                "$name rated your suggestion as ${rating.toInt()} out of 5!",
-                " You received $points points!",
-                null) }
+        recipient.pushToken?.let {
+
+            pushHelper.sendNotification("$name rated your suggestion as ${rating.toInt()} out of 5!",
+                    " You received $points points!",
+                    recipient.pushToken!!,
+                    "message",
+                    currentUser.uid,
+                    null)
+                    .subscribeOn(Schedulers.newThread())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe({Log.i("MessagePresenter",it.string())},
+                            {error -> Log.e(TAG,"errro: " + error.message)})
+        }
     }
 
     private fun addRatingToRecommender(uid: String, vinylId: Int, rating: Double) {
@@ -163,9 +186,6 @@ class MessagePresenter(@NonNull private val messageView: MessageContract.View,
                             },
                         { throwable -> messageView.showError(throwable.message) })
     }
-
-
-    override fun start() {}
 
     override fun dispose() {
         compositeDisposable.clear()

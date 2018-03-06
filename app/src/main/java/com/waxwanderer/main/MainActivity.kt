@@ -46,6 +46,8 @@ class MainActivity : AppCompatActivity(), MainContract.View, View.OnClickListene
 
     private lateinit var navigationView: NavigationView
 
+    private val firstFragmentToShow by lazy{intent?.extras?.get("tabToShow") as String?}
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -77,15 +79,22 @@ class MainActivity : AppCompatActivity(), MainContract.View, View.OnClickListene
         navigationView.menu.getItem(0).isChecked = true
     }
 
-    override fun startExploreFragment() {
-        var browseFrag: Fragment? = supportFragmentManager.findFragmentById(R.id.content)
+    override fun showFirstFragment() {
+        var frag: Fragment? = supportFragmentManager.findFragmentById(R.id.content)
 
-        if (browseFrag == null) {
-            browseFrag = BrowseFragment()
+        if (frag == null) {
+            frag = BrowseFragment()
+
+            firstFragmentToShow?.let{
+                if(firstFragmentToShow=="friends")
+                    frag = FriendsTabFragment()
+            }
+
             ActivityUtils.addFragmentToActivity(
-                    supportFragmentManager, browseFrag, R.id.content)
+                    supportFragmentManager, frag!!, R.id.content)
         }
     }
+
 
     override fun startLoginActivity() {
         val intent = Intent(this, LoginActivity::class.java)

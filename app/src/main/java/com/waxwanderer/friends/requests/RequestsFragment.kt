@@ -34,8 +34,8 @@ class RequestsFragment : Fragment(), RequestsContract.View, OnSignOutListener, O
 
     @Override
     override fun onPrepareOptionsMenu(menu: Menu) {
-        val item = menu.findItem(R.id.action_search)
-        item.isVisible = false
+        val item : MenuItem? = menu.findItem(R.id.action_search)
+        item?.isVisible = false
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

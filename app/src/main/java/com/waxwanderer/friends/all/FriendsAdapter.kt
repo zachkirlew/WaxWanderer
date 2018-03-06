@@ -42,7 +42,7 @@ class FriendsAdapter(private var friends: ArrayList<User>, private val callback 
             val context = holder.itemView.context
 
             val intent = Intent(context, MessageActivity::class.java)
-            intent.putExtra("matchedUserId",friends[position])
+            intent.putExtra("matchedUserId",friends[position].id)
             context.startActivity(intent)
 
         }

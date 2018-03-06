@@ -93,7 +93,8 @@
 
         <activity
             android:name=".vinyl_detail.VinylDetailActivity"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:parentActivityName=".main.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -113,7 +114,9 @@
 
         <activity
             android:name=".message.MessageActivity"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait"
+            android:parentActivityName=".main.MainActivity">
+        </activity>
 
         <activity
             android:name=".favourites.FavouriteActivity"

@@ -7,11 +7,12 @@ interface MainContract {
     interface View {
 
         fun showProfilePicture(imageUrl : String)
+
         fun showDisplayName(displayName : String)
+
         fun startLoginActivity()
 
-        fun startExploreFragment()
-
+        fun showFirstFragment()
     }
 
     interface Presenter {

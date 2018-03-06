@@ -41,7 +41,10 @@ class BrowsePresenter(@NonNull private var browseView: BrowseContract.View): Bro
                 .flatMap { isInternetOn -> if (isInternetOn) RxFirebaseDatabase.observeSingleValueEvent(vinylRef,{it.children.map { it.getValue<Style>(Style::class.java)!! }}).toObservable()   else Observable.error(Exception("No internet connection")) }
                 .doOnSubscribe { compositeDisposable?.add(it) }
                 .subscribe ({browseView.showStyles(it) },
-                        {error -> browseView.showMessage(error.message)})
+                        {error ->
+                            browseView.showMessage(error.message)
+                            browseView.changeProgressBarVisibility(false)
+                        })
     }
 
     override fun loadAllGenres(){
@@ -54,7 +57,9 @@ class BrowsePresenter(@NonNull private var browseView: BrowseContract.View): Bro
                 .flatMap { isInternetOn -> if (isInternetOn) RxFirebaseDatabase.observeSingleValueEvent(vinylRef,{it.children.map { it.getValue<Style>(Style::class.java)!!}}).toObservable()   else Observable.error(Exception("No internet connection")) }
                 .doOnSubscribe { compositeDisposable?.add(it) }
                 .subscribe ({browseView.showAllGenres(it)  },
-                        {error -> browseView.showMessage(error.message)})
+                        {error -> browseView.showMessage(error.message)
+                            browseView.changeProgressBarVisibility(false)
+                        })
     }
 
     override fun dispose() {

@@ -55,12 +55,17 @@ class FriendsSearchPresenter(@NonNull private var friendsView: FriendsSearchCont
 
         user.pushToken?.let { sendNotification(user.pushToken!!,
                 "",
-                "You received a friend request ${FirebaseAuth.getInstance().currentUser?.displayName} ") }
+                "You received a friend request from ${FirebaseAuth.getInstance().currentUser?.displayName} ") }
     }
 
     private fun sendNotification(token: String, title: String?, message: String?) {
 
-        pushHelper.sendNotification(title,message,token,null)
+        pushHelper.sendNotification(title!!,
+                message!!,
+                token,
+                "friend_requested",
+                userId!!,
+                null)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ it -> Log.i("", it.string()) },

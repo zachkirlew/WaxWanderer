@@ -64,7 +64,7 @@ class FriendsPresenter(@NonNull private var friendsView: FriendsContract.View) :
 
     private val zipFunction = BiFunction<DataSnapshot, RxFirebaseChildEvent<DataSnapshot>, RxChildEvent<User>> { dataSnapshot, rxDataSnapshot ->
         val matchedUser = dataSnapshot.getValue(User::class.java)
-        RxChildEvent<User>(rxDataSnapshot, matchedUser)
+        RxChildEvent(rxDataSnapshot, matchedUser)
     }
 
     private fun filterEvents(userEvent: RxChildEvent<User>) {

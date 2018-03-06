@@ -8,7 +8,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.waxwanderer.base.OnSignOutListener
 import com.waxwanderer.data.local.UserPreferences
-import com.waxwanderer.main.MainActivity
 import durdinapps.rxfirebase2.RxFirebaseDatabase
 import io.reactivex.disposables.Disposable
 
@@ -32,7 +31,7 @@ class MainPresenter(@NonNull private val mainView: MainContract.View, private va
         else{
             savePushToken(userPreferences.pushToken)
 
-            mainView.startExploreFragment()
+            mainView.showFirstFragment()
             loadUserDetails()
         }
     }

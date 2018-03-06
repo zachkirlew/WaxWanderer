@@ -20,33 +20,62 @@ import android.graphics.drawable.Drawable
 import android.os.Handler
 import com.squareup.picasso.Target
 import android.os.Looper
-
-
+import android.support.v4.app.TaskStackBuilder
+import com.waxwanderer.message.MessageActivity
 
 
 class FirebaseMessagingService : FirebaseMessagingService() {
 
     private val TAG: String = FirebaseMessagingService::class.java.simpleName
 
-    private lateinit var notificationBuilder : NotificationCompat.Builder
+    private lateinit var notificationBuilder: NotificationCompat.Builder
 
-    private val notificationManager by lazy{getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager}
+    private val notificationManager by lazy { getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager }
 
     override fun onMessageReceived(remoteMessage: RemoteMessage?) {
 
-        // Check if message contains a notification payload.
-        if (remoteMessage?.notification != null) {
-            Log.d(TAG, "Message Notification Body: " + remoteMessage.notification?.body)
 
-            sendNotification(remoteMessage.notification?.title, remoteMessage.notification?.body, remoteMessage.data)
+        // Check if message contains a data payload.
+        if (remoteMessage?.data != null) {
+
+            val data = remoteMessage.data
+
+            sendNotification(data["title"], data["message"], data)
         }
     }
 
     private fun sendNotification(title: String?, messageBody: String?, data: Map<String, String>) {
-        val intent = Intent(this, MainActivity::class.java)
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-        val pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
-                PendingIntent.FLAG_ONE_SHOT)
+
+        val notificationType = data["type"]
+
+        var resultIntent : Intent? = null
+
+        when(notificationType){
+            "message"->{
+
+                // Create an Intent for the activity you want to start
+                resultIntent = Intent(this, MessageActivity::class.java)
+                resultIntent.putExtra("matchedUserId",data["from_id"])
+            }
+            "friend_requested"->{
+                // Create an Intent for the activity you want to start
+                resultIntent = Intent(this, MainActivity::class.java)
+                resultIntent.putExtra("tabToShow","friends")
+            }
+
+            "friend_added"->{
+                // Create an Intent for the activity you want to start
+                resultIntent = Intent(this, MainActivity::class.java)
+                resultIntent.putExtra("tabToShow","friends")
+            }
+        }
+
+        // Create the TaskStackBuilder and add the intent, which inflates the back stack
+        val stackBuilder = TaskStackBuilder.create(this)
+        stackBuilder.addNextIntentWithParentStack(resultIntent!!)
+
+        // Get the PendingIntent containing the entire back stack
+        val pendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT)!!
 
         val channelId = getString(R.string.default_notification_channel_id)
         val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
@@ -68,20 +97,18 @@ class FirebaseMessagingService : FirebaseMessagingService() {
             notificationManager.createNotificationChannel(channel)
         }
 
-        if(data.isEmpty()){
+
+        if (data["release_image"] != null) {
+            val uiHandler = Handler(Looper.getMainLooper())
+            uiHandler.post({
+                getImage(data["release_image"]!!)
+            })
+        } else {
             notificationManager.notify(0 /* ID of notification */, notificationBuilder.build())
-        }
-        else{
-            if (data["release_image"] != null){
-                val uiHandler = Handler(Looper.getMainLooper())
-                uiHandler.post({
-                    getImage(data["release_image"]!!)
-                })
-            }
         }
     }
 
-    private fun getImage(url : String){
+    private fun getImage(url: String) {
         Picasso.with(this)
                 .load(url)
                 .into(notificationImageCallback)

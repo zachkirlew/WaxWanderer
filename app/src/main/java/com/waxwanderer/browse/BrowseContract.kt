@@ -13,6 +13,9 @@ interface BrowseContract {
         fun showAllGenres(genres : List<Style>)
 
         fun startVinylPreferenceActivity()
+
+        fun changeProgressBarVisibility(show : Boolean)
+
     }
 
     interface Presenter : BasePresenter {
