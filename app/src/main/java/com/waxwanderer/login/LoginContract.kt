@@ -19,6 +19,14 @@ interface LoginContract {
         fun showEmailErrorMessage(message : String)
 
         fun showMessage(message: String)
+
+        fun showProgressBar()
+
+        fun hideProgressBar()
+
+        fun showLoginView()
+
+        fun hideLoginView()
     }
 
     interface Presenter {

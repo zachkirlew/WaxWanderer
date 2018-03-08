@@ -2,6 +2,7 @@ package com.waxwanderer.main
 
 import android.support.annotation.NonNull
 import android.support.v4.app.Fragment
+import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import com.facebook.login.LoginManager
 import com.google.firebase.auth.FirebaseAuth
@@ -27,6 +28,7 @@ class MainPresenter(@NonNull private val mainView: MainContract.View, private va
         if(user==null){
             Log.d(TAG, "User is Signed Out")
             mainView.startLoginActivity()
+            (mainView as AppCompatActivity).finish()
         }
         else{
             savePushToken(userPreferences.pushToken)

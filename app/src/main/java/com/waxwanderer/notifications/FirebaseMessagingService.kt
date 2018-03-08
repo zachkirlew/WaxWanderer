@@ -38,6 +38,8 @@ class FirebaseMessagingService : FirebaseMessagingService() {
         // Check if message contains a data payload.
         if (remoteMessage?.data != null) {
 
+            println("Message received")
+
             val data = remoteMessage.data
 
             sendNotification(data["title"], data["message"], data)

@@ -37,6 +37,8 @@ class LoginActivity : AppCompatActivity(), LoginContract.View, GoogleApiClient.O
 
     private val progressSignIn by lazy { findViewById<ProgressBar>(R.id.sign_in_progress_bar) }
 
+    private val loginLayout by lazy{findViewById<LinearLayout>(R.id.layout_login)}
+
 
     private val buttonEmailSignIn by lazy { findViewById<Button>(R.id.button_login_email) }
     private val buttonGoogleSignIn by lazy { findViewById<SignInButton>(R.id.button_login_google) }
@@ -83,16 +85,23 @@ class LoginActivity : AppCompatActivity(), LoginContract.View, GoogleApiClient.O
             }
 
             override fun onCancel() {
+                showLoginView()
+                hideProgressBar()
                 Log.d(TAG, "facebook:onCancel")
             }
 
             override fun onError(error: FacebookException) {
+                showLoginView()
+                hideProgressBar()
                 Log.d(TAG, "facebook:onError", error)
             }
         })
     }
 
     private fun getLogInCreds() {
+
+        hideLoginView()
+        showProgressBar()
 
         inputLayoutEmail.isErrorEnabled = false
         inputLayoutPassword.isErrorEnabled = false
@@ -120,14 +129,10 @@ class LoginActivity : AppCompatActivity(), LoginContract.View, GoogleApiClient.O
     }
 
     private fun signIn() {
-        showProgressBar(true)
+        hideLoginView()
+        showProgressBar()
         val signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient)
         startActivityForResult(signInIntent, SIGN_IN_REQUEST_CODE)
-    }
-
-    private fun showProgressBar(show: Boolean) {
-        progressSignIn.visibility = if (show) View.VISIBLE else View.GONE
-        buttonGoogleSignIn?.visibility = if (show) View.GONE else View.VISIBLE
     }
 
     public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
@@ -159,35 +164,50 @@ class LoginActivity : AppCompatActivity(), LoginContract.View, GoogleApiClient.O
     override fun startMatchDetailsActivity() {
         val intent = Intent(this, MatchPreferencesActivity::class.java)
         startActivity(intent)
+        finish()
+    }
 
-        showProgressBar(false)
+    override fun showProgressBar() {
+        progressSignIn.visibility = View.VISIBLE
+    }
+
+    override fun hideProgressBar() {
+        progressSignIn.visibility = View.GONE
+    }
+
+    override fun showLoginView() {
+        loginLayout.visibility = View.VISIBLE
+    }
+
+    override fun hideLoginView() {
+        loginLayout.visibility = View.GONE
     }
 
     override fun startExploreActivity() {
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
-
-        showProgressBar(false)
+        finish()
     }
 
     override fun startStylesActivity() {
         val intent = Intent(this, VinylPreferencesActivity::class.java)
         startActivity(intent)
-
-        showProgressBar(false)
+        finish()
     }
 
     override fun startSignUpActivity() {
         val intent = Intent(this, SignUpActivity::class.java)
         startActivity(intent)
-
-        showProgressBar(false)
     }
 
     override fun showMessage(message : String) {
         Toast.makeText(this@LoginActivity, message,
                 Toast.LENGTH_SHORT).show()
-        showProgressBar(false)
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        finish()
     }
 
     companion object {

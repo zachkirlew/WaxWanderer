@@ -76,7 +76,7 @@ class MainActivity : AppCompatActivity(), MainContract.View, View.OnClickListene
 
         setupDrawerContent()
 
-        navigationView.menu.getItem(0).isChecked = true
+
     }
 
     override fun showFirstFragment() {
@@ -85,9 +85,14 @@ class MainActivity : AppCompatActivity(), MainContract.View, View.OnClickListene
         if (frag == null) {
             frag = BrowseFragment()
 
+            navigationView.menu.getItem(0).isChecked = true
+
             firstFragmentToShow?.let{
-                if(firstFragmentToShow=="friends")
+                if(firstFragmentToShow=="friends") {
                     frag = FriendsTabFragment()
+                    navigationView.menu.getItem(0).isChecked = false
+                    navigationView.menu.getItem(4).isChecked = true
+                }
             }
 
             ActivityUtils.addFragmentToActivity(

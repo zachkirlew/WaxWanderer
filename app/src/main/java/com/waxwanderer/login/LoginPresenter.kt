@@ -44,28 +44,28 @@ class LoginPresenter(private @NonNull val loginView: LoginContract.View) : Login
 
     override fun logInWithEmail(email : String, password : String) {
 
-        if(email.isEmpty())
-            loginView.showEmailErrorMessage("Please enter your email")
-        else if (password.isEmpty()) {
-            loginView.showPasswordErrorMessage("Please enter your password")
-        }
+        when {
+            email.isEmpty() -> loginView.showEmailErrorMessage("Please enter your email")
+            password.isEmpty() -> loginView.showPasswordErrorMessage("Please enter your password")
+            else -> {
+                Log.d(TAG, "firebaseAuthWithEmail:" + email)
+                mFirebaseAuth.signInWithEmailAndPassword(email, password)
+                        .addOnCompleteListener(loginView as Activity) { task ->
+                            if (task.isSuccessful) {
 
-        else{
-            Log.d(TAG, "firebaseAuthWithEmail:" + email)
-            mFirebaseAuth.signInWithEmailAndPassword(email, password)
-                    .addOnCompleteListener(loginView as Activity) { task ->
-                        if (task.isSuccessful) {
+                                // Sign in success, update UI with the signed-in user's information
+                                Log.d(TAG, "signInWithEmail:success")
 
-                            // Sign in success, update UI with the signed-in user's information
-                            Log.d(TAG, "signInWithEmail:success")
-
-                            checkUserPreviousSignIn()
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Log.w(TAG, "signInWithEmail:failure", task.exception)
-                            loginView.showMessage("Email authentication failed: ${task.exception?.message}")
+                                checkUserPreviousSignIn()
+                            } else {
+                                loginView.showLoginView()
+                                loginView.hideProgressBar()
+                                // If sign in fails, display a message to the user.
+                                Log.w(TAG, "signInWithEmail:failure", task.exception)
+                                loginView.showMessage("Email authentication failed: ${task.exception?.message}")
+                            }
                         }
-                    }
+            }
         }
     }
 
@@ -79,6 +79,8 @@ class LoginPresenter(private @NonNull val loginView: LoginContract.View) : Login
 
                     //failed to login
                     if (!task.isSuccessful) {
+                        loginView.showLoginView()
+                        loginView.hideProgressBar()
                         Log.w(TAG, "signInWithCredential", task.exception)
                         loginView.showMessage("Google authentication failed.")
                     } else {
@@ -98,6 +100,8 @@ class LoginPresenter(private @NonNull val loginView: LoginContract.View) : Login
                         checkUserPreviousSignIn()
 
                     } else {
+                        loginView.showLoginView()
+                        loginView.hideProgressBar()
                         //If sign in fails, display a message to the user.
                         Log.w(TAG, "signInWithCredential:failure", task.exception);
                         loginView.showMessage("Facebook authentication failed.")

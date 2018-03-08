@@ -19,7 +19,7 @@ interface FriendsSearchContract {
 
     interface Presenter{
 
-        fun loadUsers(nameQuery : String?)
+        fun searchUsers(nameQuery : String?)
 
         fun sendFriendRequest(user : User)
 

@@ -34,12 +34,12 @@ class SignUpActivity : AppCompatActivity(), SignUpContract.View {
         buttonSignUp.setOnClickListener {getSignUpCreds()}
 
         textLogInView.setOnClickListener{onBackPressed()}
-
     }
 
     override fun startMatchDetailsActivity() {
         val intent = Intent(this, MatchPreferencesActivity::class.java)
         startActivity(intent)
+        finish()
     }
 
     private fun getSignUpCreds (){

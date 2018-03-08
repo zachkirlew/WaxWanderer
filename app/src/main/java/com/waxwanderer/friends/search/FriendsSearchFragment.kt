@@ -14,7 +14,6 @@ import com.waxwanderer.base.OnSignOutListener
 import com.waxwanderer.data.model.User
 import com.waxwanderer.data.remote.notification.PushHelper
 import com.waxwanderer.util.EqualSpaceItemDecoration
-import com.waxwanderer.friends.search.FriendsSearchAdapter
 
 
 class FriendsSearchFragment : Fragment(), FriendsSearchContract.View, OnSignOutListener, OnRequestSentListener {
@@ -55,8 +54,7 @@ class FriendsSearchFragment : Fragment(), FriendsSearchContract.View, OnSignOutL
         if(!isSearching){
             isSearching = true
             friendsAdapter.clear()
-            friendsPresenter.loadUsers(queryText)
-            println(queryText)
+            friendsPresenter.searchUsers(queryText)
         }
     }
 

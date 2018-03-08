@@ -6,15 +6,14 @@ import android.support.annotation.Nullable
 import android.support.design.widget.CoordinatorLayout
 import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
+import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.*
 import android.widget.ProgressBar
 import com.waxwanderer.R
 import com.waxwanderer.base.OnSignOutListener
-import com.waxwanderer.vinyl_preferences.VinylPreferencesActivity
-import android.support.v7.widget.GridLayoutManager
-import com.waxwanderer.browse.StylesAdapter
 import com.waxwanderer.data.model.Style
+import com.waxwanderer.vinyl_preferences.VinylPreferencesActivity
 
 
 class BrowseFragment: Fragment(), BrowseContract.View, OnSignOutListener {

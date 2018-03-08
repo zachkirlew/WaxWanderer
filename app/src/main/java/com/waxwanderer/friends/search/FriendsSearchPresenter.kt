@@ -28,7 +28,7 @@ class FriendsSearchPresenter(@NonNull private var friendsView: FriendsSearchCont
 
     private lateinit var friends: List<String>
 
-    override fun loadUsers(nameQuery: String?) {
+    override fun searchUsers(nameQuery: String?) {
 
         val query = capitalize(nameQuery)
 

@@ -38,7 +38,8 @@ class BrowsePresenter(@NonNull private var browseView: BrowseContract.View): Bro
         val vinylRef = myRef.child("vinylPreferences").child(user?.uid)
 
         InternetConnectionUtil.isInternetOn()
-                .flatMap { isInternetOn -> if (isInternetOn) RxFirebaseDatabase.observeSingleValueEvent(vinylRef,{it.children.map { it.getValue<Style>(Style::class.java)!! }}).toObservable()   else Observable.error(Exception("No internet connection")) }
+                .flatMap { isInternetOn -> if (isInternetOn) RxFirebaseDatabase.observeSingleValueEvent(vinylRef,
+                        {it.children.map { it.getValue<Style>(Style::class.java)!! }}).toObservable() else Observable.error(Exception("No internet connection")) }
                 .doOnSubscribe { compositeDisposable?.add(it) }
                 .subscribe ({browseView.showStyles(it) },
                         {error ->
@@ -54,7 +55,8 @@ class BrowsePresenter(@NonNull private var browseView: BrowseContract.View): Bro
         val vinylRef = myRef.child("genres")
 
         InternetConnectionUtil.isInternetOn()
-                .flatMap { isInternetOn -> if (isInternetOn) RxFirebaseDatabase.observeSingleValueEvent(vinylRef,{it.children.map { it.getValue<Style>(Style::class.java)!!}}).toObservable()   else Observable.error(Exception("No internet connection")) }
+                .flatMap { isInternetOn -> if (isInternetOn) RxFirebaseDatabase.observeSingleValueEvent(vinylRef,
+                        {it.children.map { it.getValue<Style>(Style::class.java)!!}}).toObservable()   else Observable.error(Exception("No internet connection")) }
                 .doOnSubscribe { compositeDisposable?.add(it) }
                 .subscribe ({browseView.showAllGenres(it)  },
                         {error -> browseView.showMessage(error.message)
