@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.support.design.widget.NavigationView
 import android.support.v4.app.Fragment
 import android.support.v4.view.GravityCompat
-import android.support.v4.view.MenuItemCompat
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
@@ -20,19 +19,18 @@ import com.squareup.picasso.Picasso
 import com.waxwanderer.R
 import com.waxwanderer.browse.BrowseFragment
 import com.waxwanderer.data.local.UserPreferences
-import com.waxwanderer.vinyl.OnQueryTextListener
 import com.waxwanderer.favourites.FavouriteFragment
+import com.waxwanderer.friends.FriendsTabFragment
 import com.waxwanderer.leaderboard.LeaderBoardFragment
 import com.waxwanderer.login.LoginActivity
-import com.waxwanderer.friends.FriendsTabFragment
-import com.waxwanderer.main.MainContract
-import com.waxwanderer.main.MainPresenter
-import com.waxwanderer.settings.SettingsFragment
 import com.waxwanderer.match.MatchFragment
 import com.waxwanderer.search.SearchFragment
+import com.waxwanderer.settings.SettingsFragment
 import com.waxwanderer.util.ActivityUtils
 import com.waxwanderer.util.BorderedCircleTransform
+import com.waxwanderer.vinyl.OnQueryTextListener
 import kotlinx.android.synthetic.main.activity_main.*
+
 
 class MainActivity : AppCompatActivity(), MainContract.View, View.OnClickListener {
 
@@ -67,7 +65,7 @@ class MainActivity : AppCompatActivity(), MainContract.View, View.OnClickListene
                 R.string.navigation_drawer_close
         )
 
-        mDrawerLayout.addDrawerListener(mDrawerToggle);
+        mDrawerLayout.addDrawerListener(mDrawerToggle)
         mDrawerToggle.syncState()
 
         navigationView = findViewById(R.id.nav_view)
@@ -144,7 +142,7 @@ class MainActivity : AppCompatActivity(), MainContract.View, View.OnClickListene
             inflater.inflate(R.menu.search_menu, menu)
 
             val searchItem = menu.findItem(R.id.action_search)
-            val searchView = MenuItemCompat.getActionView(searchItem) as SearchView
+            val searchView = searchItem.actionView as SearchView
 
             searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
                 override fun onQueryTextSubmit(query: String?): Boolean {

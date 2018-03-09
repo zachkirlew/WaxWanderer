@@ -29,7 +29,7 @@ class ShareVinylDialogFragment : DialogFragment() {
     override  fun  onCreateDialog(savedInstanceState : Bundle?) : Dialog {
         val dialog = AlertDialog.Builder(activity!!)
                 .setTitle("Recommend a vinyl")
-                .setNegativeButton("Cancel",{dialogInterface: DialogInterface?, i: Int ->
+                .setNegativeButton("Cancel",{ dialogInterface: DialogInterface?, _: Int ->
                     dismissCallback?.onDismiss(dialogInterface)
                     dialogInterface?.dismiss()
                 })

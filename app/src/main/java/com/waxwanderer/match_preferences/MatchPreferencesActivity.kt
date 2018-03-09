@@ -57,7 +57,7 @@ class MatchPreferencesActivity : AppCompatActivity(), MatchPreferencesContract.V
         fromAgePicker.minValue = 18
         fromAgePicker.maxValue = 100
         
-        fromAgePicker.setOnValueChangedListener { numberPicker, oldVal, newVal ->
+        fromAgePicker.setOnValueChangedListener { _, _, newVal ->
 
             toAgePicker.minValue = newVal
 
@@ -74,7 +74,7 @@ class MatchPreferencesActivity : AppCompatActivity(), MatchPreferencesContract.V
             }
         }
 
-        toAgePicker.setOnValueChangedListener { numberPicker, oldVal, newVal ->
+        toAgePicker.setOnValueChangedListener { _, _, newVal ->
 
             val oldAgeRange = textMatchAge.text.toString()
 

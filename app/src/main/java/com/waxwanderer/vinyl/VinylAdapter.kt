@@ -37,6 +37,8 @@ class VinylAdapter(private var vinyls: ArrayList<VinylRelease>,
     }
 
     fun addVinyls(vinyls: List<VinylRelease>) {
+        if(isFavouriteAdapter)
+            this.vinyls.clear()
         this.vinyls.addAll(vinyls)
         notifyDataSetChanged()
         Log.i(TAG,"Adapter count: " + this.vinyls.size)

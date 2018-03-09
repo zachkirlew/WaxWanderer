@@ -194,7 +194,7 @@ class FavouriteFragment : Fragment(), FavouriteContract.View, OnSignOutListener,
 
         val aDialog =  AlertDialog.Builder(activity!!)
                 .setView(dialogView)
-                .setPositiveButton("View",{ _, i ->  startVinylDetailActivity(selectedVinyl)})
+                .setPositiveButton("View",{ _, _ ->  startVinylDetailActivity(selectedVinyl)})
                 .setNegativeButton(android.R.string.cancel, null)
                 .create()
         aDialog.show()
@@ -213,7 +213,7 @@ class FavouriteFragment : Fragment(), FavouriteContract.View, OnSignOutListener,
         AlertDialog.Builder(activity!!)
                 .setTitle("Sort releases by:")
                 .setSingleChoiceItems(singleChoiceItems, itemSelected, { _, selectedIndex -> itemSelected = selectedIndex})
-                .setPositiveButton("OK", {d,i -> vinylAdapter.sortVinyls(singleChoiceItems[itemSelected])})
+                .setPositiveButton("OK", { _, _ -> vinylAdapter.sortVinyls(singleChoiceItems[itemSelected])})
                 .setNegativeButton("Cancel", null)
                 .show()
     }

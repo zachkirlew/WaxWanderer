@@ -13,6 +13,8 @@ interface VinylPreferencesContract {
 
         fun showUsersPreferredStyles(styles : List<Style>)
 
+        fun showMessage(message : String?)
+
     }
 
     interface Presenter {

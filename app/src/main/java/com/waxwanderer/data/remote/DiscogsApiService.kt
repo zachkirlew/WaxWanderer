@@ -17,9 +17,4 @@ interface DiscogsApiService {
 
     @GET("/releases/{release_id}")
     fun release(@Path("release_id") releaseId : String) : Single<DetailVinylRelease>
-
-    @Headers("Authorization: Discogs key=ixsPyvNUQWBaufFSeKqJ, secret=OrEgnXaJwlSUrMmxytmfFkVRbjzAPitg")
-
-    @GET("/releases/{release_id}/rating")
-    fun releaseRating(@Path("release_id") releaseId : String) : Observable<DiscogsResponse>
 }

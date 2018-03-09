@@ -2,6 +2,8 @@ package com.waxwanderer.leaderboard
 
 import android.os.Bundle
 import android.support.annotation.Nullable
+import android.support.design.widget.CoordinatorLayout
+import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -22,9 +24,11 @@ class LeaderBoardFragment : Fragment(), LeaderBoardContract.View, OnSignOutListe
     private lateinit var leaderboardAdapter: LeaderBoardAdapter
     private var noMatchesText: TextView? = null
 
+    private val coordinatorLayout : CoordinatorLayout by lazy{activity!!.findViewById<CoordinatorLayout>(R.id.coordinatorLayout)}
+
     override fun onCreate(@Nullable savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        leaderboardAdapter = LeaderBoardAdapter(ArrayList<User>(0))
+        leaderboardAdapter = LeaderBoardAdapter(ArrayList(0))
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -56,8 +60,9 @@ class LeaderBoardFragment : Fragment(), LeaderBoardContract.View, OnSignOutListe
     }
 
     override fun showMessage(message: String?) {
-
+        message?.let { Snackbar.make(coordinatorLayout, it, Snackbar.LENGTH_LONG).show() }
     }
+
     override fun setPresenter(presenter: LeaderBoardContract.Presenter) {
         leaderboardPresenter = presenter
     }

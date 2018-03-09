@@ -94,9 +94,11 @@ class FriendsPresenter(@NonNull private var friendsView: FriendsContract.View) :
 
         val ref = database.reference.child("matches").child(userId)
 
-        RxFirebaseDatabase.observeValueEvent(ref).toObservable()
+        InternetConnectionUtil.isInternetOn()
+                .flatMap { isInternetOn -> if (isInternetOn) RxFirebaseDatabase.observeValueEvent(ref).toObservable() else Observable.error(Exception("No internet connection")) }
                 .doOnSubscribe { compositeDisposable?.add(it)}
-                .subscribe{ if (!it.exists()) friendsView.showNoFriendsView(true) else friendsView.showNoFriendsView(false) }
+                .subscribe({ if (!it.exists()) friendsView.showNoFriendsView(true) else friendsView.showNoFriendsView(false) },
+                        {friendsView.showMessage(it.message)})
     }
 
     override fun dispose() {

@@ -4,7 +4,10 @@ import android.support.annotation.NonNull
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.waxwanderer.data.model.Style
+import com.waxwanderer.data.model.User
+import com.waxwanderer.util.InternetConnectionUtil
 import durdinapps.rxfirebase2.RxFirebaseDatabase
+import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 
 
@@ -20,24 +23,29 @@ class VinylPreferencesPresenter(private @NonNull var stylesView: VinylPreference
         val database = database.reference
         val genresRef = database.child("styles")
 
-        RxFirebaseDatabase.observeValueEvent(genresRef,
-                {dataSnapshot->
-                    val genreMap = dataSnapshot.children.asIterable()
-                    genreMap.map { it.key }}).toObservable()
+        InternetConnectionUtil.isInternetOn()
+                .flatMap { isInternetOn -> if (isInternetOn) Observable.just(true) else Observable.error(Exception("No internet connection")) }
+                .flatMap{RxFirebaseDatabase.observeValueEvent(genresRef,
+                        {dataSnapshot->
+                            val genreMap = dataSnapshot.children.asIterable()
+                            genreMap.map { it.key }}).toObservable()}
                 .doOnSubscribe { compositeDisposable.add(it) }
-                .subscribe({stylesView.showGenres(it)})
+                .subscribe({stylesView.showGenres(it)},
+                        {error -> stylesView.showMessage(error.message)})
     }
 
     override fun loadStyles(genre: String) {
 
         val stylesRef = database.reference.child("styles").child(genre)
-
-        RxFirebaseDatabase.observeValueEvent(stylesRef,
-                {dataSnapshot->
-                    val stylesMap = dataSnapshot.children.asIterable()
-                    stylesMap.map { it.getValue<Style>(Style::class.java)!! } }).toObservable()
+        InternetConnectionUtil.isInternetOn()
+                .flatMap { isInternetOn -> if (isInternetOn) Observable.just(true) else Observable.error(Exception("No internet connection")) }
+                .flatMap{RxFirebaseDatabase.observeValueEvent(stylesRef,
+                        {dataSnapshot->
+                            val stylesMap = dataSnapshot.children.asIterable()
+                            stylesMap.map { it.getValue<Style>(Style::class.java)!! } }).toObservable()}
                 .doOnSubscribe { compositeDisposable.add(it) }
-                .subscribe({stylesView.showStyles(it)})
+                .subscribe({stylesView.showStyles(it)},
+                        {error -> stylesView.showMessage(error.message)})
     }
 
     override fun savePreferences(selectedStyles: List<Style>) {

@@ -27,10 +27,10 @@ class RatingBarFragment : DialogFragment() {
 
         val dialog = AlertDialog.Builder(activity!!)
                 .setTitle("Rate that vinyl!")
-                .setPositiveButton("Okay",{ _: DialogInterface?, i: Int ->
+                .setPositiveButton("Okay",{ _: DialogInterface?, _: Int ->
                     mCallback?.onRatingSubmitted(vinylId, ratingBar.rating.toDouble(),messageId)
                 })
-                .setNegativeButton("Cancel",{ dialogInterface: DialogInterface?, i: Int ->
+                .setNegativeButton("Cancel",{ dialogInterface: DialogInterface?, _: Int ->
                     dialogInterface?.dismiss()
                 })
 

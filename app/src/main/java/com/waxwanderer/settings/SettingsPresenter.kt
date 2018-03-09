@@ -7,7 +7,10 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
 import com.waxwanderer.data.local.UserPreferences
 import com.waxwanderer.data.model.User
+import com.waxwanderer.util.InternetConnectionUtil
 import durdinapps.rxfirebase2.RxFirebaseDatabase
+import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.disposables.Disposable
 import java.text.DateFormat
 import java.util.*
@@ -38,9 +41,10 @@ class SettingsPresenter(@NonNull private var settingsView: SettingsContract.View
 
         val ref = myRef.child("users").child(user?.uid)
 
-        RxFirebaseDatabase.observeSingleValueEvent(ref,{it.getValue(User::class.java)!!})
+        InternetConnectionUtil.isInternetOn()
+                .flatMapSingle { isInternetOn -> if (isInternetOn) RxFirebaseDatabase.observeSingleValueEvent(ref,{it.getValue(User::class.java)!!}).toSingle() else Single.error(Exception("No internet connection")) }
                 .doOnSubscribe { disposable = it}
-                .doOnSuccess { dob = it.dob }
+                .doOnNext { dob = it.dob }
                 .subscribe({settingsView.showUserDetails(it, preferences.minMatchAge, preferences.maxMatchAge, preferences.matchGender)},
                         {error ->settingsView.showMessage(error.message) })
     }

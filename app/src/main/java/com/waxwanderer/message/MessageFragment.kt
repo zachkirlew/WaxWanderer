@@ -121,7 +121,7 @@ class MessageFragment : Fragment(), MessageContract.View, ShareVinylDialogFragme
 
     }
 
-    fun showRatingDialog(chatId: String, vinylId: Int?, position: Int) {
+    fun showRatingDialog(chatId: String, vinylId: Int?) {
 
         val ratingBarFragment = RatingBarFragment()
 

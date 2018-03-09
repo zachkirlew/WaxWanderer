@@ -8,8 +8,12 @@ import com.google.firebase.database.FirebaseDatabase
 import com.waxwanderer.data.VinylDataSource
 import com.waxwanderer.data.model.discogs.DiscogsResponse
 import com.waxwanderer.data.model.discogs.VinylRelease
+import com.waxwanderer.data.model.discogs.detail.DetailVinylRelease
+import com.waxwanderer.util.InternetConnectionUtil
 import durdinapps.rxfirebase2.RxFirebaseDatabase
+import io.reactivex.Observable
 import io.reactivex.Observer
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
@@ -38,10 +42,10 @@ class SearchPresenter(@NonNull private var vinylDataSource: VinylDataSource, @No
 
 
     override fun searchVinylReleases(queryParams: HashMap<String, String>, pageNumber: Int) {
-
         this.queryParams = queryParams
 
-        vinylDataSource.getVinyls(this.queryParams,pageNumber)
+        InternetConnectionUtil.isInternetOn()
+                .flatMap { isInternetOn -> if (isInternetOn) vinylDataSource.getVinyls(this.queryParams,pageNumber) else Observable.error(Exception("No internet connection")) }
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(observer)
@@ -49,12 +53,13 @@ class SearchPresenter(@NonNull private var vinylDataSource: VinylDataSource, @No
     }
 
     override fun loadVinylRelease(releaseId: String) {
-
-        vinylDataSource.getVinyl(releaseId)
+        InternetConnectionUtil.isInternetOn()
+                .flatMapSingle { isInternetOn -> if (isInternetOn) vinylDataSource.getVinyl(releaseId) else Single.error(Exception("No internet connection")) }
+                .flatMapSingle { vinylDataSource.getVinyl(releaseId) }
                 .doOnSubscribe{compositeDisposable?.add(it)}
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({searchView.showQuickViewDialog(it)},
+                .subscribe({detailVinylRelease ->  searchView.showQuickViewDialog(detailVinylRelease)},
                         {error->searchView.showMessage(error.message) })
     }
 
@@ -78,7 +83,8 @@ class SearchPresenter(@NonNull private var vinylDataSource: VinylDataSource, @No
 
         val myRef = database.reference.child("favourites").child(mFirebaseAuth.currentUser?.uid).child(vinyl.id.toString())
 
-        RxFirebaseDatabase.observeSingleValueEvent(myRef).toObservable()
+        InternetConnectionUtil.isInternetOn()
+                .flatMap { isInternetOn -> if (isInternetOn) RxFirebaseDatabase.observeSingleValueEvent(myRef).toObservable() else Observable.error(Exception("No internet connection")) }
                 .map { dataSnapshot -> dataSnapshot.exists() }
                 .doOnSubscribe { compositeDisposable?.add(it) }
                 .subscribe({ isInFavourites -> if (!isInFavourites) addToFirebase(myRef,vinyl) else searchView.showMessage("Already in your favourites") },

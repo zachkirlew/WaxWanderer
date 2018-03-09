@@ -12,7 +12,7 @@ import java.util.regex.Pattern
 import com.google.firebase.auth.UserProfileChangeRequest
 
 
-class SignUpPresenter(private @NonNull var signUpView: SignUpContract.View) : SignUpContract.Presenter {
+class SignUpPresenter(@NonNull private var signUpView: SignUpContract.View) : SignUpContract.Presenter {
 
 
     private val mFirebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
@@ -22,7 +22,7 @@ class SignUpPresenter(private @NonNull var signUpView: SignUpContract.View) : Si
 
     private var dob: Date? = null
 
-    private val EMAIL_PATTERN = "^[a-zA-Z0-9#_~!$&'()*+,;=:.\"(),:;<>@\\[\\]\\\\]+@[a-zA-Z0-9-]+(\\.[a-zA-Z0-9-]+)*$"
+    private val EMAIL_PATTERN = "^[a-zA-Z0-9#_~!$&'()*+,;=:.\"<>@\\[\\]\\\\]+@[a-zA-Z0-9-]+(\\.[a-zA-Z0-9-]+)*$"
     private val pattern = Pattern.compile(EMAIL_PATTERN)
     private lateinit var matcher : Matcher
 

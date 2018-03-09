@@ -78,7 +78,7 @@ class MessageAdapter(private val messageList: ArrayList<Message>, private val mI
                     holder.rateButton?.visibility = View.VISIBLE
                     holder.ratingBar.rating = 0f
                     holder.ratedText.text = ""
-                    holder.rateButton?.setOnClickListener{messageFragment.showRatingDialog(message.id,attachedVinyl!!.id,position)}
+                    holder.rateButton?.setOnClickListener{messageFragment.showRatingDialog(message.id, attachedVinyl!!.id)}
                 }
             }
             else{

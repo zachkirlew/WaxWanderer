@@ -94,7 +94,7 @@ class MatchFragment : Fragment(), MatchContract.View, OnSignOutListener, OnSwipe
     override fun showMatchDialog(likedUserName: String) {
         val builder = AlertDialog.Builder(activity!!)
         builder.setMessage("You became friends with $likedUserName")
-                .setPositiveButton("Okay", { dialog, id ->
+                .setPositiveButton("Okay", { dialog, _ ->
                     dialog.dismiss()
                 })
         builder.create().show()

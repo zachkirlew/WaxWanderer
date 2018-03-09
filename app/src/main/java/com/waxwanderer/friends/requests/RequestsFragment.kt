@@ -2,6 +2,8 @@ package com.waxwanderer.friends.requests
 
 import android.os.Bundle
 import android.support.annotation.Nullable
+import android.support.design.widget.CoordinatorLayout
+import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
@@ -24,6 +26,8 @@ class RequestsFragment : Fragment(), RequestsContract.View, OnSignOutListener, O
     private lateinit var requestList : RecyclerView
 
     private var noRequestsText: TextView? = null
+
+    private val coordinatorLayout : CoordinatorLayout by lazy{activity!!.findViewById<CoordinatorLayout>(R.id.coordinatorLayout)}
 
     override fun onCreate(@Nullable savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,6 +81,7 @@ class RequestsFragment : Fragment(), RequestsContract.View, OnSignOutListener, O
     }
 
     override fun showMessage(message: String?) {
+        message?.let { Snackbar.make(coordinatorLayout, it, Snackbar.LENGTH_LONG).show() }
     }
 
     override fun onRequestAccepted(user: User) {
@@ -86,7 +91,7 @@ class RequestsFragment : Fragment(), RequestsContract.View, OnSignOutListener, O
     override fun showFriendDialog(userName: String) {
         val builder = AlertDialog.Builder(activity!!)
         builder.setMessage("You became friends with $userName")
-                .setPositiveButton("Okay", { dialog, id ->
+                .setPositiveButton("Okay", { dialog, _ ->
                     dialog.dismiss()
                 })
         builder.create().show()

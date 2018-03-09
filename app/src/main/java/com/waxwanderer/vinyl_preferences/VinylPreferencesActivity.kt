@@ -2,6 +2,8 @@ package com.waxwanderer.vinyl_preferences
 
 import android.content.Intent
 import android.os.Bundle
+import android.support.design.widget.CoordinatorLayout
+import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -30,6 +32,7 @@ class VinylPreferencesActivity : AppCompatActivity(), VinylPreferencesContract.V
     private lateinit var stylesAdapter: StylesAdapter
 
     private var hasComeFromMain: Boolean = false
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -73,6 +76,12 @@ class VinylPreferencesActivity : AppCompatActivity(), VinylPreferencesContract.V
 
         spinner.adapter = dataAdapter
     }
+
+    override fun showMessage(message: String?) {
+        Toast.makeText(this@VinylPreferencesActivity, message,
+                Toast.LENGTH_SHORT).show()
+    }
+
 
     override fun onNothingSelected(p0: AdapterView<*>?) {
 

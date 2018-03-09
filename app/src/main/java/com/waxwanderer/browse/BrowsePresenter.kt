@@ -15,8 +15,6 @@ class BrowsePresenter(@NonNull private var browseView: BrowseContract.View): Bro
     private val mFirebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private val database = FirebaseDatabase.getInstance()
 
-    private val TAG = BrowsePresenter::class.java.simpleName
-
     private var compositeDisposable : CompositeDisposable? = null
 
     init {

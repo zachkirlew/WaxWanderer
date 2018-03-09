@@ -10,6 +10,7 @@ import com.waxwanderer.util.InternetConnectionUtil
 import durdinapps.rxfirebase2.RxFirebaseDatabase
 import io.reactivex.Observable
 import io.reactivex.Observer
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
@@ -77,7 +78,8 @@ class FavouritePresenter(@NonNull private var favouriteView: FavouriteContract.V
 
     override fun loadVinylRelease(releaseId: String) {
 
-        vinylDataSource.getVinyl(releaseId)
+        InternetConnectionUtil.isInternetOn()
+                .flatMapSingle { isInternetOn -> if (isInternetOn) vinylDataSource.getVinyl(releaseId) else Single.error(Exception("No internet connection")) }
                 .doOnSubscribe{compositeDisposable?.add(it)}
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
