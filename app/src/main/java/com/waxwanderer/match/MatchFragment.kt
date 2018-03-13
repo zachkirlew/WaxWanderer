@@ -25,6 +25,8 @@ import com.waxwanderer.recommendations.RecommendationsActivity
 
 class MatchFragment : Fragment(), MatchContract.View, OnSignOutListener, OnSwipeListener, ItemRemovedListener {
 
+    private var cardCount = 0
+
     private lateinit var matchPresenter: MatchContract.Presenter
 
     private lateinit var mSwipeView: SwipePlaceHolderView
@@ -100,12 +102,28 @@ class MatchFragment : Fragment(), MatchContract.View, OnSignOutListener, OnSwipe
         builder.create().show()
     }
 
+    override fun getCardCount(): Int {
+        return mSwipeView.allResolvers.size
+    }
+
     override fun setPresenter(presenter: MatchContract.Presenter) {
         matchPresenter = presenter
     }
 
-    override fun addUserCard(userCard: UserCard) {
+    override fun hideProgressBar() {
         progressBar.visibility = View.GONE
+    }
+
+    override fun showProgressBar() {
+        progressBar.visibility = View.VISIBLE
+    }
+
+    override fun showNoUsersView() {
+        noUsersText.visibility = View.VISIBLE
+    }
+
+    override fun addUserCard(userCard: UserCard) {
+        hideProgressBar()
         mSwipeView.addView(UserCardView(mContext,userCard,mSwipeView,this))
     }
 
@@ -121,9 +139,10 @@ class MatchFragment : Fragment(), MatchContract.View, OnSignOutListener, OnSwipe
 
     override fun onItemRemoved(count: Int) {
         Log.i(TAG,"Removed item, left:" + count)
-        if(count==0)
-            noUsersText.visibility = View.VISIBLE
-
+        if(count==0){
+            showNoUsersView()
+            hideProgressBar()
+        }
     }
 
     override fun startRecommendationsActivity() {

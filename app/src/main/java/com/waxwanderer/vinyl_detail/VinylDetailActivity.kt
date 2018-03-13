@@ -65,7 +65,6 @@ class VinylDetailActivity : AppCompatActivity(), VinylDetailContract.View, View.
         supportActionBar?.title = " "
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        //if user has come from deep link
         if (intent.data != null) {
             val idParameter = intent.data.getQueryParameter("id")
             presenter.loadVinylRelease(idParameter)
@@ -77,7 +76,9 @@ class VinylDetailActivity : AppCompatActivity(), VinylDetailContract.View, View.
                 presenter.checkInFavourites(idParameter)
             }
 
-        } else {
+        }
+
+        else {
             val vinylRelease = intent.getSerializableExtra("selected vinyl") as VinylRelease
             presenter.loadVinylRelease(vinylRelease.id.toString())
             presenter.checkInFavourites(vinylRelease.id.toString())

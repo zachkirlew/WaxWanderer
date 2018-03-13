@@ -113,6 +113,10 @@ class MatchPresenter(@NonNull private var matchView: MatchContract.View,
 
         override fun onComplete() {
             Log.i(TAG, "Potential matches retrieved")
+            if(matchView.getCardCount() ==0) {
+                matchView.hideProgressBar()
+                matchView.showNoUsersView()
+            }
         }
 
         override fun onNext(userCard: UserCard) {

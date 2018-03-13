@@ -16,6 +16,14 @@ interface MatchContract {
 
         fun showMatchDialog(likedUserName : String)
 
+        fun getCardCount() : Int
+
+        fun hideProgressBar()
+
+        fun showProgressBar()
+
+        fun showNoUsersView()
+
         override fun showMessage(message : String?)
     }
 

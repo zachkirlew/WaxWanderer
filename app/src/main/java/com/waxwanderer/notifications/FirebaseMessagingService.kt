@@ -6,27 +6,24 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import android.media.RingtoneManager
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.support.v4.app.NotificationCompat
-import android.util.Log
+import android.support.v4.app.TaskStackBuilder
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.squareup.picasso.Picasso
+import com.squareup.picasso.Target
 import com.waxwanderer.R
 import com.waxwanderer.main.MainActivity
-import android.graphics.Bitmap
-import android.graphics.drawable.Drawable
-import android.os.Handler
-import com.squareup.picasso.Target
-import android.os.Looper
-import android.support.v4.app.TaskStackBuilder
 import com.waxwanderer.message.MessageActivity
 
 
 class FirebaseMessagingService : FirebaseMessagingService() {
-
-    private val TAG: String = FirebaseMessagingService::class.java.simpleName
 
     private lateinit var notificationBuilder: NotificationCompat.Builder
 
@@ -42,11 +39,11 @@ class FirebaseMessagingService : FirebaseMessagingService() {
 
             val data = remoteMessage.data
 
-            sendNotification(data["title"], data["message"], data)
+            displayNotification(data["title"], data["message"], data)
         }
     }
 
-    private fun sendNotification(title: String?, messageBody: String?, data: Map<String, String>) {
+    private fun displayNotification(title: String?, messageBody: String?, data: Map<String, String>) {
 
         val notificationType = data["type"]
 

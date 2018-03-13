@@ -76,7 +76,7 @@ class RecommendVinylDialogPresenter(@NonNull private var dialogView: RecommendVi
         RxFirebaseDatabase.observeSingleValueEvent(ref,{it.value as String}).toSingle()
                 .doOnSubscribe { compositeDisposable?.add(it) }
                 .map{sendMessage(user,"",userId!!,vinyl,it)}
-                .subscribe({it ->dialogView.showMessage("Recommendation sent")
+                .subscribe({dialogView.showMessage("Recommendation sent")
                                 dialogView.dismiss()
                                 dispose()},
                             {error-> dialogView.showMessage(error.message)})
