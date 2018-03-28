@@ -49,7 +49,6 @@ class SearchPresenter(@NonNull private var vinylDataSource: VinylDataSource, @No
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(observer)
-
     }
 
     override fun loadVinylRelease(releaseId: String) {

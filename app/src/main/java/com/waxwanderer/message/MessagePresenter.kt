@@ -1,6 +1,5 @@
 package com.waxwanderer.message
 
-import android.annotation.SuppressLint
 import android.support.annotation.NonNull
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
@@ -36,11 +35,7 @@ class MessagePresenter(@NonNull private val messageView: MessageContract.View,
 
     private lateinit var recipient : User
 
-    override fun start() {
-
-
-
-    }
+    override fun start() {}
 
     override fun loadRecipient(userId: String) {
 
@@ -135,7 +130,7 @@ class MessagePresenter(@NonNull private val messageView: MessageContract.View,
         println("rating is $rating")
         val name = currentUser.displayName
 
-        var points = 0
+        val points: Int
 
         when(rating){
             3.00 -> {points = 5
@@ -175,7 +170,6 @@ class MessagePresenter(@NonNull private val messageView: MessageContract.View,
                             {error -> Log.e(TAG,error.message)})
     }
 
-    @SuppressLint("CheckResult")
     private fun awardPointsToUser(points : Int) {
         val userRef = database.reference.child("users").child(recipient.id)
 

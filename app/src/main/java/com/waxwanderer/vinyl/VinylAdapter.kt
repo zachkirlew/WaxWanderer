@@ -139,8 +139,6 @@ class VinylAdapter(private var vinyls: ArrayList<VinylRelease>,
                 itemView.list_item_view.inflateMenu(R.menu.vinyl_action_menu)
             }
 
-
-
             itemView.list_item_view.setOnMenuItemClickListener { item ->
                 when (item.itemId) {
 
