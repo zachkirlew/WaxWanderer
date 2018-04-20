@@ -16,8 +16,8 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 
 
-class RecommendationsPresenter(private @NonNull var recommendationsView: RecommendationsContract.View,
-                               private @NonNull val recommender: RecommenderImp) : RecommendationsContract.Presenter {
+class RecommendationsPresenter(@NonNull private var recommendationsView: RecommendationsContract.View,
+                               @NonNull private val recommender: RecommenderImp) : RecommendationsContract.Presenter {
 
     private val database: FirebaseDatabase = FirebaseDatabase.getInstance()
     private val userId = FirebaseAuth.getInstance().uid

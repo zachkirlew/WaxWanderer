@@ -36,8 +36,8 @@ class RecommendationsFragment: Fragment(), RecommendationsContract.View, Recomme
 
         activity?.title = "User recommendations"
 
-        recommendationsList = view.findViewById<RecyclerView>(R.id.list_recommendations)
-        noRecommendationsText = view.findViewById<TextView>(R.id.text_no_recommendations)
+        recommendationsList = view.findViewById(R.id.list_recommendations)
+        noRecommendationsText = view.findViewById(R.id.text_no_recommendations)
 
         initializePresenter()
 

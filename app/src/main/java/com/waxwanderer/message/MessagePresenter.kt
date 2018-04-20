@@ -82,7 +82,6 @@ class MessagePresenter(@NonNull private val messageView: MessageContract.View,
         }
     }
 
-
     override fun sendMessage(messageText: String, authorId: String,attachedRelease : VinylRelease?) {
 
         val key = database.reference.child("chat").child(chatId).push().key
@@ -102,11 +101,9 @@ class MessagePresenter(@NonNull private val messageView: MessageContract.View,
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe({Log.i("MessagePresenter",it.string())},
-                            {error -> Log.e(TAG,"errro: " + error.message)})
+                            {error -> Log.e(TAG,"Error: " + error.message)})
         }
     }
-
-
 
     override fun loadFavourites() {
 

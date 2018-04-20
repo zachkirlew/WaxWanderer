@@ -16,8 +16,6 @@ import java.util.*
 
 class MessageAdapter(private val messageList: ArrayList<Message>, private val mId: String, private val messageFragment: MessageFragment) : RxFirebaseRecyclerAdapter<MessageAdapter.ViewHolder, Message>(Message::class.java) {
 
-    private val TAG = MessageAdapter::class.java.simpleName
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view: View = if (viewType == MESSAGE_SENT) {
             LayoutInflater.from(parent.context)
@@ -29,11 +27,6 @@ class MessageAdapter(private val messageList: ArrayList<Message>, private val mI
 
         return ViewHolder(view)
     }
-
-    fun getFirstItemId(): String {
-        return messageList[0].id
-    }
-
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val message = messageList[position]
@@ -138,7 +131,7 @@ class MessageAdapter(private val messageList: ArrayList<Message>, private val mI
 
     companion object {
 
-        private val MESSAGE_SENT = 1
-        private val MESSAGE_RECEIVED = 2
+        private const val MESSAGE_SENT = 1
+        private const val MESSAGE_RECEIVED = 2
     }
 }

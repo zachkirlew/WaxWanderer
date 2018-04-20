@@ -7,7 +7,7 @@ import com.waxwanderer.data.local.UserPreferences
 import java.text.DateFormat
 import java.util.*
 
-class MatchPreferencesPresenter(private @NonNull var matchPreferencesView: MatchPreferencesContract.View, private @NonNull val preferences: UserPreferences) : MatchPreferencesContract.Presenter {
+class MatchPreferencesPresenter(@NonNull private var matchPreferencesView: MatchPreferencesContract.View, @NonNull private val preferences: UserPreferences) : MatchPreferencesContract.Presenter {
 
 
     private val mFirebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
@@ -51,8 +51,5 @@ class MatchPreferencesPresenter(private @NonNull var matchPreferencesView: Match
 
             matchPreferencesView.startStylesActivity()
         }
-
     }
-
-
 }

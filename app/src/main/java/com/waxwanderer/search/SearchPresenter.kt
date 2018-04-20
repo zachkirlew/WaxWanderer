@@ -68,15 +68,12 @@ class SearchPresenter(@NonNull private var vinylDataSource: VinylDataSource, @No
         searchVinylReleases(queryParams,currentPage)
     }
 
-
-
     override fun refresh() {
         currentPage = 0
         searchView.setRefreshing(true)
         searchView.clearVinyls()
         searchVinylReleases(queryParams)
     }
-
 
     override fun addToFavourites(vinyl: VinylRelease) {
 
